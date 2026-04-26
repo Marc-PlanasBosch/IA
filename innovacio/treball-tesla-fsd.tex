@@ -1,0 +1,325 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[catalan]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[a4paper,margin=2.5cm]{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath, amssymb}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{caption}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue!60!black,
+  urlcolor=blue!60!black,
+  citecolor=blue!60!black
+}
+
+\title{Treball d'Innovació:\\
+Full Self-Driving v12 de Tesla\\
+\large{La transició cap a un sistema de conducció autònoma \emph{end-to-end} basat en visió}}
+\author{Marc Planas Bosch \\ Jaime Prieto Salcedo \\ Marcel Mula Tixier}
+\date{Maig 2026}
+
+\begin{document}
+
+\begin{titlepage}
+\centering
+\vspace*{2cm}
+{\Huge\bfseries Treball d'Innovació en IA\par}
+\vspace{1cm}
+{\LARGE Full Self-Driving v12 de Tesla\par}
+\vspace{0.5cm}
+{\large La transició cap a un sistema de conducció autònoma \emph{end-to-end} basat en visió\par}
+\vspace{2.5cm}
+{\large Marc Planas Bosch\par}
+{\large Jaime Prieto Salcedo\par}
+{\large Marcel Mula Tixier\par}
+\vspace{2.5cm}
+{\large Maig 2026\par}
+\vfill
+{\large Universitat Politècnica de Catalunya\par}
+{\large Facultat d'Informàtica de Barcelona\par}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+\section{Introducció}
+
+Tesla, Inc., fundada el 2003, ha esdevingut una empresa de referència en el sector de l'automoció gràcies, en gran part, a la seva aposta sostinguda per la intel·ligència artificial aplicada a la conducció autònoma. Des del 2014, els seus vehicles incorporen el sistema Autopilot, un conjunt de funcionalitats d'assistència que ha anat evolucionant fins a esdevenir, en la seva versió més avançada, el sistema Full Self-Driving (FSD).
+
+Aquest treball analitza la innovació concreta del FSD versió 12 (FSD v12), llançada en \emph{beta} el gener de 2024 i desplegada de forma generalitzada al llarg d'aquest mateix any. La novetat fonamental d'aquesta versió rau en la substitució de aproximadament 300.000 línies de codi C++ heurístic, encarregades fins aleshores de la presa de decisions del vehicle, per una xarxa neuronal entrenada \emph{end-to-end} a partir de milions de vídeos de conducció humana mitjançant \emph{imitation learning}.
+
+Aquest canvi representa una transició paradigmàtica: el pas d'un sistema híbrid, on la percepció s'encarregava a xarxes neuronals però la planificació es resolia amb regles escrites manualment, a un sistema purament neural en què la mateixa arquitectura processa píxels d'entrada i en deriva les ordres de control de baix nivell (volant, accelerador, fre).
+
+L'objectiu d'aquest document és descriure les tècniques d'intel·ligència artificial que sustenten el FSD v12, analitzar la naturalesa innovadora del sistema, i avaluar el seu impacte tant en l'empresa com en la societat.
+
+\section{Context: el problema de la conducció autònoma}
+
+\subsection{Nivells de conducció autònoma}
+
+La Society of Automotive Engineers (SAE) defineix sis nivells de conducció autònoma, del 0 (sense automatització) al 5 (automatització total en qualsevol condició). Tesla declara oficialment que el FSD opera en \textbf{nivell 2} (automatització parcial amb supervisió humana constant), tot i que la seva ambició a llarg termini és arribar al nivell 4 i, eventualment, al 5.
+
+Aquest matís és rellevant: malgrat el nom comercial \emph{``Full Self-Driving''}, el conductor humà és legalment responsable en tot moment del comportament del vehicle.
+
+\subsection{El repte tècnic}
+
+La conducció és un dels problemes més complexos a què s'enfronta la intel·ligència artificial:
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Percepció}: cal entendre l'entorn 3D a partir d'informació sensorial limitada (càmeres, radar, LIDAR), incloent-hi objectes mòbils, senyals, i geometria de la via.
+    \item \textbf{Predicció}: cal anticipar la intenció d'altres agents (cotxes, vianants, ciclistes), que actuen amb objectius propis i sovint inesperats.
+    \item \textbf{Planificació}: cal decidir maniobres òptimes considerant restriccions de seguretat, comoditat i regulació de trànsit.
+    \item \textbf{Execució}: cal traduir aquestes decisions en ordres de control suaus i reactives.
+    \item \textbf{Robustesa}: el sistema ha de funcionar en una varietat enorme de situacions (clima, il·luminació, geografia) amb un marge d'error pràcticament nul.
+\end{itemize}
+
+\subsection{Aproximacions de la indústria}
+
+Existeixen dues filosofies oposades dins la indústria:
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Sensor stack ric} (Waymo, Cruise, Mobileye, BYD): combinació de càmeres, radars, LIDARs i mapes d'alta definició (HD maps) preconstruïts. Aquesta aproximació prioritza la robustesa per àrees concretes a costa d'escalabilitat.
+    \item \textbf{Vision-only} (Tesla): vuit càmeres com a única font de percepció, sense LIDAR ni HD maps. Aquesta aproximació pretén ser escalable globalment, ja que no depèn de cartografia prèvia, però delega tota la complexitat al programari i al maquinari de càmera.
+\end{itemize}
+
+L'aposta de Tesla pel \emph{vision-only} ha estat històricament controvertida, però es justifica per dos arguments: (1) els humans condueixen amb només dos ulls, per tant la informació visual és suficient en principi; (2) escalar globalment és inviable amb mapes HD per a cada carretera del món.
+
+\subsection{Evolució històrica de l'Autopilot}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{2014--2016 (Autopilot 1.0)}: basat en hardware i programari de Mobileye. Funcionalitats limitades a manteniment de carril i control adaptatiu.
+    \item \textbf{2016--2019 (Autopilot 2.0--2.5)}: després del trencament amb Mobileye, Tesla desenvolupa la seva pròpia pila amb GPUs NVIDIA i xarxes neuronals pròpies.
+    \item \textbf{2019--2022 (HW3 + FSD v10)}: introducció del xip FSD propi i del paradigma \emph{HydraNet} (xarxa multi-tasca compartida).
+    \item \textbf{2022--2023 (FSD v11)}: adopció completa del \emph{vision-only} i de les \emph{Occupancy Networks}; la planificació segueix sent codi heurístic.
+    \item \textbf{2024 (FSD v12)}: substitució del planificador heurístic per una xarxa neuronal entrenada \emph{end-to-end}.
+\end{itemize}
+
+\section{Descripció de les tècniques d'IA}
+
+Aquesta secció descriu els components clau del sistema FSD v12. La pila de software es pot dividir en quatre etapes: (1) processament inicial d'imatge amb una xarxa convolucional compartida (HydraNet), (2) reprojecció multi-càmera a una representació en vista d'ocell amb un Transformer (BEV Transformer), (3) representació volumètrica de l'entorn (Occupancy Networks) i predicció temporal (Video Neural Networks), i (4) planificació \emph{end-to-end}.
+
+\subsection{Filosofia general: ``Software 2.0''}
+
+Andrej Karpathy, antic director d'IA de Tesla, va popularitzar el terme \emph{Software 2.0} \cite{karpathy2017} per descriure una nova forma de programació en què el programador no escriu instruccions explícites, sinó que defineix l'estructura d'una xarxa neuronal i deixa que els pesos es derivin a partir de dades. La història del FSD és essencialment la història d'una migració progressiva de \emph{Software 1.0} (codi C++) a \emph{Software 2.0} (xarxes neuronals): primer la percepció, després les representacions intermèdies, i finalment, amb el v12, el planificador.
+
+\subsection{HydraNet: backbone compartit i multi-task learning}
+
+L'arquitectura HydraNet \cite{tesla2021} resol un problema d'enginyeria fonamental: amb desenes de tasques visuals diferents (detecció de cotxes, vianants, semàfors, línies de carril, senyals de trànsit, etc.) i un pressupost computacional limitat (el xip FSD ha de processar 36 fps a 8 càmeres en temps real), no es pot disposar d'una xarxa independent per cada tasca.
+
+La solució consisteix en un \textbf{backbone convolucional compartit} (Tesla utilitza una variant de la família RegNet de Meta) que extreu característiques de baix i mitjà nivell, seguit de múltiples \textbf{caps específics} (\emph{heads}) per a cada tasca. Així:
+
+\begin{itemize}[leftmargin=*]
+    \item Es comparteix la major part del còmput entre tasques.
+    \item Característiques apreses per una tasca poden beneficiar-ne d'altres (\emph{positive transfer}).
+    \item L'entrenament pot ser independent per tasca (es pot afegir una nova capacitat sense reentrenar tot).
+\end{itemize}
+
+Un dels reptes és el \emph{negative transfer}: certes tasques tenen requisits contradictoris i poden degradar-se mútuament. Tesla ha desenvolupat tècniques de regularització i mostreig específic per mitigar aquest fenomen.
+
+\begin{figure}[h]
+\centering
+\fbox{\parbox[c][3.5cm][c]{0.8\textwidth}{\centering\emph{[Figura 1: Esquema del HydraNet — backbone convolucional compartit i caps específics per tasca. Adaptat de Tesla AI Day 2021.]}}}
+\caption{Arquitectura del HydraNet: un backbone únic alimenta múltiples caps de tasca.}
+\end{figure}
+
+\subsection{BEV Transformer: reprojecció multi-càmera}
+
+Una limitació crítica del primer Autopilot era que les prediccions es feien per cada càmera independentment, en l'espai de la imatge. Aquesta aproximació és problemàtica: un cotxe parcialment visible a dues càmeres pot detectar-se dues vegades; les distàncies són difícils d'estimar; la integració per al planificador requereix lògica complexa.
+
+La solució de Tesla és reprojectar les característiques de totes les càmeres a un espai únic en \textbf{vista d'ocell} (\emph{Bird's Eye View}, BEV) abans de fer prediccions. Això planteja la qüestió: com es passa de l'espai d'imatge a l'espai BEV de manera diferenciable i sense assumir geometria simplificada?
+
+La solució clàssica (\emph{Inverse Perspective Mapping}) assumeix que el terreny és pla, cosa que falla en pendents, ressalts i obstacles. La solució de Tesla, inspirada en arquitectures com DETR \cite{carion2020} i Lift-Splat-Shoot \cite{philion2020}, utilitza un Transformer:
+
+\begin{itemize}[leftmargin=*]
+    \item Es defineix una graella de \textbf{queries} fixes a l'espai BEV (per exemple, 200$\times$200 punts representant un quadrat al voltant del cotxe).
+    \item Cada query atén (\emph{cross-attention}) les característiques de totes les càmeres alhora.
+    \item Codificacions posicionals (incloent-hi la calibració de cada càmera) permeten al model aprendre quina informació ha de buscar a cada càmera.
+\end{itemize}
+
+El resultat és una representació densa en BEV que serveix d'input unificat per a totes les tasques posteriors (detecció, ocupació, predicció).
+
+\begin{equation}
+\text{BEV}_{(i,j)} = \text{Attention}\big(Q_{(i,j)},\; K_{\text{multi-cam}},\; V_{\text{multi-cam}}\big)
+\end{equation}
+
+on $Q_{(i,j)}$ és la \emph{query} apresa per la cel·la $(i,j)$ del BEV, i $K, V$ provenen de les característiques de totes les càmeres concatenades.
+
+\subsection{Occupancy Networks}
+
+Una limitació de la detecció basada en bounding boxes és que només funciona per a categories pre-definides. Si apareix un objecte que no s'ha vist mai durant l'entrenament (un sofà al mig de la carretera, per exemple), el sistema pot ignorar-lo.
+
+Per resoldre-ho, Tesla va introduir les \textbf{Occupancy Networks} \cite{tesla2022}, inspirades en treballs de visió 3D com NeRF \cite{mildenhall2020}. La idea és predir, per a cada vòxel de l'espai 3D al voltant del cotxe, dues quantitats:
+
+\begin{itemize}[leftmargin=*]
+    \item La \textbf{probabilitat d'ocupació} $p(\text{occupied})$: si el vòxel conté algun obstacle.
+    \item El \textbf{flux d'ocupació} $\vec{v}$: el vector velocitat del que ocupa aquell vòxel, si és que es mou.
+\end{itemize}
+
+Aquesta representació és \emph{agnòstica de classes}: el sistema sap que hi ha alguna cosa en aquell punt, encara que no la pugui categoritzar. És una xarxa de seguretat fonamental contra l'\emph{open-world problem}.
+
+\subsection{Video Neural Networks: memòria temporal}
+
+Les arquitectures anteriors processen un únic frame a la vegada. La conducció, però, requereix memòria: cal recordar que un vianant que ha quedat tapat momentàniament per un cotxe segueix existint; cal mantenir la persistència de senyals de trànsit ja vistos; cal estimar velocitats integrant múltiples frames.
+
+Tesla afegeix una \textbf{cua de característiques} (\emph{feature queue}) que emmagatzema embeddings dels últims frames i del context geogràfic, processada per un mòdul recurrent (originalment GRU; en versions més recents, basat en Transformer). Aquest component permet:
+
+\begin{itemize}[leftmargin=*]
+    \item Predicció robusta sota oclusions temporals.
+    \item Estimació de velocitat sense necessitat de radar.
+    \item Coherència temporal de les prediccions.
+\end{itemize}
+
+\subsection{Planificació \emph{end-to-end}: la innovació de FSD v12}
+
+Fins a la versió 11, l'arquitectura del FSD seguia un patró tradicional: \emph{percepció amb xarxes neuronals + planificació amb codi}. Aquest últim component (el \emph{planner}) era una peça monolítica de C++ amb funcions de cost, restriccions geomètriques, arbres de decisió i variants de \emph{Model Predictive Control} (MPC) que generaven una trajectòria òptima a partir de l'estat percebut.
+
+A FSD v12, aquest \emph{planner} desapareix. En el seu lloc, s'introdueix una xarxa neuronal que rep com a input la representació BEV (i potencialment la cua de vídeo) i produeix directament les ordres de control: angle de volant, acceleració i frenada. Aquesta xarxa s'entrena amb \emph{imitation learning} a partir de milions de vídeos de conductors humans (només dels vídeos considerats de bona qualitat, segons criteris automàtics i manuals de Tesla).
+
+Avantatges declarats:
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Comportament més natural}: el cotxe condueix com un humà perquè ha après d'humans; les transicions són més suaus, els avançaments més intuïtius.
+    \item \textbf{Generalització}: el planificador heurístic havia de cobrir explícitament cada cas (rotonda amb 4 sortides, encreuament en T, etc.); la xarxa neural aprèn la distribució subjacent.
+    \item \textbf{Escala}: amb més dades, el sistema millora automàticament; el codi heurístic, en canvi, escalava malament en complexitat.
+\end{itemize}
+
+Reptes:
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Casos límit (\emph{corner cases})}: una xarxa entrenada amb \emph{imitation learning} hereta els biaixos i errors dels humans del dataset, i pot fallar de manera inesperada davant situacions infreqüents.
+    \item \textbf{Debuggabilitat}: explicar per què el cotxe va prendre una decisió concreta és molt més difícil amb una xarxa que amb codi.
+    \item \textbf{Garanties de seguretat}: les certificacions formals (com les que es demanen a aviació) són difícilment aplicables a sistemes purament estadístics.
+\end{itemize}
+
+\subsection{Data engine i auto-labeling}
+
+Cap d'aquestes arquitectures funcionaria sense el component menys glamurós però potser més decisiu: el \textbf{data engine}. Tesla disposa d'una flota de més de 6 milions de vehicles que envien fragments de vídeo (\emph{clips}) al núvol quan el conductor pren control sobre l'Autopilot, quan es detecten esdeveniments rars, o quan un \emph{trigger} concret s'activa.
+
+L'\textbf{auto-labeling} és un procés en què models grans i lents (que s'executen \emph{offline} al núvol, sense restricció de temps real) processen aquests clips i produeixen etiquetes (segmentació, traçat, ocupació) que serviran per entrenar models més petits i ràpids capaços d'executar-se al cotxe. Aquest paradigma, anomenat \emph{model distillation}, és central a l'estratègia de Tesla.
+
+A més, Tesla utilitza simulació (motors com Unreal Engine adaptats per generar vídeo realista i \emph{ground-truth} perfecte) per cobrir casos rars o perillosos que la flota no captura amb prou freqüència.
+
+\section{La innovació de FSD v12}
+
+\subsection{Què canvia respecte a versions anteriors}
+
+La diferència fonamental entre FSD v11 i FSD v12 no és arquitectònica en el sentit estricte: les xarxes de percepció (HydraNet, BEV Transformer, Occupancy Networks, Video NNs) ja existien. El canvi és \emph{sistèmic}: substituir una peça crítica del sistema (el planificador) per una xarxa neuronal, eliminant la frontera entre percepció i actuació.
+
+Elon Musk va declarar el gener de 2024 que aquesta versió va eliminar aproximadament 300.000 línies de codi C++. Es tracta d'un dels canvis arquitectònics més grans de la història dels sistemes ADAS comercials.
+
+\subsection{Naturalesa de la innovació}
+
+Aquesta innovació entra clarament dins la categoria d'\emph{ús innovador de tècniques d'IA ja existents}. Els components individuals (Transformers, \emph{occupancy prediction}, \emph{imitation learning}) eren coneguts a la literatura. La innovació rau en:
+
+\begin{enumerate}[leftmargin=*]
+    \item L'\textbf{escala i integració}: cap altra empresa havia desplegat un sistema purament neural per al control de baix nivell d'un vehicle de carretera en producció massiva.
+    \item L'\textbf{aprofitament del data engine}: només Tesla disposa simultàniament de la flota, el hardware embarcat propi i la infraestructura de núvol per entrenar a aquesta escala.
+    \item La \textbf{verticalització}: Tesla controla tota la pila (xips, programari, vehicles, dades), cosa que li permet iterar més ràpid que competidors que depenen de proveïdors.
+\end{enumerate}
+
+És, per tant, una \textbf{innovació de combinació} a escala industrial, més que una innovació algorítmica pura.
+
+\section{Impacte empresarial}
+
+\subsection{Beneficis}
+
+\paragraph{Ingressos directes.} El paquet FSD es ven actualment a 8.000 dòlars de pagament únic o aproximadament 99 dòlars al mes en règim de subscripció. Tesla declara que cada cotxe equipat amb hardware compatible (HW3 i HW4) és un client potencial, fet que converteix el FSD en un negoci recurrent d'alt marge per sobre del preu del vehicle.
+
+\paragraph{Diferenciació de marca.} Cap altre fabricant ofereix un sistema d'aquestes característiques a la mateixa escala i preu. Això reforça la imatge tecnològica de Tesla i justifica el seu \emph{premium price}.
+
+\paragraph{Dades com a \emph{moat}.} L'avantatge competitiu derivat de la flota de Tesla és potser irrecuperable per a competidors. El cicle dades $\rightarrow$ millor model $\rightarrow$ millor producte $\rightarrow$ més vendes $\rightarrow$ més dades constitueix un cercle virtuós difícil de trencar.
+
+\paragraph{Habilitator del Robotaxi.} La visió a llarg termini de Tesla, anunciada repetidament per Elon Musk, és convertir cada vehicle en un \emph{robotaxi} capaç de generar ingressos al seu propietari quan no s'usa. FSD v12 és un pas necessari (encara que no suficient) cap a aquesta visió.
+
+\subsection{Riscos}
+
+\paragraph{Riscos regulatoris.} La National Highway Traffic Safety Administration (NHTSA) ha obert múltiples investigacions sobre Autopilot i FSD. L'informe d'abril de 2024 documenta més de 800 accidents on Autopilot va contribuir significativament al sinistre. Una intervenció regulatòria forta podria forçar Tesla a retirar funcions o fins i tot a recollir vehicles.
+
+\paragraph{Risc reputacional.} Cada accident greu amb FSD activat genera cobertura mediàtica desproporcionada. La pèrdua de confiança del consumidor podria ser catastròfica.
+
+\paragraph{Riscos legals.} Existeixen demandes col·lectives en curs per publicitat enganyosa relacionada amb la nomenclatura \emph{``Full Self-Driving''}, que crítics consideren misleading per a un sistema de nivell 2.
+
+\paragraph{Dependència de promeses.} Elon Musk ha promès la conducció autònoma total des de 2016, sempre amb terminis incomplerts. La fatiga del mercat amb aquestes promeses pot afectar la cotització.
+
+\subsection{Posició al mercat}
+
+Tesla competeix en un panorama heterogeni:
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{vs Waymo (Alphabet)}: Waymo opera amb LIDAR, HD maps i geofencing en àrees concretes (Phoenix, San Francisco), aconseguint nivell 4 dins d'aquestes zones. Tesla aposta per generalitzar globalment a costa de no aconseguir nivell 4 a curt termini. Estratègies oposades.
+    \item \textbf{vs Mobileye}: subministrador de moltes marques tradicionals. Tecnologia més conservadora, però amb major presència en el mercat OEM.
+    \item \textbf{vs competència xinesa (BYD DiPilot, Xpeng XNGP, Huawei ADS)}: avancen molt ràpidament, sovint amb stacks de sensors més rics. BYD ha incorporat el sistema DiPilot (anomenat ``God's Eye'') a vehicles d'entrada de gamma, intensificant la pressió competitiva.
+\end{itemize}
+
+\section{Impacte social}
+
+\subsection{Beneficis potencials}
+
+\paragraph{Reducció d'accidents.} Segons NHTSA, el 94\% dels accidents als EUA són atribuïbles a errors humans (distracció, fatiga, conducció sota efectes de l'alcohol). Un sistema de conducció autònoma fiable podria reduir dràsticament aquesta xifra. Tesla publica trimestralment estadístiques de seguretat que mostren menys accidents per milió de milles amb Autopilot activat que amb la conducció humana, tot i que aquestes dades són objecte de debat estadístic (selecció de via).
+
+\paragraph{Accessibilitat.} Persones grans, amb discapacitats visuals o motores podrien recuperar autonomia de mobilitat gràcies a aquests sistemes.
+
+\paragraph{Productivitat.} El temps dedicat a la conducció (que a Europa són unes 200 hores anuals per conductor) podria reaprofitar-se en altres activitats.
+
+\paragraph{Reducció de l'estrès.} La conducció és una font important d'estrès quotidià, especialment en entorns urbans saturats.
+
+\subsection{Riscos i preocupacions}
+
+\paragraph{Confiança excessiva.} Un risc ben documentat és el fenomen de \emph{automation complacency}: els conductors es desconnecten progressivament quan el sistema funciona bé, fet que els fa més lents a reaccionar quan el sistema falla. Aquest risc s'agreuja paradoxalment a mesura que el sistema millora.
+
+\paragraph{Responsabilitat legal.} En cas d'accident, qui és responsable: el conductor (que estava obligat a supervisar), Tesla (que va desenvolupar el sistema), o un tercer (els proveïdors de dades, etc.)? El marc legal actual no està preparat per respondre amb claredat aquesta pregunta.
+
+\paragraph{Privacitat.} Els vehicles Tesla recullen contínuament vídeo del seu entorn (incloent-hi de l'interior) i el transmeten als servidors de l'empresa. Això planteja qüestions de privacitat per als ocupants i pels vianants observats.
+
+\paragraph{Biaixos del dataset.} Les dades d'entrenament estan dominades per condicions específiques: regions geogràfiques amb molts usuaris Tesla (Califòrnia, Nevada), bon temps, infraestructura de carretera occidentalitzada. El sistema pot funcionar pitjor a regions infrarepresentades, agreujant desigualtats.
+
+\paragraph{Conseqüències laborals.} Si la conducció autònoma triomfa a llarg termini, milions de llocs de treball (taxistes, repartidors, transportistes) podrien desaparèixer. La transició socioeconòmica requerirà polítiques actives.
+
+\paragraph{Concentració de poder.} Que una sola empresa controli el programari que decideix com es comporten milions de vehicles a la via pública és sense precedent. Aquesta concentració planteja preguntes de governança democràtica.
+
+\section{Conclusions}
+
+El FSD v12 de Tesla representa un dels moviments tècnics més ambiciosos de la indústria de la conducció autònoma de l'última dècada. La seva innovació no rau en un algorisme nou, sinó en l'\textbf{aplicació industrial}, a una escala i en un domini sense precedents, de tècniques d'aprenentatge profund que fins ara s'havien limitat a la percepció.
+
+Aquest canvi marca la transició de la \emph{IA simbòlica} (codi i regles explícites) cap a una \emph{IA estadística pura} (xarxes neuronals \emph{end-to-end}) en un sistema de seguretat crítica. Si l'aposta funciona, redefinirà la mobilitat global i obrirà la porta a aplicacions com el robotaxi. Si falla, podria provocar un retrocés en la confiança del públic envers la conducció autònoma de nivell 4 i 5.
+
+Independentment del resultat final, FSD v12 és un cas d'estudi paradigmàtic dels reptes contemporanis de la IA: la tensió entre innovació i seguretat, entre escala i robustesa, entre utilitat i privacitat. Les seves lliçons són rellevants no només per a la indústria de l'automoció, sinó per a qualsevol sector on la IA prengui decisions amb conseqüències físiques per a les persones.
+
+\begin{thebibliography}{99}
+
+\bibitem{karpathy2017} Karpathy, A. (2017). \emph{Software 2.0}. Medium. \url{https://karpathy.medium.com/software-2-0-a64152b37c35}
+
+\bibitem{tesla2021} Tesla, Inc. (2021). \emph{Tesla AI Day 2021}. Presentació pública. \url{https://www.youtube.com/watch?v=j0z4FweCy4M}
+
+\bibitem{tesla2022} Tesla, Inc. (2022). \emph{Tesla AI Day 2022}. Presentació pública. \url{https://www.youtube.com/watch?v=ODSJsviD_SU}
+
+\bibitem{vaswani2017} Vaswani, A., et al. (2017). Attention is all you need. \emph{Advances in Neural Information Processing Systems} (NeurIPS).
+
+\bibitem{bojarski2016} Bojarski, M., et al. (2016). \emph{End to End Learning for Self-Driving Cars}. NVIDIA. arXiv:1604.07316.
+
+\bibitem{carion2020} Carion, N., et al. (2020). End-to-End Object Detection with Transformers. \emph{European Conference on Computer Vision} (ECCV).
+
+\bibitem{philion2020} Philion, J., \& Fidler, S. (2020). Lift, Splat, Shoot: Encoding Images from Arbitrary Camera Rigs by Implicitly Unprojecting to 3D. \emph{ECCV}.
+
+\bibitem{mildenhall2020} Mildenhall, B., et al. (2020). NeRF: Representing Scenes as Neural Radiance Fields for View Synthesis. \emph{ECCV}.
+
+\bibitem{chen2024} Chen, L., et al. (2024). End-to-End Autonomous Driving: Challenges and Frontiers. \emph{IEEE Transactions on Pattern Analysis and Machine Intelligence}.
+
+\bibitem{nhtsa2024} National Highway Traffic Safety Administration (2024). \emph{Standing General Order on Crash Reporting for Level 2 ADAS}. \url{https://www.nhtsa.gov}
+
+\bibitem{koopman2023} Koopman, P. (2023). \emph{How Safe is Safe Enough? Measuring and Predicting Autonomous Vehicle Safety}. Carnegie Mellon University.
+
+\bibitem{musk2024} Musk, E. (2024). Anuncis sobre FSD v12 a la xarxa social X. Diversos missatges públics, gener-març 2024.
+
+\bibitem{bloomberg2024} Bloomberg (2024). Cobertura editorial sobre el llançament de FSD v12. Diversos articles.
+
+\bibitem{karpathy2023} Karpathy, A. (2023). \emph{Intro to Large Language Models}. Talk a la Microsoft Build Conference. (Inclou referències al ``Software 2.0'' aplicat al FSD.)
+
+\end{thebibliography}
+
+\end{document}
