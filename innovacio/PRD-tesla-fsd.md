@@ -4,7 +4,7 @@
 
 **Tema:** L'evolució del Full Self-Driving de Tesla cap a un sistema end-to-end basat en visió pura (FSD v12, gener 2024). La innovació concreta a analitzar és la substitució de ~300.000 línies de codi heurístic de planning per una xarxa neuronal entrenada end-to-end a partir de vídeos de conducció humana.
 
-**Equip:** 3 persones
+**Equip:** Marc Planas Bosch, Jaime Prieto Salcedo, Marcel Mula Tixier
 **Entrega:** 27 de maig de 2026 (Racò)
 **Presentació:** 2 o 3 de juny de 2026, 6 minuts màxim
 **Format:** PDF, 12-20 pàgines (portada + índex + bibliografia inclosos)
@@ -51,9 +51,9 @@
 
 ## Repartiment de feina (proposta)
 
-- **Persona A** — Introducció + Context + 5.1-5.3 (visió general + HydraNet + BEV)
-- **Persona B** — 5.4-5.7 (Occupancy + Video NNs + Planning + Data engine)
-- **Persona C** — Innovació + Impacte empresarial + Impacte social + Conclusions
+- **Marc Planas Bosch** — Introducció + Context + 5.1-5.3 (visió general + HydraNet + BEV)
+- **Jaime Prieto Salcedo** — 5.4-5.7 (Occupancy + Video NNs + Planning + Data engine)
+- **Marcel Mula Tixier** — Innovació + Impacte empresarial + Impacte social + Conclusions
 - Bibliografia compartida (cadascú referencia les fonts del seu tros)
 - Maquetació final: rotativa o la persona amb més habilitat amb LaTeX
 
