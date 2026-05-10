@@ -46,16 +46,18 @@
    (multislot value))
 
 (deftemplate plan
-   (slot id          (type INTEGER))
-   (multislot cities (type INSTANCE-NAME))
-   (slot cost        (type INTEGER) (default 0))
+   (slot id                  (type INTEGER))
+   (multislot cities         (type INSTANCE-NAME))
+   (multislot accommodations (type INSTANCE-NAME))   ; parallel index with cities
+   (slot transport           (type INSTANCE-NAME))
+   (slot cost                (type INTEGER) (default 0))
    (multislot satisfies))
 
 (deftemplate infeasible
    (slot reason (type STRING)))
 
 
-; ---- COOL class for cities (defclass + create-accessor) --------------
+; ---- COOL classes mirroring the OWL ontology (see DECISIONS D-008) ---
 
 (defclass CITY (is-a USER)
    (role concrete)
@@ -64,6 +66,21 @@
    (slot cost-level  (type INTEGER) (create-accessor read-write))
    (multislot themes (type SYMBOL)  (create-accessor read-write))
    (multislot sights (type SYMBOL)  (create-accessor read-write)))
+
+(defclass ACCOMMODATION (is-a USER)
+   (role concrete)
+   (slot name        (type SYMBOL)        (create-accessor read-write))
+   (slot kind        (type SYMBOL)        (create-accessor read-write))   ; Hotel | Hostel | Apartment
+   (slot star-rating (type INTEGER)       (create-accessor read-write))
+   (slot price-night (type INTEGER)       (create-accessor read-write))
+   (slot located-in  (type INSTANCE-NAME) (allowed-classes CITY)
+                     (create-accessor read-write)))
+
+(defclass TRANSPORT (is-a USER)
+   (role concrete)
+   (slot name      (type SYMBOL)  (create-accessor read-write))
+   (slot kind      (type SYMBOL)  (create-accessor read-write))   ; Flight | Train | Bus
+   (slot price-eur (type INTEGER) (create-accessor read-write)))
 
 
 ; ---- seed test user (swap for an interactive interview later) --------
@@ -141,19 +158,41 @@
                                    " cities match style '" ?style
                                    "'; need >= 4 to build 2 disjoint plans."))))
       else
-        (bind ?p1 (subseq$ ?cands 1 2))
-        (bind ?p2 (subseq$ ?cands 3 4))
-        (bind ?cost1 (cost-of ?p1))
-        (bind ?cost2 (cost-of ?p2))
-        (assert (plan (id 1) (cities ?p1) (cost ?cost1)))
-        (assert (plan (id 2) (cities ?p2) (cost ?cost2)))
+        (bind ?p1     (subseq$ ?cands 1 2))
+        (bind ?p2     (subseq$ ?cands 3 4))
+        (bind ?accs1  (accommodations-for ?p1))
+        (bind ?accs2  (accommodations-for ?p2))
+        (bind ?t      (default-transport))
+        (bind ?cost1  (plan-cost ?accs1 ?t))
+        (bind ?cost2  (plan-cost ?accs2 ?t))
+        (assert (plan (id 1) (cities ?p1) (accommodations ?accs1)
+                      (transport ?t) (cost ?cost1)))
+        (assert (plan (id 2) (cities ?p2) (accommodations ?accs2)
+                      (transport ?t) (cost ?cost2)))
         (printout t "[generate] built 2 plans from " ?n " candidates" crlf)))
 
-; toy cost model: 300 EUR base per city * cost-level
-(deffunction cost-of (?cities)
-   (bind ?total 0)
+; pick one accommodation per visited city (parallel index)
+(deffunction accommodations-for (?cities)
+   (bind ?result (create$))
    (progn$ (?c ?cities)
-      (bind ?total (+ ?total (* 300 (send ?c get-cost-level)))))
+      (bind ?accs (find-all-instances ((?a ACCOMMODATION))
+                                      (eq ?a:located-in (instance-name ?c))))
+      (if (> (length$ ?accs) 0)
+         then (bind ?result (create$ ?result (nth$ 1 ?accs)))))
+   ?result)
+
+; default transport: prefer Train, fall back to anything available
+(deffunction default-transport ()
+   (bind ?ts (find-all-instances ((?t TRANSPORT)) (eq ?t:kind Train)))
+   (if (> (length$ ?ts) 0)
+      then (nth$ 1 ?ts)
+      else (nth$ 1 (find-all-instances ((?t TRANSPORT))))))
+
+; cost = (3 nights per accommodation * price-night) + transport price
+(deffunction plan-cost (?accs ?transport)
+   (bind ?total (send ?transport get-price-eur))
+   (progn$ (?a ?accs)
+      (bind ?total (+ ?total (* 3 (send ?a get-price-night)))))
    ?total)
 
 
@@ -194,10 +233,13 @@
    (printout t crlf "=== INFEASIBLE ===" crlf "  " ?r crlf))
 
 (defrule present::plan
-   (plan (id ?i) (cities $?cs) (cost ?c) (satisfies $?s))
+   (plan (id ?i) (cities $?cs) (accommodations $?as)
+         (transport ?t) (cost ?c) (satisfies $?s))
 =>
    (printout t crlf "=== PLAN " ?i " ===" crlf
              "  cities   : " ?cs crlf
+             "  stays in : " ?as crlf
+             "  transport: " ?t crlf
              "  cost     : " ?c " EUR" crlf
              "  satisfies: " ?s crlf))
 

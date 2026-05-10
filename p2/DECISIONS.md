@@ -82,4 +82,13 @@ Format:
 
 ---
 
+## D-008: CLIPS scaffold mirrors the OWL ontology one-to-one
+**Date:** 2026-05-10
+**Context:** Two formal representations of the same domain — the ontology (`p2/al-fin-del-mundo.rdf`) and the rule-base (`p2/clips/`) — could drift apart. The rubric (§5.1 Implementation) wants "adequate ontology representation" in the code.
+**Decision:** Each ontology class with intrinsic attributes maps to a CLIPS `defclass` (`CITY`, `ACCOMMODATION`, `TRANSPORT`); each object property navigation maps to an `INSTANCE-NAME` slot (`ACCOMMODATION located-in CITY`, `plan accommodations`, `plan transport`). Names are aligned: ontology class `Hotel` ↔ CLIPS slot value `(kind Hotel)`. The OWL individuals (`HotelRitzParis`, `TGVHighSpeed`, …) appear verbatim as CLIPS instance names in `data.clp`.
+**Alternatives:** Generate CLIPS from OWL programmatically with a converter (rejected — overkill for this size; the ontology will keep changing during Sprint 5; debugging the converter would cost more than just keeping the two in sync by hand). Use the ontology purely as documentation, with a CLIPS-only domain (rejected — fails the rubric's "adequate ontology representation" check).
+**Trade-off:** Manual sync. Mitigation: a single canonical naming convention and the matching convention listed in `data.clp` / `main.clp` comments. If divergence becomes painful, revisit and consider a generator.
+
+---
+
 <!-- Append future entries here. Each entry gets a fresh D-NNN. -->
