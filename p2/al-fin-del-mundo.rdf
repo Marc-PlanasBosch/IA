@@ -1,15 +1,188 @@
 <?xml version="1.0"?>
-<rdf:RDF xmlns="http://www.semanticweb.org/amplo/ontologies/2026/4/untitled-ontology-2/"
-     xml:base="http://www.semanticweb.org/amplo/ontologies/2026/4/untitled-ontology-2/"
+<rdf:RDF xmlns="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#"
+     xml:base="http://upc.edu/ia/p2/jmm/al-fin-del-mundo"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:xml="http://www.w3.org/XML/1998/namespace"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-    <owl:Ontology rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo"/>
+
+    <owl:Ontology rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo">
+        <rdfs:label xml:lang="en">al fin del mundo y mas alla — Trip Recommender Ontology</rdfs:label>
+        <rdfs:comment xml:lang="en">Ontology for the IA P2 SBC practice (UPC, 2025/2026 Q2). Models the domain of multi-city trip recommendations: trips, users, places, accommodations, transports and preferences.</rdfs:comment>
+    </owl:Ontology>
+
+
+    <!-- ============================================================
+         TOP-LEVEL CONCEPTS (direct subclasses of owl:Thing)
+         ============================================================ -->
+
+    <owl:Class rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Trip">
+        <rdfs:label>Trip</rdfs:label>
+        <rdfs:comment>A complete multi-city travel plan recommended to a user.</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#User">
+        <rdfs:label>User</rdfs:label>
+        <rdfs:comment>The client (or group) requesting a trip recommendation.</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Place">
+        <rdfs:label>Place</rdfs:label>
+        <rdfs:comment>A geographical location that can appear in a trip.</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Accommodation">
+        <rdfs:label>Accommodation</rdfs:label>
+        <rdfs:comment>A place to sleep during a trip (hotel, hostel, apartment...).</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Transport">
+        <rdfs:label>Transport</rdfs:label>
+        <rdfs:comment>A means of moving between origin and trip cities.</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Preference">
+        <rdfs:label>Preference</rdfs:label>
+        <rdfs:comment>A user-side soft constraint used to score candidate trips.</rdfs:comment>
+    </owl:Class>
+
+
+    <!-- ============================================================
+         USER SUBCLASSES (group composition)
+         ============================================================ -->
+
+    <owl:Class rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Single">
+        <rdfs:subClassOf rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#User"/>
+        <rdfs:label>Single</rdfs:label>
+        <rdfs:comment>A single-person request.</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Family">
+        <rdfs:subClassOf rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#User"/>
+        <rdfs:label>Family</rdfs:label>
+        <rdfs:comment>A family request, possibly travelling with children.</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Group">
+        <rdfs:subClassOf rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#User"/>
+        <rdfs:label>Group</rdfs:label>
+        <rdfs:comment>A group of friends.</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#LargeGroup">
+        <rdfs:subClassOf rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#User"/>
+        <rdfs:label>LargeGroup</rdfs:label>
+        <rdfs:comment>A large group (e.g. a class trip, an extended-family event).</rdfs:comment>
+    </owl:Class>
+
+
+    <!-- ============================================================
+         PLACE SUBCLASSES
+         ============================================================ -->
+
+    <owl:Class rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#City">
+        <rdfs:subClassOf rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Place"/>
+        <rdfs:label>City</rdfs:label>
+        <rdfs:comment>A city that can be visited during a trip.</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#PointOfInterest">
+        <rdfs:subClassOf rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Place"/>
+        <rdfs:label>PointOfInterest</rdfs:label>
+        <rdfs:comment>A specific attraction located within a city.</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Museum">
+        <rdfs:subClassOf rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#PointOfInterest"/>
+        <rdfs:label>Museum</rdfs:label>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Beach">
+        <rdfs:subClassOf rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#PointOfInterest"/>
+        <rdfs:label>Beach</rdfs:label>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Restaurant">
+        <rdfs:subClassOf rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#PointOfInterest"/>
+        <rdfs:label>Restaurant</rdfs:label>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Landmark">
+        <rdfs:subClassOf rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#PointOfInterest"/>
+        <rdfs:label>Landmark</rdfs:label>
+        <rdfs:comment>An iconic building, monument or natural feature.</rdfs:comment>
+    </owl:Class>
+
+
+    <!-- ============================================================
+         ACCOMMODATION SUBCLASSES
+         ============================================================ -->
+
+    <owl:Class rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Hotel">
+        <rdfs:subClassOf rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Accommodation"/>
+        <rdfs:label>Hotel</rdfs:label>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Hostel">
+        <rdfs:subClassOf rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Accommodation"/>
+        <rdfs:label>Hostel</rdfs:label>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Apartment">
+        <rdfs:subClassOf rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Accommodation"/>
+        <rdfs:label>Apartment</rdfs:label>
+    </owl:Class>
+
+
+    <!-- ============================================================
+         TRANSPORT SUBCLASSES
+         ============================================================ -->
+
+    <owl:Class rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Flight">
+        <rdfs:subClassOf rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Transport"/>
+        <rdfs:label>Flight</rdfs:label>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Train">
+        <rdfs:subClassOf rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Transport"/>
+        <rdfs:label>Train</rdfs:label>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Bus">
+        <rdfs:subClassOf rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Transport"/>
+        <rdfs:label>Bus</rdfs:label>
+    </owl:Class>
+
+
+    <!-- ============================================================
+         PREFERENCE SUBCLASSES
+         ============================================================ -->
+
+    <owl:Class rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#TripObjective">
+        <rdfs:subClassOf rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Preference"/>
+        <rdfs:label>TripObjective</rdfs:label>
+        <rdfs:comment>The main purpose of the trip: rest, cultural, fun, romantic, honeymoon...</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#BudgetTier">
+        <rdfs:subClassOf rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Preference"/>
+        <rdfs:label>BudgetTier</rdfs:label>
+        <rdfs:comment>Coarse-grained budget bracket (low, mid, high) inferred from the user's stated budget.</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#TransportPreference">
+        <rdfs:subClassOf rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Preference"/>
+        <rdfs:label>TransportPreference</rdfs:label>
+        <rdfs:comment>User-stated preference for / aversion to specific transport modes.</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#AccommodationPreference">
+        <rdfs:subClassOf rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Preference"/>
+        <rdfs:label>AccommodationPreference</rdfs:label>
+        <rdfs:comment>User-stated minimum quality / type of accommodation.</rdfs:comment>
+    </owl:Class>
+
 </rdf:RDF>
 
-
-
-<!-- Generated by the OWL API (version 4.5.29.2024-05-13T12:11:03Z) https://github.com/owlcs/owlapi -->
-
+<!-- Generated for the IA P2 SBC practice. Edit in Protege via File > Open. -->
