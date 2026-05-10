@@ -259,6 +259,231 @@
         <rdfs:comment>Direct transport connection between two cities. Symmetric: A connectsTo B implies B connectsTo A.</rdfs:comment>
     </owl:ObjectProperty>
 
+
+    <!-- ============================================================
+         DATA PROPERTIES (attributes with primitive values)
+         ============================================================ -->
+
+    <owl:DatatypeProperty rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#costLevel">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#City"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+        <rdfs:label>costLevel</rdfs:label>
+        <rdfs:comment>Cost-of-living index for a city, integer 1 (cheap) .. 5 (very expensive). Functional.</rdfs:comment>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#starRating">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Accommodation"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+        <rdfs:label>starRating</rdfs:label>
+        <rdfs:comment>Number of stars an accommodation holds, integer 1..5. Functional.</rdfs:comment>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#priceEUR">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <owl:Class rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Accommodation"/>
+                    <owl:Class rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Transport"/>
+                    <owl:Class rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Trip"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:label>priceEUR</rdfs:label>
+        <rdfs:comment>Price in EUR. Per-night for accommodations, per-segment for transport, total-per-person for trips. Functional.</rdfs:comment>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#durationDays">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Trip"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+        <rdfs:label>durationDays</rdfs:label>
+        <rdfs:comment>Total trip length in days. Functional.</rdfs:comment>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#themeTag">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <owl:Class rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#City"/>
+                    <owl:Class rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Trip"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:label>themeTag</rdfs:label>
+        <rdfs:comment>Free-form thematic tag (e.g. "romantic", "cultural", "beach"). Multivalued — a city or trip can have several.</rdfs:comment>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#userAge">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#User"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+        <rdfs:label>userAge</rdfs:label>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#userBudget">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#User"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:label>userBudget</rdfs:label>
+        <rdfs:comment>Approximate maximum total cost the user is willing to pay, EUR. Functional.</rdfs:comment>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#withKids">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#User"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <rdfs:label>withKids</rdfs:label>
+        <rdfs:comment>True if the trip request involves children. Functional.</rdfs:comment>
+    </owl:DatatypeProperty>
+
+
+    <!-- ============================================================
+         INDIVIDUALS (instances exercising every relation)
+         Naming convention: lowercase for atomic preferences (rest,
+         cultural, ...), CamelCase for entity instances (Paris,
+         HotelRitzParis, HoneymoonRomantic01).
+         ============================================================ -->
+
+    <!-- TripObjective values modeled as individuals (see D-006) -->
+
+    <owl:NamedIndividual rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#rest">
+        <rdf:type rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#TripObjective"/>
+    </owl:NamedIndividual>
+    <owl:NamedIndividual rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#cultural">
+        <rdf:type rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#TripObjective"/>
+    </owl:NamedIndividual>
+    <owl:NamedIndividual rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#fun">
+        <rdf:type rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#TripObjective"/>
+    </owl:NamedIndividual>
+    <owl:NamedIndividual rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#romantic">
+        <rdf:type rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#TripObjective"/>
+    </owl:NamedIndividual>
+    <owl:NamedIndividual rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#honeymoon">
+        <rdf:type rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#TripObjective"/>
+    </owl:NamedIndividual>
+
+    <!-- Cities -->
+
+    <owl:NamedIndividual rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Paris">
+        <rdf:type rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#City"/>
+        <costLevel rdf:datatype="http://www.w3.org/2001/XMLSchema#int">5</costLevel>
+        <themeTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">romantic</themeTag>
+        <themeTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">cultural</themeTag>
+        <connectsTo rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Venice"/>
+        <connectsTo rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Berlin"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Venice">
+        <rdf:type rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#City"/>
+        <costLevel rdf:datatype="http://www.w3.org/2001/XMLSchema#int">4</costLevel>
+        <themeTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">romantic</themeTag>
+        <themeTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">cultural</themeTag>
+        <connectsTo rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Vienna"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Vienna">
+        <rdf:type rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#City"/>
+        <costLevel rdf:datatype="http://www.w3.org/2001/XMLSchema#int">4</costLevel>
+        <themeTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">cultural</themeTag>
+        <themeTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">romantic</themeTag>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Barcelona">
+        <rdf:type rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#City"/>
+        <costLevel rdf:datatype="http://www.w3.org/2001/XMLSchema#int">3</costLevel>
+        <themeTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">cultural</themeTag>
+        <themeTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">fun</themeTag>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Berlin">
+        <rdf:type rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#City"/>
+        <costLevel rdf:datatype="http://www.w3.org/2001/XMLSchema#int">3</costLevel>
+        <themeTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">cultural</themeTag>
+        <themeTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">fun</themeTag>
+    </owl:NamedIndividual>
+
+    <!-- Accommodations -->
+
+    <owl:NamedIndividual rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#HotelRitzParis">
+        <rdf:type rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Hotel"/>
+        <starRating rdf:datatype="http://www.w3.org/2001/XMLSchema#int">5</starRating>
+        <priceEUR rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">400</priceEUR>
+        <locatedIn rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Paris"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#HostelGenerator">
+        <rdf:type rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Hostel"/>
+        <starRating rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</starRating>
+        <priceEUR rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">30</priceEUR>
+        <locatedIn rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Berlin"/>
+    </owl:NamedIndividual>
+
+    <!-- Transports -->
+
+    <owl:NamedIndividual rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#TGVHighSpeed">
+        <rdf:type rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Train"/>
+        <priceEUR rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">120</priceEUR>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#EasyJetFlight">
+        <rdf:type rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Flight"/>
+        <priceEUR rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">80</priceEUR>
+    </owl:NamedIndividual>
+
+    <!-- Points of interest -->
+
+    <owl:NamedIndividual rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#EiffelTower">
+        <rdf:type rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Landmark"/>
+        <locatedIn rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Paris"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#LouvreMuseum">
+        <rdf:type rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Museum"/>
+        <locatedIn rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Paris"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#GrandCanal">
+        <rdf:type rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Landmark"/>
+        <locatedIn rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Venice"/>
+    </owl:NamedIndividual>
+
+    <!-- City -> POI navigation (cf. D-005) -->
+
+    <rdf:Description rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Paris">
+        <hasPOI rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#EiffelTower"/>
+        <hasPOI rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#LouvreMuseum"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Venice">
+        <hasPOI rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#GrandCanal"/>
+    </rdf:Description>
+
+    <!-- User and Trip -->
+
+    <owl:NamedIndividual rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#ClientHoneymoon01">
+        <rdf:type rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Single"/>
+        <userAge rdf:datatype="http://www.w3.org/2001/XMLSchema#int">34</userAge>
+        <userBudget rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">2500</userBudget>
+        <withKids rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</withKids>
+        <hasPreference rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#honeymoon"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#HoneymoonRomantic01">
+        <rdf:type rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Trip"/>
+        <durationDays rdf:datatype="http://www.w3.org/2001/XMLSchema#int">7</durationDays>
+        <priceEUR rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">2700</priceEUR>
+        <themeTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">romantic</themeTag>
+        <targetUser rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#ClientHoneymoon01"/>
+        <visitsCity rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Paris"/>
+        <visitsCity rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#Venice"/>
+        <staysIn rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#HotelRitzParis"/>
+        <travelsBy rdf:resource="http://upc.edu/ia/p2/jmm/al-fin-del-mundo#TGVHighSpeed"/>
+    </owl:NamedIndividual>
+
 </rdf:RDF>
 
 <!-- Generated for the IA P2 SBC practice. Edit in Protege via File > Open. -->

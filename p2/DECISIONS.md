@@ -64,4 +64,22 @@ Format:
 
 ---
 
+## D-006: TripObjective values modeled as `NamedIndividual`s, not subclasses
+**Date:** 2026-05-10
+**Context:** The five canonical trip objectives — `rest`, `cultural`, `fun`, `romantic`, `honeymoon` — are a closed enumeration. They could be subclasses of `TripObjective`, individuals of `TripObjective`, or string values of a `themeTag` data property.
+**Decision:** Use `owl:NamedIndividual`s of class `TripObjective`. Then `User hasPreference romantic` is a clean object property assertion.
+**Alternatives:** Subclasses (rejected — would require punning to also use them as values, since OWL DL doesn't allow a class to fill an object-property slot directly). String values (rejected — loses structure; reasoner can't enforce the closed set; lookups in CLIPS would need string compares).
+**Trade-off:** If we later need to attach data to an objective (e.g. a description), we already have the individual to hang it on. The closed set isn't enforced by OWL — we'd need an `owl:oneOf` axiom on `TripObjective` to do that, which we can add later.
+
+---
+
+## D-007: `priceEUR` is one shared property over `Accommodation ∪ Transport ∪ Trip`
+**Date:** 2026-05-10
+**Context:** Three classes need a price attribute. We could declare three properties (`accommodationPrice`, `transportPrice`, `tripPrice`) or one shared one.
+**Decision:** One shared `priceEUR` data property with a union domain over the three classes. Marked `owl:FunctionalProperty` (each individual has one price). Range `xsd:decimal`.
+**Alternatives:** Three separate properties (rejected — duplicates the concept; the ontology graph PNG becomes cluttered; the report has to justify the duplication). One property with no domain restriction (rejected — too permissive; e.g. nothing would prevent setting `priceEUR` on a `User`).
+**Trade-off:** The semantic meaning of "price" differs slightly per class (per-night for accommodations, per-segment for transport, total per-person for trips). Documented in the property's `rdfs:comment` rather than encoded structurally.
+
+---
+
 <!-- Append future entries here. Each entry gets a fresh D-NNN. -->
