@@ -29,15 +29,17 @@ Fill in honestly before continuing. If any row is "not started", that is a red f
 
 | Item | Expected by today | Status |
 |------|-------------------|--------|
-| CLIPS environment running locally | end of W1 | ☐ |
-| Statement re-read; informal domain notes | end of W1 | ☐ |
-| Problem specification doc | end of W2 | ☐ |
-| Ontology v1 in Protégé (concepts + attributes) | end of W2 | ☐ |
-| Sub-problem decomposition + methodology chosen | end of W3 | ☐ |
-| First prototype solving 1 simple case in CLIPS | end of W3 | ☐ |
+| CLIPS environment running locally | end of W1 | ✅ 10 May (Windows install via clipsdos + IDE) |
+| Statement re-read; informal domain notes | end of W1 | ✅ (covered by PRD §1–§3) |
+| Problem specification doc | end of W2 | ✅ `p2/PRD.md` |
+| Ontology v1 in Protégé (concepts + attributes) | end of W2 | 🟡 Protégé installing 10 May — **next up** |
+| Sub-problem decomposition + methodology chosen | end of W3 | 🟡 partial — 5-phase decomposition encoded as CLIPS modules (`interview / inference / generate / score / present`); methodology choice still to write up |
+| First prototype solving 1 simple case in CLIPS | end of W3 | ✅ `p2/clips/main.clp` runs honeymoon test case end-to-end |
 | Ontology v2 with relations + ≥ a few instances | end of W3 / W4 | ☐ |
-| Prototype extended to more cases | end of W4 | ☐ |
+| Prototype extended to more cases | end of W4 | ☐ (only honeymoon case so far) |
 | Ontology section of the report drafted | end of W4 | ☐ |
+
+> **Snapshot 10 May 18:00.** Prototype track is on schedule. Ontology track is the only thing behind — the rest of Sprint 5 should pivot toward closing that gap, not adding CLIPS features.
 
 ---
 
@@ -49,13 +51,15 @@ Fill in honestly before continuing. If any row is "not started", that is a red f
 
 | Day | Task | Owner | DoD |
 |-----|------|-------|-----|
-| Mon 11 | Stand-up: confirm status of items in §B; list the cases the system must solve. | Team | List of ≥ 8 candidate cases (common + edge + infeasible). |
-| Mon 11 – Tue 12 | Close ontology v3 in Protégé: every concept has attributes AND relations; export the graph image; add a representative set of instances. | Member A | Ontology file + graph PNG committed. |
-| Mon 11 – Wed 13 | Refactor CLIPS rules into modules (e.g. `MAIN`, `interview`, `inference`, `generate`, `score`, `present`). Replace global vars with `deftemplates` / `defclass`. | Member B | `clips -f run.clp` executes a known case end-to-end. |
-| Wed 13 – Thu 14 | Implement infeasibility detection + the "two distinct plans" requirement (FR-4, FR-7). | Member C | Two test cases pass: one with two valid plans, one infeasible. |
-| Thu 14 | Run candidate cases through the prototype; capture original CLIPS output to text files. | Team | `tests/case-NN.out` files committed. |
-| Fri 15 | **(Optional) Submit intermediate prototype before 23:59.** | Team | Submission receipt saved. |
-| Sat 16 – Sun 17 | Buffer / fix any blocker found during the test run; freeze feature scope. | Team | Issue list at zero; "feature freeze" tag in repo. |
+| Mon 11 | Stand-up: confirm §B status; list the cases the system must solve. | Team | List of ≥ 8 candidate cases (common + edge + infeasible) committed under `p2/tests/cases.md`. |
+| Mon 11 – Tue 12 | **Ontology v1 in Protégé** — class hierarchy + data properties + first object properties (see §G). Save as `p2/ontology/al-fin-del-mundo.owl`. | Member A | `.owl` file committed; class hierarchy screenshot under `p2/ontology/img/`. |
+| Tue 12 – Wed 13 | **Ontology v2** — add the remaining object properties (relations between Trip/City/Accommodation/Transport/POI/User), add ≥ 8 instances exercising every relation, run reasoner, fix inconsistencies. Export OntoGraf PNG. | Member A | Ontology validates (no red triangles); graph PNG committed. |
+| Tue 12 – Wed 13 | **Align CLIPS scaffold with the ontology** — extend `p2/clips/main.clp` deftemplates / `CITY` defclass to mirror the ontology classes & properties. Add `ACCOMMODATION` and `TRANSPORT` defclasses. | Member B | `(start)` still runs end-to-end; new fields visible in plan output. |
+| Wed 13 – Thu 14 | **Interactive interview** — replace `deffacts test-user` with `(read)`-driven rules in the `interview` module, validating each answer. Keep a `--test` shortcut for the hardcoded user so demos stay reproducible. | Member B | New rule `interview::ask-objective` etc.; manual run fills a `user` fact via the REPL. |
+| Wed 13 – Thu 14 | **Extend cases to ≥ 6** — add rules / data so the prototype handles: large group with kids, tight budget, romantic short trip, infeasible (impossible style), unknown city objective, train-only transport restriction. | Member C | Each new case lives in `p2/tests/case-NN.bat`; output captured to `case-NN.out`. |
+| Thu 14 | Run all candidate cases; capture original CLIPS output to `tests/case-NN.out`. | Team | All `case-NN.out` files committed. |
+| Fri 15 | **(Optional) Submit intermediate prototype before 23:59.** Tag repo `intermediate-prototype`. | Team | Submission receipt saved. |
+| Sat 16 – Sun 17 | Buffer / fix any blocker; freeze feature scope; start drafting the **Formalisation** report section while the ontology is fresh. | Team | "feature freeze" tag pushed; ≥ 1 page of Formalisation section drafted. |
 
 **Sprint 5 milestones:**
 - ✅ Working prototype frozen.
@@ -121,3 +125,88 @@ Fill in honestly before continuing. If any row is "not started", that is a red f
 - [ ] Report has intro → development → conclusions; figures are meaningful; no spelling errors.
 - [ ] LLM appendix included (if pursuing +1).
 - [ ] Source code committed, commented, tagged.
+
+---
+
+## G. Protégé quick-start (use during Sprint 5 Mon–Tue)
+
+Protégé is a graphical OWL ontology editor — analogous to the CLIPS IDE, but for the ontology side. The deliverable is a `.owl` file plus a hierarchy graph image; the rubric (§5.1 *Formalisation*) wants every class, property and relation documented.
+
+### Tabs you will use
+- **Active Ontology** — set the IRI once: `http://upc.edu/ia/p2/al-fin-del-mundo`.
+- **Entities → Classes** — the concept hierarchy.
+- **Entities → Object properties** — relations between individuals (range/domain are classes).
+- **Entities → Data properties** — attributes that take primitive values (string, int, float).
+- **Entities → Individuals** — instances exercising every relation.
+- **Reasoner menu** — start HermiT or Pellet to detect inconsistencies and compute the inferred class hierarchy.
+- **Window → Tabs → OntoGraf** — graphical view; `Export as PNG` for the report.
+
+### Class hierarchy to start from (mirror of the CLIPS scaffold)
+
+```
+Thing
+├── Trip
+├── User
+│   ├── Single
+│   ├── Family
+│   ├── Group
+│   └── LargeGroup
+├── Place
+│   ├── City
+│   └── PointOfInterest
+│       ├── Museum
+│       ├── Beach
+│       ├── Restaurant
+│       └── Landmark
+├── Accommodation
+│   ├── Hotel
+│   ├── Hostel
+│   └── Apartment
+├── Transport
+│   ├── Flight
+│   ├── Train
+│   └── Bus
+└── Preference
+    ├── TripObjective         (rest, cultural, fun, romantic, honeymoon)
+    ├── BudgetTier
+    ├── TransportPreference
+    └── AccommodationPreference
+```
+
+### Object properties (relations) — minimum set
+
+| Property | Domain → Range | Notes |
+|---|---|---|
+| `visitsCity` | Trip → City | with cardinality 1..* |
+| `staysIn` | Trip → Accommodation | one per visited city |
+| `travelsBy` | Trip → Transport | |
+| `targetUser` | Trip → User | |
+| `hasPreference` | User → Preference | |
+| `locatedIn` | Accommodation → City, PointOfInterest → City | reuse the same property |
+| `hasPOI` | City → PointOfInterest | inverse of `locatedIn` for PointOfInterest |
+| `connectsTo` | City → City | for transport-graph reasoning |
+
+### Data properties (attributes)
+
+| Property | Domain | Range | Example |
+|---|---|---|---|
+| `costLevel` | City | xsd:int (1–5) | Paris = 5 |
+| `starRating` | Accommodation | xsd:int (1–5) | |
+| `priceEUR` | Accommodation, Transport, Trip | xsd:decimal | |
+| `durationDays` | Trip | xsd:int | |
+| `themeTag` | City, Trip | xsd:string (multivalued) | "romantic", "cultural"… |
+
+### Workflow for tonight + tomorrow
+
+1. **Mon 11 morning** — install + open Protégé, set IRI, build the class hierarchy above (no properties yet). Save as `p2/ontology/al-fin-del-mundo.owl`.
+2. **Mon 11 afternoon** — add data properties; assign domains & ranges.
+3. **Tue 12 morning** — add object properties; mark `inverseOf` where it applies.
+4. **Tue 12 afternoon** — add ≥ 8 individuals (Paris, Venice, a sample Hotel in each, one Trip, one User…). Run the reasoner; fix anything red.
+5. **Tue 12 evening** — `Window → Tabs → OntoGraf → Export as PNG` → commit under `p2/ontology/img/hierarchy.png`. This is the figure for the Formalisation section.
+
+### How the ontology and CLIPS code stay in sync
+- Ontology = the *spec*. CLIPS code = the *implementation*.
+- Each OWL class becomes a `defclass` in COOL (or a `deftemplate` if it has no behaviour).
+- Each object property becomes a `slot ... (type INSTANCE-NAME)` (or multislot).
+- Each data property becomes a typed `slot`.
+- Individuals can be exported from Protégé and turned into `definstances` for `data.clp` — but for the prototype, hand-curated `definstances` are fine and easier to iterate on.
