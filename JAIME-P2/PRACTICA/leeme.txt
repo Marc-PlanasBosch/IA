@@ -1,0 +1,8 @@
+PRÁCTICA SBC: HASTA EL FINAL DEL MUNDO
+======================================
+
+
+EJECUTAR EL PROGRAMA EN CLIPS:
+1. Cargar el archivo CLIPS con: (load "ontologiaCodigo.clp")
+2. Reiniciar el sistema con: (reset)
+3. Ejecutar el agente con: (run)
