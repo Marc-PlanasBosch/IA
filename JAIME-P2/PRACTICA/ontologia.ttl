@@ -1,0 +1,719 @@
+@prefix : <http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@base <http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/> .
+
+<http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica> rdf:type owl:Ontology ;
+                                                                        rdfs:comment "Ontologia de la practica" .
+
+#################################################################
+#    Object Properties
+#################################################################
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica#Se_alojan_en
+:Se_alojan_en rdf:type owl:ObjectProperty ;
+              rdfs:subPropertyOf :Viaje ;
+              rdfs:domain :Viaje ;
+              rdfs:range :Alojamiento .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/Ciudad
+:Ciudad rdf:type owl:ObjectProperty ;
+        rdfs:subPropertyOf owl:topObjectProperty .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/Contienen
+:Contienen rdf:type owl:ObjectProperty ;
+           rdfs:subPropertyOf :Ciudad ;
+           rdfs:domain :Ciudad ;
+           rdfs:range :Punto_de_Interes .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/Destino
+:Destino rdf:type owl:ObjectProperty ;
+         rdfs:subPropertyOf :Transporte ;
+         rdfs:domain :Transporte ;
+         rdfs:range :Ciudad .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/Enfocado_en
+:Enfocado_en rdf:type owl:ObjectProperty ;
+             rdfs:subPropertyOf :Viaje ;
+             rdfs:domain :Viaje ;
+             rdfs:range :Tematica .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/Habla_en
+:Habla_en rdf:type owl:ObjectProperty ;
+          rdfs:subPropertyOf :Usuario ;
+          rdfs:domain :Usuario ;
+          rdfs:range :Idioma .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/Hablan_en
+:Hablan_en rdf:type owl:ObjectProperty ;
+           rdfs:subPropertyOf :Ciudad ;
+           rdfs:domain :Ciudad ;
+           rdfs:range :Idioma .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/Incluye_un_conjunto_de
+:Incluye_un_conjunto_de rdf:type owl:ObjectProperty ;
+                        rdfs:subPropertyOf :Viaje ;
+                        rdf:type owl:FunctionalProperty ;
+                        rdfs:domain :Viaje ;
+                        rdfs:range :Ciudad ;
+                        rdfs:comment "Incluye" .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/Origen
+:Origen rdf:type owl:ObjectProperty ;
+        rdfs:subPropertyOf :Transporte ;
+        rdfs:domain :Transporte ;
+        rdfs:range :Ciudad .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/Quieren_visitar
+:Quieren_visitar rdf:type owl:ObjectProperty ;
+                 rdfs:subPropertyOf :Viaje ;
+                 rdfs:domain :Viaje ;
+                 rdfs:range :Punto_de_Interes .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/Requiere_de
+:Requiere_de rdf:type owl:ObjectProperty ;
+             rdfs:subPropertyOf :Ciudad ;
+             rdfs:domain :Ciudad ;
+             rdfs:range :Material .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/Se_celebra
+:Se_celebra rdf:type owl:ObjectProperty ;
+            rdfs:subPropertyOf :Ciudad ;
+            rdfs:domain :Ciudad ;
+            rdfs:range :Eventos_especiales .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/Se_desplaza_en
+:Se_desplaza_en rdf:type owl:ObjectProperty ;
+                rdfs:subPropertyOf :Viaje ;
+                rdfs:domain :Viaje ;
+                rdfs:range :Transporte .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/Solicita_un
+:Solicita_un rdf:type owl:ObjectProperty ;
+             rdfs:subPropertyOf :Usuario ;
+             rdfs:domain :Usuario ;
+             rdfs:range :Viaje .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/Tiene
+:Tiene rdf:type owl:ObjectProperty ;
+       rdfs:subPropertyOf :Usuario ;
+       rdfs:domain :Usuario ;
+       rdfs:range :Material .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/Tiene_como_objetivo
+:Tiene_como_objetivo rdf:type owl:ObjectProperty ;
+                     rdfs:subPropertyOf :Viaje ;
+                     rdfs:domain :Viaje ;
+                     rdfs:range :Objetivo .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/Tiene_un_conjunto_de
+:Tiene_un_conjunto_de rdf:type owl:ObjectProperty ;
+                      rdfs:subPropertyOf :Ciudad ;
+                      rdfs:domain :Ciudad ;
+                      rdfs:range :Alojamiento .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/Tipo_de_ciudad
+:Tipo_de_ciudad rdf:type owl:ObjectProperty ;
+                rdfs:subPropertyOf :Ciudad ;
+                rdfs:domain :Ciudad ;
+                rdfs:range :Tematica .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/Transporte
+:Transporte rdf:type owl:ObjectProperty ;
+            rdfs:subPropertyOf owl:topObjectProperty .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/Usuario
+:Usuario rdf:type owl:ObjectProperty ;
+         rdfs:subPropertyOf owl:topObjectProperty ;
+         rdfs:domain :Usuario .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/Viaja_en
+:Viaja_en rdf:type owl:ObjectProperty ;
+          rdfs:subPropertyOf :Viaje ;
+          rdfs:domain :Viaje ;
+          rdfs:range :Temporada .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/Viajan_por
+:Viajan_por rdf:type owl:ObjectProperty ;
+            rdfs:subPropertyOf :Viaje ;
+            rdfs:domain :Viaje ;
+            rdfs:range :Eventos_especiales .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/Viaje
+:Viaje rdf:type owl:ObjectProperty ;
+       rdfs:subPropertyOf owl:topObjectProperty .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/Vive_en
+:Vive_en rdf:type owl:ObjectProperty ;
+         rdfs:subPropertyOf :Usuario ;
+         rdfs:domain :Usuario ;
+         rdfs:range :Ciudad .
+
+
+#################################################################
+#    Data properties
+#################################################################
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/accesibilidad
+:accesibilidad rdf:type owl:DatatypeProperty ;
+               rdfs:subPropertyOf :atributosTransporte ;
+               rdfs:domain :Transporte ;
+               rdfs:range xsd:boolean .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/ambiente
+:ambiente rdf:type owl:DatatypeProperty ;
+          rdfs:subPropertyOf :atributosAlojamiento ;
+          rdfs:domain :Alojamiento ;
+          rdfs:range [ rdf:type rdfs:Datatype ;
+                       owl:oneOf [ rdf:type rdf:List ;
+                                   rdf:first "SOCIAL" ;
+                                   rdf:rest [ rdf:type rdf:List ;
+                                              rdf:first "TRANQUILO" ;
+                                              rdf:rest rdf:nil
+                                            ]
+                                 ]
+                     ] .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/apartamentoFamiliar
+:apartamentoFamiliar rdf:type owl:DatatypeProperty ;
+                     rdfs:subPropertyOf :atributosAlojamiento ;
+                     rdfs:domain :Alojamiento ;
+                     rdfs:range xsd:boolean .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/aptoParaNiños
+:aptoParaNiños rdf:type owl:DatatypeProperty ;
+               rdfs:subPropertyOf :atributosEventosEspeciales ,
+                                  :atributosPuntoInteres ;
+               rdfs:domain :Eventos_especiales ,
+                           :Punto_de_Interes ;
+               rdfs:range xsd:boolean .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/atributosAlojamiento
+:atributosAlojamiento rdf:type owl:DatatypeProperty ;
+                      rdfs:subPropertyOf owl:topDataProperty .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/atributosAmigos
+:atributosAmigos rdf:type owl:DatatypeProperty ;
+                 rdfs:subPropertyOf :atributosUsuario .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/atributosApartamento
+:atributosApartamento rdf:type owl:DatatypeProperty ;
+                      rdfs:subPropertyOf :atributosAlojamiento .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/atributosCiudad
+:atributosCiudad rdf:type owl:DatatypeProperty ;
+                 rdfs:subPropertyOf owl:topDataProperty .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/atributosCoche
+:atributosCoche rdf:type owl:DatatypeProperty ;
+                rdfs:subPropertyOf :atributosTransporte .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/atributosEventosEspeciales
+:atributosEventosEspeciales rdf:type owl:DatatypeProperty ;
+                            rdfs:subPropertyOf owl:topDataProperty .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/atributosFamilia
+:atributosFamilia rdf:type owl:DatatypeProperty ;
+                  rdfs:subPropertyOf :atributosUsuario ;
+                  rdfs:domain :Familia ;
+                  rdfs:range xsd:integer .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/atributosHostal
+:atributosHostal rdf:type owl:DatatypeProperty ;
+                 rdfs:subPropertyOf :atributosAlojamiento .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/atributosHotel
+:atributosHotel rdf:type owl:DatatypeProperty ;
+                rdfs:subPropertyOf :atributosAlojamiento .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/atributosPuntoInteres
+:atributosPuntoInteres rdf:type owl:DatatypeProperty ;
+                       rdfs:subPropertyOf owl:topDataProperty .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/atributosTemporada
+:atributosTemporada rdf:type owl:DatatypeProperty ;
+                    rdfs:subPropertyOf owl:topDataProperty .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/atributosTransporte
+:atributosTransporte rdf:type owl:DatatypeProperty ;
+                     rdfs:subPropertyOf owl:topDataProperty .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/atributosUsuario
+:atributosUsuario rdf:type owl:DatatypeProperty ;
+                  rdfs:subPropertyOf owl:topDataProperty .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/atributosViaje
+:atributosViaje rdf:type owl:DatatypeProperty ;
+                rdfs:subPropertyOf :atributosAlojamiento ,
+                                   owl:topDataProperty .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/añosEstudio
+:añosEstudio rdf:type owl:DatatypeProperty ;
+             rdfs:subPropertyOf :atributosUsuario ;
+             rdfs:domain :Usuario ;
+             rdfs:range xsd:integer .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/calidadAlojamiento
+:calidadAlojamiento rdf:type owl:DatatypeProperty ;
+                    rdfs:subPropertyOf :atributosAlojamiento ;
+                    rdfs:domain :Alojamiento ;
+                    rdfs:range [ rdf:type rdfs:Datatype ;
+                                 owl:onDatatype xsd:integer ;
+                                 owl:withRestrictions ( [ xsd:minInclusive 1
+                                                        ]
+                                                        [ xsd:maxInclusive 5
+                                                        ]
+                                                      )
+                               ] .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/capacidad
+:capacidad rdf:type owl:DatatypeProperty ;
+           rdfs:subPropertyOf :atributosTransporte ;
+           rdfs:domain :Transporte ;
+           rdfs:range xsd:integer .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/claseAsiento
+:claseAsiento rdf:type owl:DatatypeProperty ;
+              rdfs:subPropertyOf :atributosTransporte ;
+              rdfs:domain :Autobus ,
+                          :Avion ,
+                          :Barco ,
+                          :Tren ;
+              rdfs:range [ rdf:type rdfs:Datatype ;
+                           owl:oneOf [ rdf:type rdf:List ;
+                                       rdf:first "ALTO" ;
+                                       rdf:rest [ rdf:type rdf:List ;
+                                                  rdf:first "BAJO" ;
+                                                  rdf:rest [ rdf:type rdf:List ;
+                                                             rdf:first "MEDIO" ;
+                                                             rdf:rest rdf:nil
+                                                           ]
+                                                ]
+                                     ]
+                         ] .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/clima
+:clima rdf:type owl:DatatypeProperty ;
+       rdfs:subPropertyOf :atributosTemporada ;
+       rdfs:domain :Temporada ;
+       rdfs:range [ rdf:type rdfs:Datatype ;
+                    owl:oneOf [ rdf:type rdf:List ;
+                                rdf:first "CALIDO" ;
+                                rdf:rest [ rdf:type rdf:List ;
+                                           rdf:first "FRIO" ;
+                                           rdf:rest [ rdf:type rdf:List ;
+                                                      rdf:first "MUY-CALIDO" ;
+                                                      rdf:rest [ rdf:type rdf:List ;
+                                                                 rdf:first "MUY-FRIO" ;
+                                                                 rdf:rest [ rdf:type rdf:List ;
+                                                                            rdf:first "TEMPLADO" ;
+                                                                            rdf:rest rdf:nil
+                                                                          ]
+                                                               ]
+                                                    ]
+                                         ]
+                              ]
+                  ] .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/conductorExterno
+:conductorExterno rdf:type owl:DatatypeProperty ;
+                  rdfs:subPropertyOf :atributosCoche ;
+                  rdfs:domain :Coche ;
+                  rdfs:range xsd:boolean .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/contaminacion
+:contaminacion rdf:type owl:DatatypeProperty ;
+               rdfs:subPropertyOf :atributosTransporte ;
+               rdfs:domain :Transporte ;
+               rdfs:range [ rdf:type rdfs:Datatype ;
+                            owl:oneOf [ rdf:type rdf:List ;
+                                        rdf:first "ALTA" ;
+                                        rdf:rest [ rdf:type rdf:List ;
+                                                   rdf:first "BAJA" ;
+                                                   rdf:rest [ rdf:type rdf:List ;
+                                                              rdf:first "MEDIA" ;
+                                                              rdf:rest rdf:nil
+                                                            ]
+                                                 ]
+                                      ]
+                          ] .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/duracion
+:duracion rdf:type owl:DatatypeProperty ;
+          rdfs:subPropertyOf :atributosViaje ;
+          rdfs:domain :Viaje ;
+          rdfs:range xsd:integer .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/duracionViaje
+:duracionViaje rdf:type owl:DatatypeProperty ;
+               rdfs:subPropertyOf :atributosTransporte ;
+               rdfs:domain :Transporte ;
+               rdfs:range xsd:dateTime .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/edad
+:edad rdf:type owl:DatatypeProperty ;
+      rdfs:subPropertyOf :atributosUsuario ;
+      rdfs:domain :Usuario ;
+      rdfs:range xsd:integer .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/edadNiños
+:edadNiños rdf:type owl:DatatypeProperty ;
+           rdfs:subPropertyOf :atributosFamilia ;
+           rdfs:domain :Familia ;
+           rdfs:range [ rdf:type rdfs:Datatype ;
+                        owl:oneOf [ rdf:type rdf:List ;
+                                    rdf:first "GRANDE" ;
+                                    rdf:rest [ rdf:type rdf:List ;
+                                               rdf:first "MEDIANO" ;
+                                               rdf:rest [ rdf:type rdf:List ;
+                                                          rdf:first "PEQUEÑO" ;
+                                                          rdf:rest rdf:nil
+                                                        ]
+                                             ]
+                                  ]
+                      ] .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/esAccesible
+:esAccesible rdf:type owl:DatatypeProperty ;
+             rdfs:subPropertyOf :atributosEventosEspeciales ;
+             rdfs:domain :Eventos_especiales ;
+             rdfs:range xsd:boolean .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/esAccessible
+:esAccessible rdf:type owl:DatatypeProperty ;
+              rdfs:subPropertyOf :atributosPuntoInteres ;
+              rdfs:domain :Punto_de_Interes ;
+              rdfs:range xsd:boolean .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/estiloVida
+:estiloVida rdf:type owl:DatatypeProperty ;
+            rdfs:subPropertyOf :atributosCiudad ;
+            rdfs:domain :Ciudad ;
+            rdfs:range xsd:string .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/habitacionCompartida
+:habitacionCompartida rdf:type owl:DatatypeProperty ;
+                      rdfs:subPropertyOf :atributosHostal ;
+                      rdfs:domain :Hostal ;
+                      rdfs:range xsd:boolean .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/nAdultos
+:nAdultos rdf:type owl:DatatypeProperty ;
+          rdfs:subPropertyOf :atributosFamilia .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/nNiños
+:nNiños rdf:type owl:DatatypeProperty ;
+        rdfs:subPropertyOf :atributosFamilia ;
+        rdfs:domain :Familia ;
+        rdfs:range xsd:integer .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/nPersonas
+:nPersonas rdf:type owl:DatatypeProperty ;
+           rdfs:subPropertyOf :atributosAmigos ;
+           rdfs:domain :Grupo_de_amigos ;
+           rdfs:range xsd:integer .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/numHabitaciones
+:numHabitaciones rdf:type owl:DatatypeProperty ;
+                 rdfs:subPropertyOf :atributosApartamento ;
+                 rdfs:domain :Apartamento ;
+                 rdfs:range xsd:integer .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/pais
+:pais rdf:type owl:DatatypeProperty ;
+      rdfs:subPropertyOf :atributosCiudad ;
+      rdfs:domain :Ciudad ;
+      rdfs:range xsd:string .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/paisesVisitados
+:paisesVisitados rdf:type owl:DatatypeProperty ;
+                 rdfs:subPropertyOf :atributosUsuario ;
+                 rdfs:domain :Usuario ;
+                 rdfs:range xsd:integer .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/precioAlojamiento
+:precioAlojamiento rdf:type owl:DatatypeProperty ;
+                   rdfs:subPropertyOf :atributosAlojamiento ;
+                   rdfs:domain :Alojamiento ;
+                   rdfs:range xsd:integer .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/precioEntrada
+:precioEntrada rdf:type owl:DatatypeProperty ;
+               rdfs:subPropertyOf :atributosEventosEspeciales ,
+                                  :atributosPuntoInteres ;
+               rdfs:domain :Eventos_especiales ,
+                           :Punto_de_Interes ;
+               rdfs:range xsd:integer .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/precioMedio
+:precioMedio rdf:type owl:DatatypeProperty ;
+             rdfs:subPropertyOf :atributosCiudad ;
+             rdfs:domain :Ciudad ;
+             rdfs:range xsd:integer .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/precioTransporte
+:precioTransporte rdf:type owl:DatatypeProperty ;
+                  rdfs:subPropertyOf :atributosTransporte ;
+                  rdfs:domain :Transporte ;
+                  rdfs:range xsd:integer .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/presupuestoMaximo
+:presupuestoMaximo rdf:type owl:DatatypeProperty ;
+                   rdfs:subPropertyOf :atributosUsuario ;
+                   rdfs:domain :Usuario ;
+                   rdfs:range xsd:integer .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/presupuestoViaje
+:presupuestoViaje rdf:type owl:DatatypeProperty ;
+                  rdfs:subPropertyOf :atributosViaje ;
+                  rdfs:domain :Viaje ;
+                  rdfs:range xsd:integer .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/puntuacion
+:puntuacion rdf:type owl:DatatypeProperty ;
+            rdfs:subPropertyOf :atributosEventosEspeciales ,
+                               :atributosPuntoInteres ;
+            rdfs:domain :Eventos_especiales ,
+                        :Punto_de_Interes ;
+            rdfs:range [ rdf:type rdfs:Datatype ;
+                         owl:onDatatype xsd:integer ;
+                         owl:withRestrictions ( [ xsd:minInclusive 1
+                                                ]
+                                                [ xsd:maxInclusive 5
+                                                ]
+                                              )
+                       ] .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/servicio
+:servicio rdf:type owl:DatatypeProperty ;
+          rdfs:subPropertyOf :atributosHotel ;
+          rdfs:domain :Hotel ;
+          rdfs:range [ rdf:type rdfs:Datatype ;
+                       owl:oneOf [ rdf:type rdf:List ;
+                                   rdf:first "BASICO" ;
+                                   rdf:rest [ rdf:type rdf:List ;
+                                              rdf:first "COMPLETO" ;
+                                              rdf:rest rdf:nil
+                                            ]
+                                 ]
+                     ] .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/tiempo
+:tiempo rdf:type owl:DatatypeProperty ;
+        rdfs:subPropertyOf :atributosEventosEspeciales ;
+        rdfs:domain :Eventos_especiales ;
+        rdfs:range xsd:dateTime ,
+                   xsd:integer .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/turismo
+:turismo rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf :atributosTemporada ;
+         rdfs:domain :Temporada ;
+         rdfs:range [ rdf:type rdfs:Datatype ;
+                      owl:oneOf [ rdf:type rdf:List ;
+                                  rdf:first "ALTA" ;
+                                  rdf:rest [ rdf:type rdf:List ;
+                                             rdf:first "BAJA" ;
+                                             rdf:rest [ rdf:type rdf:List ;
+                                                        rdf:first "MEDIA" ;
+                                                        rdf:rest rdf:nil
+                                                      ]
+                                           ]
+                                ]
+                    ] .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/viajesRealizados
+:viajesRealizados rdf:type owl:DatatypeProperty ;
+                  rdfs:subPropertyOf :atributosUsuario ;
+                  rdfs:domain :Usuario ;
+                  rdfs:range xsd:integer .
+
+
+#################################################################
+#    Classes
+#################################################################
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/Alojamiento
+:Alojamiento rdf:type owl:Class .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/Apartamento
+:Apartamento rdf:type owl:Class ;
+             rdfs:subClassOf :Alojamiento .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/Autobus
+:Autobus rdf:type owl:Class ;
+         rdfs:subClassOf :Transporte .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/Avion
+:Avion rdf:type owl:Class ;
+       rdfs:subClassOf :Transporte .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/Barco
+:Barco rdf:type owl:Class ;
+       rdfs:subClassOf :Transporte .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/Ciudad
+:Ciudad rdf:type owl:Class .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/Coche
+:Coche rdf:type owl:Class ;
+       rdfs:subClassOf :Transporte .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/Eventos_especiales
+:Eventos_especiales rdf:type owl:Class .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/Familia
+:Familia rdf:type owl:Class ;
+         rdfs:subClassOf :Usuario .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/Grupo_de_amigos
+:Grupo_de_amigos rdf:type owl:Class ;
+                 rdfs:subClassOf :Usuario .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/Hostal
+:Hostal rdf:type owl:Class ;
+        rdfs:subClassOf :Alojamiento .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/Hotel
+:Hotel rdf:type owl:Class ;
+       rdfs:subClassOf :Alojamiento .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/Idioma
+:Idioma rdf:type owl:Class .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/Material
+:Material rdf:type owl:Class .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/Objetivo
+:Objetivo rdf:type owl:Class .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/Pareja
+:Pareja rdf:type owl:Class ;
+        rdfs:subClassOf :Usuario .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/Persona_Individual
+:Persona_Individual rdf:type owl:Class ;
+                    rdfs:subClassOf :Usuario .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/Punto_de_Interes
+:Punto_de_Interes rdf:type owl:Class .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/Tematica
+:Tematica rdf:type owl:Class .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/Temporada
+:Temporada rdf:type owl:Class .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/Transporte
+:Transporte rdf:type owl:Class .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/Tren
+:Tren rdf:type owl:Class ;
+      rdfs:subClassOf :Transporte .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/Usuario
+:Usuario rdf:type owl:Class .
+
+
+###  http://www.semanticweb.org/jaime/ontologies/2026/4/ontologiaPractica/Viaje
+:Viaje rdf:type owl:Class .
+
+
+###  Generated by the OWL API (version 4.5.29.2024-05-13T12:11:03Z) https://github.com/owlcs/owlapi

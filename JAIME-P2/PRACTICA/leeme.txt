@@ -1,8 +1,83 @@
 PRÁCTICA SBC: HASTA EL FINAL DEL MUNDO
 ======================================
 
+Esta práctica consiste en crear una ontología para un sistema experto que ayude a las personas a planificar sus viajes.
 
-EJECUTAR EL PROGRAMA EN CLIPS:
-1. Cargar el archivo CLIPS con: (load "ontologiaCodigo.clp")
+En este directorio encontramos 5 ficheros:
+- ontologiaCodigo.clp: contiene la ontología.
+- instancias.clp: contiene las instancias de la ontología.
+- reglas.clp: contiene las reglas del sistema experto.
+- completo.clp: contiene la ontología, las instancias y las reglas.
+- leeme.txt: este archivo.
+
+La ontología se divide en cuatro grandes bloques:
+- Clases de usuarios: Familia, Grupo_de_amigos, Pareja, Persona_individual.
+- Clases de alojamiento: Apartamento, Hostal, Hotel.
+- Clases de transporte: Autobus, Avion, Barco, Coche, Tren.
+- Clases de ciudad: Ciudad.
+- Clases de viaje: Viaje.
+- Clases de eventos especiales: Eventos_especiales.
+- Clases de idiomas: Idioma.
+- Clases de materiales: Material.
+- Clases de objetivos: Objetivo.
+- Clases de puntos de interés: Punto_de_Interes.
+- Clases de temática: Tematica.
+- Clases de temporada: Temporada.
+
+
+En las clases de usuarios se especifican los atributos y relaciones de cada tipo de usuario.
+Un usuario es la persona a la que se le quiere ayudar a planificar su viaje. Por lo que la clase usuario solo tendrá los atributos edad y precio máximo de viaje.
+Además, hay varios tipos de usuarios, como: Familia, Grupo_de_amigos, Pareja, Persona_individual que representan a los grupos de personas que van de viaje. Por lo que cada uno tendrá atributos y relaciones que los caractericen.
+
+En las clases de alojamiento se especifican los atributos y relaciones de cada tipo de alojamiento que se encuentran en cada ciudad. Hay varios tipos de alojamiento, como: Apartamento, hostal, hotel que representan los diferentes tipos de alojamiento. Por lo que cada uno tendrá atributos y relaciones que los caractericen.
+
+En las clases de transporte se especifican los atributos y relaciones de cada tipo de transporte. Hay varios tipos de transporte, como autobús, avión, barco, coche, tren, que representan los diferentes tipos de transporte. Por lo que cada uno tendrá atributos y relaciones que los caractericen.
+
+En las clases de ciudad se especifican los atributos y relaciones de cada tipo de ciudad. Tiene varios atributos como: país, continente, precio medio.
+
+En las clases de eventos especiales se especifican los atributos y relaciones de cada tipo de evento especial.
+
+En las clases de idiomas se especifican los diferentes idiomas en los que se puede comunicar el usuario.
+
+En las clases de materiales se especifican los atributos y relaciones de cada tipo de material que se requerirán para viajar a ciertos destinos.
+
+En las clases de objetivos se especifica el objetivo del viaje.
+
+En las clases de puntos de interés se especifican los puntos de interés que se encuentran en una ciudad.
+
+En las clases de temáticas se especifican tanto la temática de los viajes como la de las ciudades.
+
+En las clases de temporadas, se da el año en el que se produce el viaje y se especifica si es temporada alta, media o baja.
+
+En la clase de viaje se especifica el viaje que se realiza, sus atributos y relaciones con el resto de las clases.
+
+Para planificar el viaje, el sistema experto preguntará ciertas preguntas al usuario sobre:
+- Las características de los usuarios: cómo es la edad, qué tipo de usuario es, con quién viaja, su conocimiento, su idioma y experiencia en viajes.
+- El objetivo del viaje.
+- El presupuesto para el viaje.
+- La disponibilidad de fechas para el viaje.
+- El nivel de accesibilidad que requiere el viaje.
+- La estación del año en la que quiere viajar.
+- La temática del viaje.
+- La calidad del alojamiento que quiere.
+- La preferencia de transporte.
+
+
+Una vez que tenga toda la información, el sistema experto planificará el viaje, encontrando la mejor combinación de ciudades, alojamientos y transporte.
+Para realizarlo, el sistema abstraerá toda esa información relevante con el objetivo de buscar que tipo de ciudades quiere visitar, qué transporte utilizar o qué alojamiento es el más adecuado para el usuario.
+
+En este prototipo inicial únicamente se tiene en cuenta la temática, el presupuesto del usuario, el idioma y una filtración de duración de viaje muy básica
+Teniendo en cuenta estos factores, se puntúa cada ciudad y se selecciona las ciudades que tengan la mayor puntuación, teniendo en cuenta el presupuesto y la duración del viaje.
+Por último, se escoge el alojamiento más barato que cumpla con el requisito mínimo de calidad propuesto por el usuario y el transporte más barato, intentando favorecer su transporte favorito.
+
+También cabe mencionar que siempre se eligen las máximas ciudades que elige el usuario, siempre que no supere el presupuesto máximo del usuario con un cierto margen de error. En el momento de superar el presupuesto, dejan de añadir ciudades.
+En caso de que no se llegue a ninguna solución válida, se le indicará al usuario que no es posible realizar el viaje y se le darán una serie de recomendaciones.
+
+En el prototipo final se tendrán en cuenta todos los datos obtenidos de las preguntas para poder realizar un viaje mucho más elaborado según las preferencias del usuario.
+Se tendrá en cuenta el conocimiento y la experiencia del usuario, el objetivo del viaje o el ritmo deseado para modificar la manera de obtener las soluciones. 
+Por otro lado, también se tendrá en cuenta la accesibilidad, el clima y los puntos de interés que hay en cada ciudad para añadir elementos que podrían ser de interés para el usuario.
+
+Para ejecutar el programa, se debe ejecutar el siguiente comando en CLIPS:
+1. Cargar el archivo CLIPS con: (load "completo.clp")
 2. Reiniciar el sistema con: (reset)
 3. Ejecutar el agente con: (run)
