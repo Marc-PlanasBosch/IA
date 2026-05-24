@@ -995,7 +995,7 @@
     (bind ?instancias (find-all-instances ((?ins ?clase)) TRUE))
     (printout t crlf ?pregunta crlf)
     (loop-for-count (?i 1 (length$ ?instancias)) do
-        (format t "  %d. %s%n" ?i (instance-name (nth$ ?i ?instancias))))
+        (format t "  %d. %s%n" ?i (str-cat (instance-name (nth$ ?i ?instancias)))))
     (printout t "  0. Terminar seleccion" crlf)
     (bind ?lista (create$))
     (bind ?r (pregunta-numerica "Seleccione:" 0 (length$ ?instancias)))
@@ -1004,7 +1004,7 @@
         (if (not (member$ ?seleccionada ?lista))
             then 
                 (bind ?lista (insert$ ?lista (+ (length$ ?lista) 1) ?seleccionada))
-                (format t "  Anadido: %s%n" (instance-name ?seleccionada))
+                (format t "  Anadido: %s%n" (str-cat (instance-name ?seleccionada)))
             else
                 (printout t "  Ya seleccionado, elige otro." crlf))
         (bind ?r (pregunta-numerica "Seleccione (0 para terminar):" 0 (length$ ?instancias))))
