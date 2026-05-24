@@ -1,967 +1,1994 @@
-;---------------------------------------------------------
-; CLASES USUARIOS
-; ---------------------------------------------------------
-
-  (defclass Usuario
+;; ============================================================================
+;; CLASE  USUARIO
+;; Representa el perfil general de cualquier viajero.
+;; ============================================================================
+(defclass Usuario
     (is-a USER)
     (role concrete)
     (pattern-match reactive)
-    (multislot Habla_en (type INSTANCE) (create-accessor read-write))
-    (multislot Solicita_un (type INSTANCE) (create-accessor read-write))
-    (multislot Vive_en (type INSTANCE) (create-accessor read-write))
-    (slot anosEstudio (type INTEGER) (create-accessor read-write))
-    (slot edad (type INTEGER) (create-accessor read-write))
-    (slot experiencia (type INTEGER) (create-accessor read-write))
-    (slot presupuestoMaximo (type INTEGER) (create-accessor read-write))
-  )
+    
+    ;; Relaciones (Instancias de otras clases)
+    (multislot Habla_en          (type INSTANCE) (create-accessor read-write))
+    (multislot Solicita_un      (type INSTANCE) (create-accessor read-write))
+    (multislot Tiene            (type INSTANCE) (create-accessor read-write))
+    (multislot Usuario          (type INSTANCE) (create-accessor read-write))
+    (multislot Vive_en          (type INSTANCE) (create-accessor read-write))
+    
+    ;; Atributos propios
+    (slot profesion             (type SYMBOL)  (allowed-symbols artes ciencias humanidades ninguno salud tecnico) (create-accessor read-write))
+    (slot añosEstudio           (type INTEGER) (create-accessor read-write))
+    (slot edad                  (type INTEGER) (create-accessor read-write))
+    (slot paisesVisitados       (type INTEGER) (create-accessor read-write))
+    (slot presupuestoMaximo     (type INTEGER) (create-accessor read-write))
+    (slot viajesRealizados      (type INTEGER) (create-accessor read-write))
+    (slot requiereAccesibilidad (type SYMBOL)  (allowed-symbols si no) (default no) (create-accessor read-write))
+)
 
-  (defclass Familia
+;; Subclases de Usuario (Especializaciones del tipo de viajero)
+
+(defclass Familia
     (is-a Usuario)
     (role concrete)
     (pattern-match reactive)
-    (slot nAdultos (type INTEGER) (create-accessor read-write))
-    (slot nNinos (type INTEGER) (create-accessor read-write))
-    (multislot edadNinos (type INTEGER) (create-accessor read-write))
-    (slot atributosFamilia (type INTEGER) (create-accessor read-write))
-  )
+    (multislot atributosFamilia (type INTEGER) (create-accessor read-write))
+    (multislot edadNiños        (type INTEGER) (create-accessor read-write))
+    (slot nAdultos              (type INTEGER) (create-accessor read-write))
+    (slot nNiños                (type INTEGER) (create-accessor read-write))
+)
 
-  (defclass Grupo_de_amigos
+(defclass Grupo_de_amigos
     (is-a Usuario)
     (role concrete)
     (pattern-match reactive)
-    (slot nPersonas (type INTEGER) (create-accessor read-write))
-  )
+    (slot nPersonas             (type INTEGER) (create-accessor read-write))
+)
 
-  (defclass Pareja
+(defclass Pareja
     (is-a Usuario)
     (role concrete)
     (pattern-match reactive)
-  )
+)
 
-  (defclass Persona_Individual
+(defclass Persona_Individual
     (is-a Usuario)
     (role concrete)
     (pattern-match reactive)
-  )
+)
 
-; ---------------------------------------------------------
-; CLASES ALOJAMIENTO
-; ---------------------------------------------------------
-
-  (defclass Alojamiento
+;; ============================================================================
+;; CLASE ALOJAMIENTO
+;; Define las características comunes para pernoctar.
+;; ============================================================================
+(defclass Alojamiento
     (is-a USER)
     (role concrete)
     (pattern-match reactive)
-    (slot ambiente (type SYMBOL) (create-accessor read-write))
-    (slot apartamentoFamiliar (type SYMBOL) (create-accessor read-write))
-    (slot calidadAlojamiento (type SYMBOL) (create-accessor read-write))
+    (slot accesibilidad     (type SYMBOL)  (allowed-symbols si no) (default no) (create-accessor read-write))
+    (slot ambiente          (type SYMBOL)  (allowed-symbols SOCIAL TRANQUILO) (create-accessor read-write))
+    (slot calidadAlojamiento(type INTEGER) (allowed-integers 1 2 3 4 5) (create-accessor read-write))
     (slot precioAlojamiento (type INTEGER) (create-accessor read-write))
-  )
+)
 
-  (defclass Apartamento
+;; Subclases de Alojamiento
+(defclass Apartamento
     (is-a Alojamiento)
     (role concrete)
     (pattern-match reactive)
-    (multislot numHabitaciones (type INTEGER) (create-accessor read-write))
-  )
+    (slot capacidad         (type INTEGER) (create-accessor read-write))
+)
 
-  (defclass Hostal
+(defclass Hostal
     (is-a Alojamiento)
     (role concrete)
     (pattern-match reactive)
-    (multislot habitacionCompartida (type SYMBOL) (create-accessor read-write))
-  )
+)
 
-  (defclass Hotel
+(defclass Hotel
     (is-a Alojamiento)
     (role concrete)
     (pattern-match reactive)
-    (multislot servicio (type SYMBOL) (create-accessor read-write))
-  )
+    (slot servicio          (type SYMBOL)  (allowed-symbols si no) (default no) (create-accessor read-write))
+)
 
-; ---------------------------------------------------------
-; CLASES TRANSPORTE
-; ---------------------------------------------------------
-
-  (defclass Transporte
+;; ============================================================================
+;; CLASE TRANSPORTE
+;; Define cómo se desplazan los usuarios entre el origen y el destino.
+;; ============================================================================
+(defclass Transporte
     (is-a USER)
     (role concrete)
     (pattern-match reactive)
-    (slot Origen (type INSTANCE) (create-accessor read-write))
-    (slot Destino (type INSTANCE) (create-accessor read-write))
-    (slot accesibilidad (type SYMBOL) (create-accessor read-write))
-    (slot capacidad (type INTEGER) (create-accessor read-write))
-    (slot contaminacion (type SYMBOL) (create-accessor read-write))
-    (slot duracionViaje (type SYMBOL) (create-accessor read-write))
-    (slot precioTransporte (type INTEGER) (create-accessor read-write))
-  )
+    (slot Origen            (type SYMBOL)  (create-accessor read-write))
+    (slot Destino           (type SYMBOL)  (create-accessor read-write))
+    (slot accesibilidad     (type SYMBOL)  (allowed-symbols si no) (create-accessor read-write))
+    (slot capacidad         (type INTEGER) (create-accessor read-write))
+    (slot contaminacion     (type SYMBOL)  (allowed-symbols alta media baja) (create-accessor read-write))
+    (slot duracionViaje     (type SYMBOL)  (allowed-symbols corta media larga muy-larga) (create-accessor read-write))
+    (slot precioTransporte  (type INTEGER) (create-accessor read-write))
+    (slot medio             (type SYMBOL)  (create-accessor read-write))
+    (slot claseAsiento      (type SYMBOL)  (create-accessor read-write))
+)
 
-  (defclass Autobus
+;; Subclases de Transporte según el medio utilizado
+(defclass Autobus
     (is-a Transporte)
     (role concrete)
     (pattern-match reactive)
-    (multislot claseAsiento (type SYMBOL) (create-accessor read-write))
-  )
+)
 
-  (defclass Avion
+(defclass Avion
     (is-a Transporte)
     (role concrete)
     (pattern-match reactive)
-    (multislot claseAsiento (type SYMBOL) (create-accessor read-write))
-  )
+)
 
-  (defclass Barco
+(defclass Barco
     (is-a Transporte)
     (role concrete)
     (pattern-match reactive)
-    (multislot claseAsiento (type SYMBOL) (create-accessor read-write))
-  )
+)
 
-  (defclass Coche
+(defclass Coche
     (is-a Transporte)
     (role concrete)
     (pattern-match reactive)
-    (multislot conductorExterno (type SYMBOL) (create-accessor read-write))
-  )
+    (slot cocheAlquiler    (type SYMBOL)  (allowed-symbols si no) (create-accessor read-write))
+)
 
-  (defclass Tren
+(defclass Tren
     (is-a Transporte)
     (role concrete)
     (pattern-match reactive)
-    (multislot claseAsiento (type SYMBOL) (create-accessor read-write))
-  )
+)
 
-; ---------------------------------------------------------
-; CLASES CIUDAD
-; ---------------------------------------------------------
-
-  (defclass Ciudad
+;; ============================================================================
+;; CLASE: Ciudad
+;; Representa el destino principal del viaje.
+;; ============================================================================
+(defclass Ciudad
     (is-a USER)
     (role concrete)
     (pattern-match reactive)
-    (multislot Contienen (type INSTANCE) (create-accessor read-write))      
-    (multislot Hablan_en (type INSTANCE) (create-accessor read-write))     
-    (multislot Requiere_de (type INSTANCE) (create-accessor read-write))   
-    (multislot Se_celebra (type INSTANCE) (create-accessor read-write))    
-    (multislot Tiene_un_conjunto_de (type INSTANCE) (create-accessor read-write))
-    (multislot Tipo_de_ciudad (type INSTANCE) (create-accessor read-write))  
-    (slot estiloVida (type STRING) (create-accessor read-write))
-    (slot pais (type STRING) (create-accessor read-write))
-    (slot continente (type STRING) (create-accessor read-write))
-    (slot precioMedio (type INTEGER) (create-accessor read-write))
-  )
+    
+    ;; Relaciones con otras entidades
+    (multislot Contienen             (type INSTANCE) (create-accessor read-write))
+    (multislot Hablan_en             (type INSTANCE) (create-accessor read-write))
+    (multislot Requiere_de           (type INSTANCE) (create-accessor read-write))
+    (multislot Se_celebra            (type INSTANCE) (create-accessor read-write))
+    (multislot Tiene_un_conjunto_de  (type INSTANCE) (create-accessor read-write))
+    (multislot Tipo_de_ciudad        (type INSTANCE) (create-accessor read-write))
+    
+    ;; Información geográfica y socioeconómica
+    (slot continente                 (type SYMBOL)   (create-accessor read-write))
+    (slot estiloVida                 (type STRING)   (create-accessor read-write))
+    (slot pais                       (type STRING)   (create-accessor read-write))
+    (slot precioMedio                (type INTEGER)  (create-accessor read-write))
+)
 
-; ---------------------------------------------------------
-; CLASES EVENTOS ESPECIALES
-; ---------------------------------------------------------
-
-  (defclass Eventos_especiales
+;; ============================================================================
+;; CLASES: Puntos de Interés y Eventos
+;; Actividades y lugares que se pueden visitar en el destino.
+;; ============================================================================
+(defclass Punto_de_Interes
     (is-a USER)
     (role concrete)
     (pattern-match reactive)
-    (slot aptoParaNinos (type SYMBOL) (create-accessor read-write))
-    (slot esAccesible (type SYMBOL) (create-accessor read-write))
-    (slot precioEntrada (type INTEGER) (create-accessor read-write))
-    (slot puntuacion (type SYMBOL) (create-accessor read-write))
-    (slot tiempo (type SYMBOL) (create-accessor read-write))
-  )
+    (slot aptoParaNiños     (type SYMBOL)  (allowed-symbols si no) (create-accessor read-write))
+    (slot esAccessible      (type SYMBOL)  (allowed-symbols si no) (create-accessor read-write))
+    (slot precioEntrada     (type INTEGER) (create-accessor read-write))
+    (slot puntuacion        (type SYMBOL)  (allowed-symbols alta media baja) (create-accessor read-write))
+)
 
-; ---------------------------------------------------------
-; CLASES IDIOMAS
-; ---------------------------------------------------------
-
-  (defclass Idioma
+(defclass Eventos_especiales
     (is-a USER)
     (role concrete)
     (pattern-match reactive)
-  )
+    (slot aptoParaNiños     (type SYMBOL)  (allowed-symbols si no) (create-accessor read-write))
+    (slot esAccesible       (type SYMBOL)  (allowed-symbols si no) (create-accessor read-write))
+    (slot precioEntrada     (type INTEGER) (create-accessor read-write))
+    (slot puntuacion        (type SYMBOL)  (allowed-symbols alta media baja) (create-accessor read-write))
+    (slot tiempo            (type SYMBOL)  (create-accessor read-write))
+)
 
-; ---------------------------------------------------------
-; CLASES MATERIALES
-; ---------------------------------------------------------
+;; ============================================================================
+;; CLASES MAESTRAS (Auxiliares/Etiquetas)
+;; Clases simples utilizadas principalmente para categorización.
+;; ============================================================================
+(defclass Idioma
+    (is-a USER) (role concrete) (pattern-match reactive)
+)
 
-  (defclass Material
+(defclass Material
+    (is-a USER) (role concrete) (pattern-match reactive)
+)
+
+(defclass Objetivo
+    (is-a USER) (role concrete) (pattern-match reactive)
+)
+
+(defclass Tematica
+    (is-a USER) (role concrete) (pattern-match reactive)
+)
+
+(defclass Temporada
     (is-a USER)
     (role concrete)
     (pattern-match reactive)
-  )
+    (slot clima             (type SYMBOL) (create-accessor read-write))
+    (slot turismo           (type SYMBOL) (create-accessor read-write))
+)
 
-; ---------------------------------------------------------
-; CLASES OBJETIVOS
-; ---------------------------------------------------------
-
-  (defclass Objetivo
+;; ============================================================================
+;; CLASE PRINCIPAL: Viaje
+;; Conecta todas las entidades anteriores en una propuesta/instancia de viaje.
+;; ============================================================================
+(defclass Viaje
     (is-a USER)
     (role concrete)
     (pattern-match reactive)
-  )
+    
+    ;; Relaciones que componen el viaje completo
+    (multislot Enfocado_en          (type INSTANCE) (create-accessor read-write))
+    (multislot Quieren_visitar      (type INSTANCE) (create-accessor read-write))
+    (multislot Se_alojan_en         (type INSTANCE) (create-accessor read-write))
+    (multislot Se_desplaza_en       (type INSTANCE) (create-accessor read-write))
+    (multislot Tiene_como_objetivo  (type INSTANCE) (create-accessor read-write))
+    (multislot Viaja_en             (type INSTANCE) (create-accessor read-write))
+    (multislot Viajan_por           (type INSTANCE) (create-accessor read-write))
+    
+    ;; Detalles económicos y de tiempo
+    (slot Incluye_un_conjunto_de    (type INSTANCE) (create-accessor read-write))
+    (slot duracion                  (type INTEGER)  (create-accessor read-write))
+    (slot presupuestoViaje          (type INTEGER)  (create-accessor read-write))
+)
 
-; ---------------------------------------------------------
-; CLASES PUNTOS DE INTERES
-; ---------------------------------------------------------
-
-  (defclass Punto_de_Interes
-    (is-a USER)
-    (role concrete)
-    (pattern-match reactive)
-    (slot precioEntrada (type INTEGER) (create-accessor read-write))
-    (slot puntuacion (type SYMBOL) (create-accessor read-write))
-    (slot aptoParaNinos (type SYMBOL) (create-accessor read-write))
-    (slot esAccessible (type SYMBOL) (create-accessor read-write))
-  )
-
-; ---------------------------------------------------------
-; CLASES TEMATICA
-; ---------------------------------------------------------
-
-  (defclass Tematica
-    (is-a USER)
-    (role concrete)
-    (pattern-match reactive)
-  )
-
-; ---------------------------------------------------------
-; CLASES TEMPORADA
-; ---------------------------------------------------------
-
-  (defclass Temporada
-    (is-a USER)
-    (role concrete)
-    (pattern-match reactive)
-    (slot clima (type SYMBOL) (create-accessor read-write))
-    (slot turismo (type SYMBOL) (create-accessor read-write))
-  )
-
-; ---------------------------------------------------------
-; CLASES VIAJE
-; ---------------------------------------------------------
-
-  (defclass Viaje
-    (is-a USER)
-    (role concrete)
-    (pattern-match reactive)
-    (multislot Enfocado_en (type INSTANCE) (create-accessor read-write))   
-    (slot Incluye_un_conjunto_de (type INSTANCE) (create-accessor read-write)) 
-    (multislot Quieren_visitar (type INSTANCE) (create-accessor read-write))   
-    (multislot Se_desplaza_en (type INSTANCE) (create-accessor read-write))    
-    (multislot Tiene_como_objetivo (type INSTANCE) (create-accessor read-write))
-    (multislot Viaja_en (type INSTANCE) (create-accessor read-write))
-    (multislot Viajan_por (type INSTANCE) (create-accessor read-write))
-    (slot duracion (type INTEGER) (create-accessor read-write))
-    (slot presupuestoViaje (type INTEGER) (create-accessor read-write))
-  )
 
 ; ---------------------------------------------------------
 ; INSTANCIAS
 ; ---------------------------------------------------------
 
-  (definstances instancias-viaje
+(definstances instancias-viaje
 
-  ; TEMATICAS
-  (cultura     of Tematica)
-  (playa       of Tematica)
-  (montana     of Tematica)
-  (romantica   of Tematica)
-  (aventura    of Tematica)
-  (gastronomia of Tematica)
-  (fiesta      of Tematica)
+; =========================================================
+; TEMÁTICAS
+; =========================================================
 
-  ; IDIOMAS
-  (espanol   of Idioma)
-  (frances   of Idioma)
-  (ingles    of Idioma)
-  (italiano  of Idioma)
-  (portugues of Idioma)
-  (aleman    of Idioma)
-  (japones   of Idioma)
+(cultura     of Tematica)
+(playa       of Tematica)
+(montana     of Tematica)
+(romantica   of Tematica)
+(aventura    of Tematica)
+(gastronomia of Tematica)
+(fiesta      of Tematica)
+(naturaleza  of Tematica)
+(historia    of Tematica)
+(tecnologia  of Tematica)
 
-  ; OBJETIVOS
-  (obj-descanso    of Objetivo)
-  (obj-cultural    of Objetivo)
-  (obj-diversion   of Objetivo)
-  (obj-romantico   of Objetivo)
-  (obj-aventura    of Objetivo)
-  (obj-gastronomia of Objetivo)
-  (obj-negocios    of Objetivo)
-  (obj-familiar    of Objetivo)
-  (obj-mochilero   of Objetivo)
+; =========================================================
+; IDIOMAS
+; =========================================================
 
-  ; TEMPORADAS
-  (temp-verano    of Temporada (clima CALIDO)   (turismo alto))
-  (temp-invierno  of Temporada (clima MUY-FRIO) (turismo bajo))
-  (temp-primavera of Temporada (clima TEMPLADO) (turismo medio))
-  (temp-otono     of Temporada (clima FRIO)     (turismo medio))
+(espanol   of Idioma)
+(frances   of Idioma)
+(ingles    of Idioma)
+(italiano  of Idioma)
+(portugues of Idioma)
+(aleman    of Idioma)
+(japones   of Idioma)
+(chino     of Idioma)
+(arabe     of Idioma)
 
-  ; MATERIAL
-  (material-montana  of Material)
-  (material-playa    of Material)
-  (material-invierno of Material)
-  (material-urbano   of Material)
-  (material-camping  of Material)
+; =========================================================
+; OBJETIVOS
+; =========================================================
 
-  ; EVENTOS ESPECIALES
+(obj-descanso    of Objetivo)
+(obj-cultural    of Objetivo)
+(obj-diversion   of Objetivo)
+(obj-romantico   of Objetivo)
+(obj-aventura    of Objetivo)
+(obj-gastronomia of Objetivo)
+(obj-negocios    of Objetivo)
+(obj-familiar    of Objetivo)
+(obj-mochilero   of Objetivo)
+(obj-fotografia  of Objetivo)
+(obj-naturaleza  of Objetivo)
 
-  ; ESPAÑA
-  (FeriaAbrilSevilla  of Eventos_especiales (precioEntrada 0)(esAccesible si)(puntuacion alta)(tiempo 5h)(aptoParaNinos si))
-  (SanFermines        of Eventos_especiales (precioEntrada 0)(esAccesible si)(puntuacion alta)(tiempo 24h)(aptoParaNinos no))
-  (Tomatina           of Eventos_especiales (precioEntrada 12)(esAccesible no)(puntuacion media)(tiempo 3h)(aptoParaNinos no))
-  (LasFallasValencia  of Eventos_especiales (precioEntrada 0)(esAccesible si)(puntuacion alta)(tiempo 12h)(aptoParaNinos si))
-  
-  ; BRASIL
-  (CarnavalRio        of Eventos_especiales (precioEntrada 50)(esAccesible si)(puntuacion alta)(tiempo 8h)(aptoParaNinos no))
+; =========================================================
+; TEMPORADAS
+; =========================================================
 
-  ; ALEMANIA
-  (OktoberfestMunich  of Eventos_especiales (precioEntrada 0)(esAccesible si)(puntuacion alta)(tiempo 6h)(aptoParaNinos no))
+(temp-verano    of Temporada (clima CALIDO)   (turismo alto))
+(temp-invierno  of Temporada (clima MUY-FRIO) (turismo bajo))
+(temp-primavera of Temporada (clima TEMPLADO) (turismo medio))
+(temp-otono     of Temporada (clima FRIO)     (turismo medio))
+
+; =========================================================
+; MATERIALES
+; =========================================================
+
+(material-montana  of Material)
+(material-playa    of Material)
+(material-invierno of Material)
+(material-urbano   of Material)
+(material-camping  of Material)
+(material-senderismo of Material)
+(material-fotografia of Material)
+
+; =========================================================
+; EVENTOS ESPECIALES — ESPAÑA
+; =========================================================
+
+(FeriaAbrilSevilla  of Eventos_especiales (precioEntrada 0)  (esAccesible si) (puntuacion alta) (tiempo 5h)  (aptoParaNiños si))
+(SanFermines        of Eventos_especiales (precioEntrada 0)  (esAccesible si) (puntuacion alta) (tiempo 24h) (aptoParaNiños no))
+(Tomatina           of Eventos_especiales (precioEntrada 12) (esAccesible no) (puntuacion media)(tiempo 3h)  (aptoParaNiños no))
+(LasFallasValencia  of Eventos_especiales (precioEntrada 0)  (esAccesible si) (puntuacion alta) (tiempo 12h) (aptoParaNiños si))
+(FeriaLibroMadrid   of Eventos_especiales (precioEntrada 0)  (esAccesible si) (puntuacion alta) (tiempo 8h)  (aptoParaNiños si))
+(PrimaveraSoundBCN  of Eventos_especiales (precioEntrada 180)(esAccesible si) (puntuacion alta) (tiempo 10h) (aptoParaNiños no))
+
+; =========================================================
+; EVENTOS ESPECIALES — EUROPA
+; =========================================================
+
+(OktoberfestMunich  of Eventos_especiales (precioEntrada 0)  (esAccesible si) (puntuacion alta) (tiempo 6h)  (aptoParaNiños no))
+(LucesNavidadParis  of Eventos_especiales (precioEntrada 0)  (esAccesible si) (puntuacion media)(tiempo 3h)  (aptoParaNiños si))
+(FestivalCineCannes of Eventos_especiales (precioEntrada 0)  (esAccesible si) (puntuacion alta) (tiempo 8h)  (aptoParaNiños no))
+(FestivalJazzMontreux of Eventos_especiales (precioEntrada 120)(esAccesible si)(puntuacion alta)(tiempo 6h)(aptoParaNiños no))
+
+; =========================================================
+; EVENTOS ESPECIALES — AMÉRICA
+; =========================================================
+
+(AnoNuevoTimesSquare of Eventos_especiales (precioEntrada 0) (esAccesible si) (puntuacion alta) (tiempo 10h) (aptoParaNiños si))
+(DiaDeMuertosMexico  of Eventos_especiales (precioEntrada 0) (esAccesible si) (puntuacion alta) (tiempo 24h) (aptoParaNiños si))
+(CarnavalRio         of Eventos_especiales (precioEntrada 50)(esAccesible si) (puntuacion alta) (tiempo 8h)  (aptoParaNiños no))
+
+; =========================================================
+; EVENTOS ESPECIALES — ASIA
+; =========================================================
+
+(HanamiTokyo         of Eventos_especiales (precioEntrada 0) (esAccesible si) (puntuacion alta) (tiempo 4h)  (aptoParaNiños si))
+(FestivalLinternasTaiwan of Eventos_especiales (precioEntrada 0)(esAccesible si)(puntuacion alta)(tiempo 6h)(aptoParaNiños si))
+
+; =========================================================
+; EVENTOS ESPECIALES — OCEANÍA
+; =========================================================
+
+(VividSydney         of Eventos_especiales (precioEntrada 0) (esAccesible si) (puntuacion alta) (tiempo 5h)  (aptoParaNiños si))
+
+
+  ; =========================================================
+; PUNTOS DE INTERÉS — ESPAÑA
+; =========================================================
+
+; -------------------------
+; BARCELONA
+; -------------------------
+
+(SagradaFamilia of Punto_de_Interes (precioEntrada 26) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+(ParcGuell of Punto_de_Interes (precioEntrada 10) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+(CampNou of Punto_de_Interes (precioEntrada 28) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+(BarrioGotico of Punto_de_Interes (precioEntrada 0) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+(BeachBarcelona of Punto_de_Interes (precioEntrada 0) (esAccessible si) (puntuacion media) (aptoParaNiños si))
+(MNAC of Punto_de_Interes (precioEntrada 12) (esAccessible si) (puntuacion alta) (aptoParaNiños no))
+(MercadoBoqueria of Punto_de_Interes (precioEntrada 0) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+(Tibidabo of Punto_de_Interes (precioEntrada 35) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+
+; -------------------------
+; MADRID
+; -------------------------
+
+(MuseoPrado of Punto_de_Interes (precioEntrada 15) (esAccessible si) (puntuacion alta) (aptoParaNiños no))
+(RetiroPark of Punto_de_Interes (precioEntrada 0) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+(PalacioReal of Punto_de_Interes (precioEntrada 12) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+(MercadoSanMiguel of Punto_de_Interes (precioEntrada 0) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+(BernabeuTour of Punto_de_Interes (precioEntrada 25) (esAccessible si) (puntuacion media) (aptoParaNiños si))
+(ReinaSOfia of Punto_de_Interes (precioEntrada 10) (esAccessible si) (puntuacion alta) (aptoParaNiños no))
+(TemploDebod of Punto_de_Interes (precioEntrada 0) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+
+; -------------------------
+; SEVILLA
+; -------------------------
+
+(CatedralSevilla of Punto_de_Interes (precioEntrada 10) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+(AlcazarSevilla of Punto_de_Interes (precioEntrada 12) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+(BarrioTriana of Punto_de_Interes (precioEntrada 0) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+(PlazaEspana of Punto_de_Interes (precioEntrada 0) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+(TorreDelOro of Punto_de_Interes (precioEntrada 3) (esAccessible si) (puntuacion media) (aptoParaNiños si))
+(ArchivoIndias of Punto_de_Interes (precioEntrada 0) (esAccessible si) (puntuacion alta) (aptoParaNiños no))
+
+; -------------------------
+; VALENCIA
+; -------------------------
+
+(CiudadArtesCiencias of Punto_de_Interes (precioEntrada 38) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+(PlayaMalvarrosa of Punto_de_Interes (precioEntrada 0) (esAccessible si) (puntuacion media) (aptoParaNiños si))
+(MercadoCentral of Punto_de_Interes (precioEntrada 0) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+(CatedralValencia of Punto_de_Interes (precioEntrada 8) (esAccessible si) (puntuacion media) (aptoParaNiños si))
+(BioparcValencia of Punto_de_Interes (precioEntrada 20) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+(Oceanografic of Punto_de_Interes (precioEntrada 31) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+
+; -------------------------
+; SAN SEBASTIÁN
+; -------------------------
+
+(PlayaConcha of Punto_de_Interes (precioEntrada 0) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+(ParteVieja of Punto_de_Interes (precioEntrada 0) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+(PintosSS of Punto_de_Interes (precioEntrada 0) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+(MonteIgeldo of Punto_de_Interes (precioEntrada 5) (esAccessible si) (puntuacion media) (aptoParaNiños si))
+(AcuarioSS of Punto_de_Interes (precioEntrada 15) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+
+; -------------------------
+; GRANADA
+; -------------------------
+
+(Alhambra of Punto_de_Interes (precioEntrada 15) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+(Albaicin of Punto_de_Interes (precioEntrada 0) (esAccessible no) (puntuacion alta) (aptoParaNiños no))
+(CathedralGranada of Punto_de_Interes (precioEntrada 5) (esAccessible si) (puntuacion media) (aptoParaNiños si))
+(SierraNevadaGranada of Punto_de_Interes (precioEntrada 0) (esAccessible no) (puntuacion alta) (aptoParaNiños no))
+(TablaosFlamenco of Punto_de_Interes (precioEntrada 30) (esAccessible si) (puntuacion alta) (aptoParaNiños no))
+
+; =========================================================
+; PUNTOS DE INTERÉS — EUROPA
+; =========================================================
+
+; -------------------------
+; PARÍS
+; -------------------------
+
+(TorreEiffel of Punto_de_Interes (precioEntrada 28) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+(Louvre of Punto_de_Interes (precioEntrada 17) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+(Montmartre of Punto_de_Interes (precioEntrada 0) (esAccessible no) (puntuacion alta) (aptoParaNiños no))
+(VersaillesP of Punto_de_Interes (precioEntrada 20) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+(ChampsElysees of Punto_de_Interes (precioEntrada 0) (esAccessible si) (puntuacion media) (aptoParaNiños si))
+(MuseeOrsay of Punto_de_Interes (precioEntrada 14) (esAccessible si) (puntuacion alta) (aptoParaNiños no))
+(CatedralNotreDame of Punto_de_Interes (precioEntrada 0) (esAccessible no) (puntuacion alta) (aptoParaNiños no))
+
+; -------------------------
+; ROMA
+; -------------------------
+
+(Coliseo of Punto_de_Interes (precioEntrada 18) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+(VaticanoCiudad of Punto_de_Interes (precioEntrada 20) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+(FontanaTrevi of Punto_de_Interes (precioEntrada 0) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+(ForoRomano of Punto_de_Interes (precioEntrada 16) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+(PlazaNavona of Punto_de_Interes (precioEntrada 0) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+(GaleriaGallese of Punto_de_Interes (precioEntrada 15) (esAccessible si) (puntuacion media) (aptoParaNiños no))
+
+; -------------------------
+; AMSTERDAM
+; -------------------------
+
+(RijksmuseumA of Punto_de_Interes (precioEntrada 22) (esAccessible si) (puntuacion alta) (aptoParaNiños no))
+(CasaAnnaFrank of Punto_de_Interes (precioEntrada 14) (esAccessible si) (puntuacion alta) (aptoParaNiños no))
+(CanalesAmsterdam of Punto_de_Interes (precioEntrada 0) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+(VondelPark of Punto_de_Interes (precioEntrada 0) (esAccessible si) (puntuacion media) (aptoParaNiños si))
+(BarrioRojoA of Punto_de_Interes (precioEntrada 0) (esAccessible si) (puntuacion media) (aptoParaNiños no))
+
+; -------------------------
+; LISBOA
+; -------------------------
+
+(TorreBelem of Punto_de_Interes (precioEntrada 6) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+(MonasterioJeronimos of Punto_de_Interes (precioEntrada 10) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+(BarrioAlfama of Punto_de_Interes (precioEntrada 0) (esAccessible no) (puntuacion alta) (aptoParaNiños no))
+(CastilloSJorge of Punto_de_Interes (precioEntrada 10) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+(PlazoComercioL of Punto_de_Interes (precioEntrada 0) (esAccessible si) (puntuacion media) (aptoParaNiños si))
+
+; -------------------------
+; PRAGA
+; -------------------------
+
+(CastilloPraga of Punto_de_Interes (precioEntrada 15) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+(PuenteCarlos of Punto_de_Interes (precioEntrada 0) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+(PlazaVenceslao of Punto_de_Interes (precioEntrada 0) (esAccessible si) (puntuacion media) (aptoParaNiños si))
+(BarrioJudioPraga of Punto_de_Interes (precioEntrada 12) (esAccessible si) (puntuacion alta) (aptoParaNiños no))
+(CatedralSanVito of Punto_de_Interes (precioEntrada 0) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+
+; -------------------------
+; BERLÍN
+; -------------------------
+
+(PuertaBrandeburgo of Punto_de_Interes (precioEntrada 0) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+(MuroBerlin of Punto_de_Interes (precioEntrada 0) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+(Reichstag of Punto_de_Interes (precioEntrada 0) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+(MuseoPergamo of Punto_de_Interes (precioEntrada 19) (esAccessible si) (puntuacion alta) (aptoParaNiños no))
+(CheckpointCharlie of Punto_de_Interes (precioEntrada 0) (esAccessible si) (puntuacion media) (aptoParaNiños si))
+
+; =========================================================
+; PUNTOS DE INTERÉS — AMÉRICA
+; =========================================================
+
+; -------------------------
+; NUEVA YORK
+; -------------------------
+
+(EstatuaLibertad of Punto_de_Interes (precioEntrada 25) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+(CentralPark of Punto_de_Interes (precioEntrada 0) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+(TimesSquare of Punto_de_Interes (precioEntrada 0) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+(EmpireState of Punto_de_Interes (precioEntrada 40) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+(MetropolitanNY of Punto_de_Interes (precioEntrada 25) (esAccessible si) (puntuacion alta) (aptoParaNiños no))
+
+; -------------------------
+; BUENOS AIRES
+; -------------------------
+
+(TeatroColon of Punto_de_Interes (precioEntrada 15) (esAccessible si) (puntuacion alta) (aptoParaNiños no))
+(ObeliscoBA of Punto_de_Interes (precioEntrada 0) (esAccessible si) (puntuacion media) (aptoParaNiños si))
+(Caminito of Punto_de_Interes (precioEntrada 0) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+(Recoleta of Punto_de_Interes (precioEntrada 0) (esAccessible si) (puntuacion media) (aptoParaNiños si))
+(PuertoMaderoBA of Punto_de_Interes (precioEntrada 0) (esAccessible si) (puntuacion media) (aptoParaNiños si))
+
+; =========================================================
+; PUNTOS DE INTERÉS — ÁFRICA
+; =========================================================
+
+; -------------------------
+; EL CAIRO
+; -------------------------
+
+(PiramidesGiza of Punto_de_Interes (precioEntrada 20) (esAccessible no) (puntuacion alta) (aptoParaNiños no))
+(MuseoEgipcio of Punto_de_Interes (precioEntrada 12) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+(KhanElKhalili of Punto_de_Interes (precioEntrada 0) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+(CiudadelaCairo of Punto_de_Interes (precioEntrada 8) (esAccessible si) (puntuacion media) (aptoParaNiños si))
+
+; -------------------------
+; CIUDAD DEL CABO
+; -------------------------
+
+(TableMountain of Punto_de_Interes (precioEntrada 22) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+(RobbenIsland of Punto_de_Interes (precioEntrada 30) (esAccessible si) (puntuacion alta) (aptoParaNiños no))
+(CapePoint of Punto_de_Interes (precioEntrada 15) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+(BouldersBeach of Punto_de_Interes (precioEntrada 10) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+
+; =========================================================
+; PUNTOS DE INTERÉS — ASIA
+; =========================================================
+
+; -------------------------
+; TOKYO
+; -------------------------
+
+(TorreTokyoT of Punto_de_Interes (precioEntrada 12) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+(TemploSensoji of Punto_de_Interes (precioEntrada 0) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+(ShinjukuT of Punto_de_Interes (precioEntrada 0) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+(AkihabaraTok of Punto_de_Interes (precioEntrada 0) (esAccessible si) (puntuacion media) (aptoParaNiños si))
+(MonteFujiTok of Punto_de_Interes (precioEntrada 5) (esAccessible no) (puntuacion alta) (aptoParaNiños no))
+(DisneySea of Punto_de_Interes (precioEntrada 80) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+
+; -------------------------
+; BANGKOK
+; -------------------------
+
+(GranPalacioBK of Punto_de_Interes (precioEntrada 15) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+(WatArun of Punto_de_Interes (precioEntrada 5) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+(MercadoChatuchak of Punto_de_Interes (precioEntrada 0) (esAccessible si) (puntuacion alta) (aptoParaNiños si))
+(RioChaoPhrayaBK of Punto_de_Interes (precioEntrada 10) (esAccessible si) (puntuacion media) (aptoParaNiños si))
+
+
+; =========================================================
+; CIUDADES — ESPAÑA
+; =========================================================
+
+(Barcelona of Ciudad
+   (pais "Espana")
+   (continente Europa)
+   (precioMedio 130)
+   (estiloVida "cosmopolita")
+   (Tipo_de_ciudad [cultura] [playa] [gastronomia])
+   (Hablan_en [espanol])
+   (Contienen [SagradaFamilia] [ParcGuell] [CampNou] [BarrioGotico]
+              [BeachBarcelona] [MNAC] [MercadoBoqueria] [Tibidabo])
+   (Tiene_un_conjunto_de [HotelArtsBarcelona] [HostalRamblasBarcelona] [ApartBarcelona1]
+                         [HotelDiagonalSky] [HostalBornBackpackers] [ApartBCNBeach])
+   (Requiere_de [material-urbano] [material-playa])
+   (Se_celebra [FinalChampions] [PrimaveraSoundBCN]))
+
+(Madrid of Ciudad
+   (pais "Espana")
+   (continente Europa)
+   (precioMedio 110)
+   (estiloVida "animada")
+   (Tipo_de_ciudad [cultura] [gastronomia] [fiesta])
+   (Hablan_en [espanol])
+   (Contienen [MuseoPrado] [RetiroPark] [PalacioReal] [MercadoSanMiguel]
+              [BernabeuTour] [ReinaSOfia] [TemploDebod])
+   (Tiene_un_conjunto_de [HotelWMadrid] [HostalMadridCentro] [ApartMadrid1]
+                         [HotelGranViaPremium] [HostalSolBackpackers] [ApartMadridCentro2])
+   (Requiere_de [material-urbano])
+   (Se_celebra [FeriaLibroMadrid]))
+
+(Sevilla of Ciudad
+   (pais "Espana")
+   (continente Europa)
+   (precioMedio 85)
+   (estiloVida "tradicional")
+   (Tipo_de_ciudad [cultura] [gastronomia] [romantica])
+   (Hablan_en [espanol])
+   (Contienen [CatedralSevilla] [AlcazarSevilla] [BarrioTriana]
+              [PlazaEspana] [TorreDelOro] [ArchivoIndias])
+   (Tiene_un_conjunto_de [HotelAlfonsXIII] [HostalSevillaCentro] [ApartSevilla1]
+                         [HotelTrianaSuites] [HostalSantaCruz] [ApartSevillaRiverside])
+   (Requiere_de [material-urbano])
+   (Se_celebra [FeriaAbrilSevilla]))
+
+(Valencia of Ciudad
+   (pais "Espana")
+   (continente Europa)
+   (precioMedio 90)
+   (estiloVida "mediterranea")
+   (Tipo_de_ciudad [playa] [gastronomia] [cultura])
+   (Hablan_en [espanol])
+   (Contienen [CiudadArtesCiencias] [PlayaMalvarrosa] [MercadoCentral]
+              [CatedralValencia] [BioparcValencia] [Oceanografic])
+   (Tiene_un_conjunto_de [HotelSheratonValencia] [HostalValenciaCentro] [ApartValencia1]
+                         [HotelRuzafaUrban] [HostalCarmen] [ApartValenciaBeach])
+   (Requiere_de [material-playa] [material-urbano])
+   (Se_celebra [LasFallasValencia]))
+
+(SanSebastian of Ciudad
+   (pais "Espana")
+   (continente Europa)
+   (precioMedio 140)
+   (estiloVida "elegante")
+   (Tipo_de_ciudad [gastronomia] [playa] [cultura])
+   (Hablan_en [espanol])
+   (Contienen [PlayaConcha] [ParteVieja] [PintosSS] [MonteIgeldo] [AcuarioSS])
+   (Tiene_un_conjunto_de [HotelMariaDristinasSS] [HostalSSCentro] [ApartSS1]
+                         [HotelZurriolaView] [HostalOldTown] [ApartSSBeach])
+   (Requiere_de [material-playa] [material-invierno])
+   (Se_celebra [SanFermines]))
+
+(Granada of Ciudad
+   (pais "Espana")
+   (continente Europa)
+   (precioMedio 75)
+   (estiloVida "historica")
+   (Tipo_de_ciudad [cultura] [romantica] [montana])
+   (Hablan_en [espanol])
+   (Contienen [Alhambra] [Albaicin] [CathedralGranada]
+              [SierraNevadaGranada] [TablaosFlamenco])
+   (Tiene_un_conjunto_de [HotelParadorGranada] [HostalGranadaCentro] [ApartGranada1]
+                         [HotelAlbayzinSuites] [HostalRealejo] [ApartGranadaMirador])
+   (Requiere_de [material-montana] [material-invierno]))
+
+; =========================================================
+; CIUDADES — EUROPA
+; =========================================================
+
+(Paris of Ciudad
+   (pais "Francia")
+   (continente Europa)
+   (precioMedio 190)
+   (estiloVida "romantica")
+   (Tipo_de_ciudad [romantica] [cultura] [gastronomia])
+   (Hablan_en [frances])
+   (Contienen [TorreEiffel] [Louvre] [Montmartre] [VersaillesP]
+              [ChampsElysees] [MuseeOrsay] [CatedralNotreDame])
+   (Tiene_un_conjunto_de [HotelRitzParis] [HostalParisCentro] [ApartParis1]
+                         [HotelMontmartreView] [HostalLatinQuarter] [ApartParisOpera])
+   (Requiere_de [material-urbano])
+   (Se_celebra [LucesNavidadParis] [FestivalCineCannes]))
+
+(Roma of Ciudad
+   (pais "Italia")
+   (continente Europa)
+   (precioMedio 150)
+   (estiloVida "historica")
+   (Tipo_de_ciudad [cultura] [gastronomia] [romantica])
+   (Hablan_en [italiano])
+   (Contienen [Coliseo] [VaticanoCiudad] [FontanaTrevi]
+              [ForoRomano] [PlazaNavona] [GaleriaGallese])
+   (Tiene_un_conjunto_de [HotelExcelsiorRoma] [HostalRomaCentro] [ApartRoma1]
+                         [HotelTrastevereSuites] [HostalTermini] [ApartRomaColosseo])
+   (Requiere_de [material-urbano]))
+
+(Amsterdam of Ciudad
+   (pais "Holanda")
+   (continente Europa)
+   (precioMedio 170)
+   (estiloVida "liberal")
+   (Tipo_de_ciudad [cultura] [fiesta] [aventura])
+   (Hablan_en [ingles])
+   (Contienen [RijksmuseumA] [CasaAnnaFrank] [CanalesAmsterdam]
+              [VondelPark] [BarrioRojoA])
+   (Tiene_un_conjunto_de [HotelPulitzerAmsterdam] [HostalAmsterdamCentro] [ApartAmsterdam1]
+                         [HotelCanalView] [HostalJordaan] [ApartAmsterdamDock])
+   (Requiere_de [material-urbano]))
+
+(Lisboa of Ciudad
+   (pais "Portugal")
+   (continente Europa)
+   (precioMedio 95)
+   (estiloVida "nostalgica")
+   (Tipo_de_ciudad [cultura] [gastronomia] [romantica])
+   (Hablan_en [portugues])
+   (Contienen [TorreBelem] [MonasterioJeronimos] [BarrioAlfama]
+              [CastilloSJorge] [PlazoComercioL])
+   (Tiene_un_conjunto_de [HotelBairroAltoLisboa] [HostalLisboaCentro] [ApartLisboa1]
+                         [HotelChiadoSky] [HostalAlfama] [ApartLisboaRiver])
+   (Requiere_de [material-urbano]))
+
+(Praga of Ciudad
+   (pais "Republica Checa")
+   (continente Europa)
+   (precioMedio 80)
+   (estiloVida "medieval")
+   (Tipo_de_ciudad [cultura] [fiesta] [romantica])
+   (Hablan_en [ingles])
+   (Contienen [CastilloPraga] [PuenteCarlos] [PlazaVenceslao]
+              [BarrioJudioPraga] [CatedralSanVito])
+   (Tiene_un_conjunto_de [HotelFourSeasonsPraga] [HostalPragaCentro] [ApartPraga1]
+                         [HotelOldTownPraga] [HostalMalaStrana] [ApartPragaCastle])
+   (Requiere_de [material-urbano]))
+
+(Berlin of Ciudad
+   (pais "Alemania")
+   (continente Europa)
+   (precioMedio 120)
+   (estiloVida "alternativa")
+   (Tipo_de_ciudad [cultura] [fiesta])
+   (Hablan_en [aleman] [ingles])
+   (Contienen [PuertaBrandeburgo] [MuroBerlin] [Reichstag]
+              [MuseoPergamo] [CheckpointCharlie])
+   (Tiene_un_conjunto_de [HotelAdlonBerlin] [HostalBerlinMitte] [ApartBerlin1]
+                         [HotelKreuzbergUrban] [HostalPrenzlauer] [ApartBerlinWall])
+   (Requiere_de [material-urbano])
+   (Se_celebra [OktoberfestMunich]))
+
+; =========================================================
+; CIUDADES — OCEANÍA
+; =========================================================
+
+(Sydney of Ciudad
+   (pais "Australia")
+   (continente Oceania)
+   (precioMedio 180)
+   (estiloVida "relajada-playera")
+   (Tipo_de_ciudad [playa] [cultura] [aventura])
+   (Hablan_en [ingles])
+   (Contienen [OperaHouse] [BondiBeach] [HarbourBridge] [TarongaZoo])
+   (Tiene_un_conjunto_de [HotelParkHyattSyd] [HostalSydSurf] [ApartSyd1]
+                         [HotelDarlingHarbour] [HostalBondi] [ApartSydOpera])
+   (Requiere_de [material-urbano] [material-playa])
+   (Se_celebra [VividSydney]))
+
+(OperaHouse of Punto_de_Interes
+   (precioEntrada 45)
+   (esAccessible si)
+   (puntuacion alta)
+   (aptoParaNiños si))
+
+(BondiBeach of Punto_de_Interes
+   (precioEntrada 0)
+   (esAccessible si)
+   (puntuacion alta)
+   (aptoParaNiños si))
+
+(HarbourBridge of Punto_de_Interes
+   (precioEntrada 0)
+   (esAccessible si)
+   (puntuacion media)
+   (aptoParaNiños si))
+
+(TarongaZoo of Punto_de_Interes
+   (precioEntrada 35)
+   (esAccessible si)
+   (puntuacion alta)
+   (aptoParaNiños si))
+
+(HotelParkHyattSyd of Hotel
+   (accesibilidad si)
+   (ambiente TRANQUILO)
+   (calidadAlojamiento 5)
+   (precioAlojamiento 220)
+   (servicio si))
+
+(HostalSydSurf of Hostal
+   (accesibilidad no)
+   (ambiente SOCIAL)
+   (calidadAlojamiento 3)
+   (precioAlojamiento 35))
+
+(ApartSyd1 of Apartamento
+   (accesibilidad si)
+   (ambiente TRANQUILO)
+   (calidadAlojamiento 4)
+   (precioAlojamiento 110)
+   (capacidad 4))
+
+(HotelDarlingHarbour of Hotel
+   (accesibilidad si)
+   (ambiente TRANQUILO)
+   (calidadAlojamiento 4)
+   (precioAlojamiento 160)
+   (servicio si))
+
+(HostalBondi of Hostal
+   (accesibilidad no)
+   (ambiente SOCIAL)
+   (calidadAlojamiento 2)
+   (precioAlojamiento 28))
+
+(ApartSydOpera of Apartamento
+   (accesibilidad si)
+   (ambiente TRANQUILO)
+   (calidadAlojamiento 4)
+   (precioAlojamiento 130)
+   (capacidad 3))
+
+; =========================================================
+; CIUDADES — AMÉRICA
+; =========================================================
+
+(NuevaYork of Ciudad
+   (pais "EEUU")
+   (continente America)
+   (precioMedio 250)
+   (estiloVida "frenetica")
+   (Tipo_de_ciudad [cultura] [gastronomia] [aventura])
+   (Hablan_en [ingles])
+   (Contienen [EstatuaLibertad] [CentralPark] [TimesSquare]
+              [EmpireState] [MetropolitanNY])
+   (Tiene_un_conjunto_de [HotelMarriottNY] [HostalNYCentral] [ApartNY1]
+                         [HotelBrooklynBridge] [HostalHarlem] [ApartNYMidtown])
+   (Requiere_de [material-urbano])
+   (Se_celebra [AnoNuevoTimesSquare]))
+
+(BuenosAires of Ciudad
+   (pais "Argentina")
+   (continente America)
+   (precioMedio 90)
+   (estiloVida "bohemia")
+   (Tipo_de_ciudad [cultura] [gastronomia] [romantica])
+   (Hablan_en [espanol])
+   (Contienen [TeatroColon] [ObeliscoBA] [Caminito]
+              [Recoleta] [PuertoMaderoBA])
+   (Tiene_un_conjunto_de [HotelAlvearBA] [HostalPalermo] [ApartBA1]
+                         [HotelSanTelmo] [HostalLaBoca] [ApartBARecoleta])
+   (Requiere_de [material-urbano])
+   (Se_celebra [CarnavalRio]))
+
+; =========================================================
+; CIUDADES — ÁFRICA
+; =========================================================
+
+(ElCairo of Ciudad
+   (pais "Egipto")
+   (continente Africa)
+   (precioMedio 60)
+   (estiloVida "caotica-historica")
+   (Tipo_de_ciudad [cultura] [aventura])
+   (Hablan_en [ingles])
+   (Contienen [PiramidesGiza] [MuseoEgipcio] [KhanElKhalili] [CiudadelaCairo])
+   (Tiene_un_conjunto_de [HotelRitzCairo] [HostalCairoOld] [ApartCairo1]
+                         [HotelNiloView] [HostalGiza] [ApartCairoMuseum])
+   (Requiere_de [material-urbano]))
+
+(HotelRitzCairo of Hotel
+   (accesibilidad si)
+   (ambiente TRANQUILO)
+   (calidadAlojamiento 5)
+   (precioAlojamiento 140)
+   (servicio si))
+
+(HostalCairoOld of Hostal
+   (accesibilidad no)
+   (ambiente SOCIAL)
+   (calidadAlojamiento 2)
+   (precioAlojamiento 18))
+
+(ApartCairo1 of Apartamento
+   (accesibilidad si)
+   (ambiente TRANQUILO)
+   (calidadAlojamiento 3)
+   (precioAlojamiento 35)
+   (capacidad 4))
+
+(HotelNiloView of Hotel
+   (accesibilidad si)
+   (ambiente TRANQUILO)
+   (calidadAlojamiento 4)
+   (precioAlojamiento 90)
+   (servicio si))
+
+(HostalGiza of Hostal
+   (accesibilidad no)
+   (ambiente SOCIAL)
+   (calidadAlojamiento 2)
+   (precioAlojamiento 15))
+
+(ApartCairoMuseum of Apartamento
+   (accesibilidad si)
+   (ambiente TRANQUILO)
+   (calidadAlojamiento 3)
+   (precioAlojamiento 40)
+   (capacidad 3))
+
+(HotelTheSilof of Hotel
+   (accesibilidad si)
+   (ambiente TRANQUILO)
+   (calidadAlojamiento 5)
+   (precioAlojamiento 200)
+   (servicio si))
+
+(HostalCapeBackpackers of Hostal
+   (accesibilidad no)
+   (ambiente SOCIAL)
+   (calidadAlojamiento 2)
+   (precioAlojamiento 22))
+
+(ApartCape1 of Apartamento
+   (accesibilidad si)
+   (ambiente TRANQUILO)
+   (calidadAlojamiento 4)
+   (precioAlojamiento 70)
+   (capacidad 4))
+
+(HotelWaterfront of Hotel
+   (accesibilidad si)
+   (ambiente TRANQUILO)
+   (calidadAlojamiento 4)
+   (precioAlojamiento 150)
+   (servicio si))
+
+(HostalMuizenberg of Hostal
+   (accesibilidad no)
+   (ambiente SOCIAL)
+   (calidadAlojamiento 2)
+   (precioAlojamiento 20))
+
+(ApartCapeHarbour of Apartamento
+   (accesibilidad si)
+   (ambiente TRANQUILO)
+   (calidadAlojamiento 4)
+   (precioAlojamiento 85)
+   (capacidad 3))
+
+(CiudadDelCabo of Ciudad
+   (pais "Sudafrica")
+   (continente Africa)
+   (precioMedio 110)
+   (estiloVida "natural")
+   (Tipo_de_ciudad [aventura] [playa] [gastronomia])
+   (Hablan_en [ingles])
+   (Contienen [TableMountain] [RobbenIsland] [CapePoint] [BouldersBeach])
+   (Tiene_un_conjunto_de [HotelTheSilof] [HostalCapeBackpackers] [ApartCape1]
+                         [HotelWaterfront] [HostalMuizenberg] [ApartCapeHarbour])
+   (Requiere_de [material-urbano] [material-playa]))
+
+(HotelMandarinBK of Hotel
+   (accesibilidad si)
+   (ambiente TRANQUILO)
+   (calidadAlojamiento 5)
+   (precioAlojamiento 120)
+   (servicio si))
+
+(HotelSukhumvitSky of Hotel
+   (accesibilidad si)
+   (ambiente TRANQUILO)
+   (calidadAlojamiento 4)
+   (precioAlojamiento 80)
+   (servicio si))
+
+(HostalBKStreet of Hostal
+   (accesibilidad no)
+   (ambiente SOCIAL)
+   (calidadAlojamiento 2)
+   (precioAlojamiento 18))
+
+(HostalKhaoSan of Hostal
+   (accesibilidad no)
+   (ambiente SOCIAL)
+   (calidadAlojamiento 2)
+   (precioAlojamiento 15))
+
+(ApartBK1 of Apartamento
+   (accesibilidad si)
+   (ambiente TRANQUILO)
+   (calidadAlojamiento 4)
+   (precioAlojamiento 45)
+   (capacidad 4))
+
+(ApartBKRiver of Apartamento
+   (accesibilidad si)
+   (ambiente TRANQUILO)
+   (calidadAlojamiento 4)
+   (precioAlojamiento 55)
+   (capacidad 3))
+
+; =========================================================
+; CIUDADES — ASIA
+; =========================================================
+
+(Bangkok of Ciudad
+   (pais "Tailandia")
+   (continente Asia)
+   (precioMedio 50)
+   (estiloVida "exotica")
+   (Tipo_de_ciudad [gastronomia] [cultura] [aventura])
+   (Hablan_en [ingles])
+   (Contienen [GranPalacioBK] [WatArun] [MercadoChatuchak] [RioChaoPhrayaBK])
+   (Tiene_un_conjunto_de [HotelMandarinBK] [HostalBKStreet] [ApartBK1]
+                         [HotelSukhumvitSky] [HostalKhaoSan] [ApartBKRiver])
+   (Requiere_de [material-urbano]))
+
+(Tokyo of Ciudad
+   (pais "Japon")
+   (continente Asia)
+   (precioMedio 200)
+   (estiloVida "futurista")
+   (Tipo_de_ciudad [cultura] [gastronomia] [aventura])
+   (Hablan_en [japones])
+   (Contienen [TorreTokyoT] [TemploSensoji] [ShinjukuT]
+              [AkihabaraTok] [MonteFujiTok] [DisneySea])
+   (Tiene_un_conjunto_de [HotelParkHyattTokyo] [HostalTokyoCentro] [ApartTokyo1]
+                         [HotelShibuyaSky] [HostalAsakusa] [ApartTokyoGinza] [HostalShinjukuNight])
+   (Requiere_de [material-urbano])
+   (Se_celebra [HanamiTokyo]))
+
+   (ApartTokyo1 of Apartamento
+   (accesibilidad si)
+   (ambiente TRANQUILO)
+   (calidadAlojamiento 4)
+   (precioAlojamiento 130)
+   (capacidad 3))
+
+(ApartTokyoGinza of Apartamento
+   (accesibilidad si)
+   (ambiente TRANQUILO)
+   (calidadAlojamiento 4)
+   (precioAlojamiento 150)
+   (capacidad 2))
+
+(HotelParkHyattTokyo of Hotel
+   (accesibilidad si)
+   (ambiente TRANQUILO)
+   (calidadAlojamiento 5)
+   (precioAlojamiento 260)
+   (servicio si))
+
+(HostalShinjukuNight of Hostal
+   (accesibilidad no)
+   (ambiente SOCIAL)
+   (calidadAlojamiento 3)
+   (precioAlojamiento 32))
+
+(HostalTokyoCentro of Hostal
+   (accesibilidad si)
+   (ambiente SOCIAL)
+   (calidadAlojamiento 3)
+   (precioAlojamiento 40))
+
+(HotelTokyoBay of Hotel
+   (accesibilidad si)
+   (ambiente TRANQUILO)
+   (calidadAlojamiento 4)
+   (precioAlojamiento 150)
+   (servicio si))
+
+(HotelShibuyaSky of Hotel
+   (accesibilidad si)
+   (ambiente TRANQUILO)
+   (calidadAlojamiento 4)
+   (precioAlojamiento 180)
+   (servicio si))
+
+(HostalAsakusa of Hostal
+   (accesibilidad no)
+   (ambiente SOCIAL)
+   (calidadAlojamiento 2)
+   (precioAlojamiento 28))
+
+(HotelGinzaPremium of Hotel
+   (accesibilidad si)
+   (ambiente TRANQUILO)
+   (calidadAlojamiento 5)
+   (precioAlojamiento 220)
+   (servicio si))
+
+(Alicante of Ciudad
+   (pais "Espana")
+   (continente Europa)
+   (precioMedio 95)
+   (estiloVida "mediterranea")
+   (Tipo_de_ciudad [playa] [gastronomia] [cultura])
+   (Hablan_en [espanol])
+   (Contienen [PlayaSanJuan] [CastilloSantaBarbara] [ExplanadaAlicante])
+   (Tiene_un_conjunto_de [HotelMeliaAlicante] [HostalAlicanteCentro] [ApartAlicante1])
+   (Requiere_de [material-playa] [material-urbano]))
+
+(PlayaSanJuan of Punto_de_Interes
+   (precioEntrada 0)
+   (esAccessible si)
+   (puntuacion alta)
+   (aptoParaNiños si))
+
+(CastilloSantaBarbara of Punto_de_Interes
+   (precioEntrada 0)
+   (esAccessible si)
+   (puntuacion alta)
+   (aptoParaNiños si))
+
+(ExplanadaAlicante of Punto_de_Interes
+   (precioEntrada 0)
+   (esAccessible si)
+   (puntuacion media)
+   (aptoParaNiños si))
+
+(HotelMeliaAlicante of Hotel
+   (calidadAlojamiento 4)
+   (precioAlojamiento 150)
+   (servicio si)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+(HostalAlicanteCentro of Hostal
+   (calidadAlojamiento 2)
+   (precioAlojamiento 35)
+   (accesibilidad no)
+   (ambiente SOCIAL))
+
+(ApartAlicante1 of Apartamento
+   (calidadAlojamiento 3)
+   (precioAlojamiento 80)
+   (capacidad 3)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+
+  ; =========================================================
+; ALOJAMIENTOS — ESPAÑA
+; =========================================================
+
+; -------------------------
+; BARCELONA
+; -------------------------
+
+(HotelArtsBarcelona of Hotel
+   (calidadAlojamiento 5)
+   (precioAlojamiento 220)
+   (servicio si)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+(HostalRamblasBarcelona of Hostal
+   (calidadAlojamiento 3)
+   (precioAlojamiento 55)
+   (accesibilidad no)
+   (ambiente SOCIAL))
+
+(ApartBarcelona1 of Apartamento
+   (calidadAlojamiento 4)
+   (precioAlojamiento 120)
+   (capacidad 4)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+(HotelDiagonalSky of Hotel
+   (calidadAlojamiento 4)
+   (precioAlojamiento 150)
+   (servicio si)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+(HostalBornBackpackers of Hostal
+   (calidadAlojamiento 2)
+   (precioAlojamiento 35)
+   (accesibilidad no)
+   (ambiente SOCIAL))
+
+(ApartBCNBeach of Apartamento
+   (calidadAlojamiento 3)
+   (precioAlojamiento 95)
+   (capacidad 3)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+; -------------------------
+; MADRID
+; -------------------------
+
+(HotelWMadrid of Hotel
+   (calidadAlojamiento 5)
+   (precioAlojamiento 210)
+   (servicio si)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+(HostalMadridCentro of Hostal
+   (calidadAlojamiento 3)
+   (precioAlojamiento 45)
+   (accesibilidad no)
+   (ambiente SOCIAL))
+
+(ApartMadrid1 of Apartamento
+   (calidadAlojamiento 4)
+   (precioAlojamiento 110)
+   (capacidad 4)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+(HotelGranViaPremium of Hotel
+   (calidadAlojamiento 4)
+   (precioAlojamiento 160)
+   (servicio si)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+(HostalSolBackpackers of Hostal
+   (calidadAlojamiento 2)
+   (precioAlojamiento 30)
+   (accesibilidad no)
+   (ambiente SOCIAL))
+
+(ApartMadridCentro2 of Apartamento
+   (calidadAlojamiento 3)
+   (precioAlojamiento 85)
+   (capacidad 3)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+; -------------------------
+; SEVILLA
+; -------------------------
+
+(HotelAlfonsXIII of Hotel
+   (calidadAlojamiento 5)
+   (precioAlojamiento 230)
+   (servicio si)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+(HostalSevillaCentro of Hostal
+   (calidadAlojamiento 3)
+   (precioAlojamiento 40)
+   (accesibilidad no)
+   (ambiente SOCIAL))
+
+(ApartSevilla1 of Apartamento
+   (calidadAlojamiento 4)
+   (precioAlojamiento 90)
+   (capacidad 4)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+
+(HotelTrianaSuites of Hotel
+   (calidadAlojamiento 4)
+   (precioAlojamiento 140)
+   (servicio si)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+(HostalSantaCruz of Hostal
+   (calidadAlojamiento 2)
+   (precioAlojamiento 28)
+   (accesibilidad no)
+   (ambiente SOCIAL))
+
+(ApartSevillaRiverside of Apartamento
+   (calidadAlojamiento 3)
+   (precioAlojamiento 75)
+   (capacidad 3)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+; -------------------------
+; VALENCIA
+; -------------------------
+
+(HotelSheratonValencia of Hotel
+   (calidadAlojamiento 5)
+   (precioAlojamiento 180)
+   (servicio si)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+(HostalValenciaCentro of Hostal
+   (calidadAlojamiento 3)
+   (precioAlojamiento 38)
+   (accesibilidad no)
+   (ambiente SOCIAL))
+
+(ApartValencia1 of Apartamento
+   (calidadAlojamiento 4)
+   (precioAlojamiento 95)
+   (capacidad 4)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+(HotelRuzafaUrban of Hotel
+   (calidadAlojamiento 4)
+   (precioAlojamiento 130)
+   (servicio si)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+(HostalCarmen of Hostal
+   (calidadAlojamiento 2)
+   (precioAlojamiento 28)
+   (accesibilidad no)
+   (ambiente SOCIAL))
+
+(ApartValenciaBeach of Apartamento
+   (calidadAlojamiento 3)
+   (precioAlojamiento 80)
+   (capacidad 3)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+; -------------------------
+; SAN SEBASTIÁN
+; -------------------------
+
+(HotelMariaDristinasSS of Hotel
+   (calidadAlojamiento 5)
+   (precioAlojamiento 240)
+   (servicio si)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+(HostalSSCentro of Hostal
+   (calidadAlojamiento 3)
+   (precioAlojamiento 50)
+   (accesibilidad no)
+   (ambiente SOCIAL))
+
+(ApartSS1 of Apartamento
+   (calidadAlojamiento 4)
+   (precioAlojamiento 120)
+   (capacidad 4)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+(HotelZurriolaView of Hotel
+   (calidadAlojamiento 4)
+   (precioAlojamiento 160)
+   (servicio si)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+(HostalOldTown of Hostal
+   (calidadAlojamiento 2)
+   (precioAlojamiento 32)
+   (accesibilidad no)
+   (ambiente SOCIAL))
+
+(ApartSSBeach of Apartamento
+   (calidadAlojamiento 3)
+   (precioAlojamiento 85)
+   (capacidad 3)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+; -------------------------
+; GRANADA
+; -------------------------
+
+(HotelParadorGranada of Hotel
+   (calidadAlojamiento 5)
+   (precioAlojamiento 200)
+   (servicio si)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+(HostalGranadaCentro of Hostal
+   (calidadAlojamiento 3)
+   (precioAlojamiento 35)
+   (accesibilidad no)
+   (ambiente SOCIAL))
+
+(ApartGranada1 of Apartamento
+   (calidadAlojamiento 4)
+   (precioAlojamiento 85)
+   (capacidad 4)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+(HotelAlbayzinSuites of Hotel
+   (calidadAlojamiento 4)
+   (precioAlojamiento 140)
+   (servicio si)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+(HostalRealejo of Hostal
+   (calidadAlojamiento 2)
+   (precioAlojamiento 28)
+   (accesibilidad no)
+   (ambiente SOCIAL))
+
+(ApartGranadaMirador of Apartamento
+   (calidadAlojamiento 3)
+   (precioAlojamiento 70)
+   (capacidad 3)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+; -------------------------
+; PARIS
+; -------------------------
+
+(HotelRitzParis of Hotel
+   (calidadAlojamiento 5)
+   (precioAlojamiento 450)
+   (servicio si)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+(HostalParisCentro of Hostal
+   (calidadAlojamiento 3)
+   (precioAlojamiento 50)
+   (accesibilidad no)
+   (ambiente SOCIAL))
+
+(ApartParis1 of Apartamento
+   (calidadAlojamiento 4)
+   (precioAlojamiento 180)
+   (capacidad 4)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+(HotelMontmartreView of Hotel
+   (calidadAlojamiento 4)
+   (precioAlojamiento 210)
+   (servicio si)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+(HostalLatinQuarter of Hostal
+   (calidadAlojamiento 2)
+   (precioAlojamiento 35)
+   (accesibilidad no)
+   (ambiente SOCIAL))
+
+(ApartParisOpera of Apartamento
+   (calidadAlojamiento 3)
+   (precioAlojamiento 140)
+   (capacidad 3)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+; -------------------------
+; ROMA
+; -------------------------
+
+(HotelExcelsiorRoma of Hotel
+   (calidadAlojamiento 5)
+   (precioAlojamiento 300)
+   (servicio si)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+(HostalRomaCentro of Hostal
+   (calidadAlojamiento 3)
+   (precioAlojamiento 45)
+   (accesibilidad no)
+   (ambiente SOCIAL))
+
+(ApartRoma1 of Apartamento
+   (calidadAlojamiento 4)
+   (precioAlojamiento 130)
+   (capacidad 4)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+(HotelTrastevereSuites of Hotel
+   (calidadAlojamiento 4)
+   (precioAlojamiento 160)
+   (servicio si)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+(HostalTermini of Hostal
+   (calidadAlojamiento 2)
+   (precioAlojamiento 32)
+   (accesibilidad no)
+   (ambiente SOCIAL))
+
+(ApartRomaColosseo of Apartamento
+   (calidadAlojamiento 3)
+   (precioAlojamiento 110)
+   (capacidad 3)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+; -------------------------
+; AMSTERDAM
+; -------------------------
+
+(HotelPulitzerAmsterdam of Hotel
+   (calidadAlojamiento 5)
+   (precioAlojamiento 260)
+   (servicio si)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+(HostalAmsterdamCentro of Hostal
+   (calidadAlojamiento 3)
+   (precioAlojamiento 48)
+   (accesibilidad no)
+   (ambiente SOCIAL))
+
+(ApartAmsterdam1 of Apartamento
+   (calidadAlojamiento 4)
+   (precioAlojamiento 150)
+   (capacidad 4)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+
+(HotelCanalView of Hotel
+   (calidadAlojamiento 4)
+   (precioAlojamiento 180)
+   (servicio si)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+(HostalJordaan of Hostal
+   (calidadAlojamiento 2)
+   (precioAlojamiento 30)
+   (accesibilidad no)
+   (ambiente SOCIAL))
+
+(ApartAmsterdamDock of Apartamento
+   (calidadAlojamiento 3)
+   (precioAlojamiento 120)
+   (capacidad 3)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+; -------------------------
+; LISBOA
+; -------------------------
+
+(HotelBairroAltoLisboa of Hotel
+   (calidadAlojamiento 5)
+   (precioAlojamiento 220)
+   (servicio si)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+(HostalLisboaCentro of Hostal
+   (calidadAlojamiento 3)
+   (precioAlojamiento 40)
+   (accesibilidad no)
+   (ambiente SOCIAL))
+
+(ApartLisboa1 of Apartamento
+   (calidadAlojamiento 4)
+   (precioAlojamiento 110)
+   (capacidad 4)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+(HotelChiadoSky of Hotel
+   (calidadAlojamiento 4)
+   (precioAlojamiento 150)
+   (servicio si)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+(HostalAlfama of Hostal
+   (calidadAlojamiento 2)
+   (precioAlojamiento 28)
+   (accesibilidad no)
+   (ambiente SOCIAL))
+
+(ApartLisboaRiver of Apartamento
+   (calidadAlojamiento 3)
+   (precioAlojamiento 90)
+   (capacidad 3)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+; -------------------------
+; PRAGA
+; -------------------------
+
+(HotelFourSeasonsPraga of Hotel
+   (calidadAlojamiento 5)
+   (precioAlojamiento 260)
+   (servicio si)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+(HostalPragaCentro of Hostal
+   (calidadAlojamiento 3)
+   (precioAlojamiento 38)
+   (accesibilidad no)
+   (ambiente SOCIAL))
+
+(ApartPraga1 of Apartamento
+   (calidadAlojamiento 4)
+   (precioAlojamiento 120)
+   (capacidad 4)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+(HotelOldTownPraga of Hotel
+   (calidadAlojamiento 4)
+   (precioAlojamiento 150)
+   (servicio si)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+(HostalMalaStrana of Hostal
+   (calidadAlojamiento 2)
+   (precioAlojamiento 28)
+   (accesibilidad no)
+   (ambiente SOCIAL))
+
+(ApartPragaCastle of Apartamento
+   (calidadAlojamiento 3)
+   (precioAlojamiento 95)
+   (capacidad 3)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+; -------------------------
+; BERLIN
+; -------------------------
+
+(HotelAdlonBerlin of Hotel
+   (calidadAlojamiento 5)
+   (precioAlojamiento 300)
+   (servicio si)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+(HostalBerlinMitte of Hostal
+   (calidadAlojamiento 3)
+   (precioAlojamiento 45)
+   (accesibilidad no)
+   (ambiente SOCIAL))
+
+(ApartBerlin1 of Apartamento
+   (calidadAlojamiento 4)
+   (precioAlojamiento 130)
+   (capacidad 4)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+(HotelKreuzbergUrban of Hotel
+   (calidadAlojamiento 4)
+   (precioAlojamiento 160)
+   (servicio si)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+(HostalPrenzlauer of Hostal
+   (calidadAlojamiento 2)
+   (precioAlojamiento 30)
+   (accesibilidad no)
+   (ambiente SOCIAL))
+
+(ApartBerlinWall of Apartamento
+   (calidadAlojamiento 3)
+   (precioAlojamiento 100)
+   (capacidad 3)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+; =========================================================
+; ALOJAMIENTOS — AMÉRICA
+; =========================================================
+
+; -------------------------
+; NUEVA YORK
+; -------------------------
+
+(HotelMarriottNY of Hotel
+   (calidadAlojamiento 5)
+   (precioAlojamiento 350)
+   (servicio si)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+(HostalNYCentral of Hostal
+   (calidadAlojamiento 3)
+   (precioAlojamiento 55)
+   (accesibilidad no)
+   (ambiente SOCIAL))
+
+(ApartNY1 of Apartamento
+   (calidadAlojamiento 4)
+   (precioAlojamiento 200)
+   (capacidad 4)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
  
-  ; EEUU
-  (AnoNuevoTimesSquare of Eventos_especiales (precioEntrada 0)(esAccesible si)(puntuacion alta)(tiempo 10h)(aptoParaNinos si))
-
-  ; JAPON
-  (HanamiTokyo        of Eventos_especiales (precioEntrada 0)(esAccesible si)(puntuacion alta)(tiempo 4h)(aptoParaNinos si))
-
-  ; FRANCIA
-  (LucesNavidadParis  of Eventos_especiales (precioEntrada 0)(esAccesible si)(puntuacion media)(tiempo 3h)(aptoParaNinos si))
-
-  ; ITALIA
-  (CarnavalVenecia    of Eventos_especiales (precioEntrada 0)(esAccesible no)(puntuacion alta)(tiempo 5h)(aptoParaNinos no))
-
-  (FinalChampions     of Eventos_especiales (precioEntrada 300)(esAccesible si)(puntuacion alta)(tiempo 4h)(aptoParaNinos si))
-
-  ; PUNTOS DE INTERES
-  
-  ; BARCELONA
-  (SagradaFamilia of Punto_de_Interes (precioEntrada 26)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-  (ParcGuell of Punto_de_Interes (precioEntrada 10)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-  (CampNou of Punto_de_Interes (precioEntrada 28)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-  (BarrioGotico of Punto_de_Interes (precioEntrada 0)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-  (BeachBarcelona of Punto_de_Interes (precioEntrada 0)(esAccessible si)(puntuacion media)(aptoParaNinos si))
-  (MNAC of Punto_de_Interes (precioEntrada 12)(esAccessible si)(puntuacion alta)(aptoParaNinos no))
-
-  ; MADRID
-  (MuseoPrado of Punto_de_Interes (precioEntrada 15)(esAccessible si)(puntuacion alta)(aptoParaNinos no))
-  (RetiroPark of Punto_de_Interes (precioEntrada 0)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-  (PalacioReal of Punto_de_Interes (precioEntrada 12)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-  (MercadoSanMiguel of Punto_de_Interes (precioEntrada 0)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-  (BernabeuTour of Punto_de_Interes (precioEntrada 25)(esAccessible si)(puntuacion media)(aptoParaNinos si))
-  (ReinaSOfia of Punto_de_Interes (precioEntrada 10)(esAccessible si)(puntuacion alta)(aptoParaNinos no))
-
-  ; SEVILLA
-  (CatedralSevilla of Punto_de_Interes (precioEntrada 10)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-  (AlcazarSevilla of Punto_de_Interes (precioEntrada 12)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-  (BarrioTriana of Punto_de_Interes (precioEntrada 0)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-  (PlazaEspana of Punto_de_Interes (precioEntrada 0)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-  (TorreDelOro of Punto_de_Interes (precioEntrada 3)(esAccessible si)(puntuacion media)(aptoParaNinos si))
-
-  ; VALENCIA
-  (CiudadArtesCiencias of Punto_de_Interes (precioEntrada 38)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-  (PlayaMalvarrosa of Punto_de_Interes (precioEntrada 0)(esAccessible si)(puntuacion media)(aptoParaNinos si))
-  (MercadoCentral of Punto_de_Interes (precioEntrada 0)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-  (CatedralValencia of Punto_de_Interes (precioEntrada 8)(esAccessible si)(puntuacion media)(aptoParaNinos si))
-  (BiopagoValencia of Punto_de_Interes (precioEntrada 20)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-
-  ; SAN SEBASTIAN
-  (PlayaConcha of Punto_de_Interes (precioEntrada 0)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-  (ParteVieja of Punto_de_Interes (precioEntrada 0)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-  (PintosSS of Punto_de_Interes (precioEntrada 0)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-  (MonteIgeldo of Punto_de_Interes (precioEntrada 5)(esAccessible si)(puntuacion media)(aptoParaNinos si))
-  (AcuarioSS of Punto_de_Interes (precioEntrada 15)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-
-  ; GRANADA
-  (Alhambra of Punto_de_Interes (precioEntrada 15)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-  (Albaicin of Punto_de_Interes (precioEntrada 0)(esAccessible no)(puntuacion alta)(aptoParaNinos no))
-  (CathedralGranada of Punto_de_Interes (precioEntrada 5)(esAccessible si)(puntuacion media)(aptoParaNinos si))
-  (SierraNevadaGranada of Punto_de_Interes (precioEntrada 0)(esAccessible no)(puntuacion alta)(aptoParaNinos no))
-  (TablaosFlamenco of Punto_de_Interes (precioEntrada 30)(esAccessible si)(puntuacion alta)(aptoParaNinos no))
-
-  ; PARIS
-  (TorreEiffel of Punto_de_Interes (precioEntrada 28)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-  (Louvre of Punto_de_Interes (precioEntrada 17)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-  (Montmartre of Punto_de_Interes (precioEntrada 0)(esAccessible no)(puntuacion alta)(aptoParaNinos no))
-  (VersaillesP of Punto_de_Interes (precioEntrada 20)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-  (ChampsElysees of Punto_de_Interes (precioEntrada 0)(esAccessible si)(puntuacion media)(aptoParaNinos si))
-  (MuseeOrsay of Punto_de_Interes (precioEntrada 14)(esAccessible si)(puntuacion alta)(aptoParaNinos no))
-
-  ; ROMA
-  (Coliseo of Punto_de_Interes (precioEntrada 18)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-  (VaticanoCiudad of Punto_de_Interes (precioEntrada 20)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-  (FontanaTrevi of Punto_de_Interes (precioEntrada 0)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-  (ForoRomano of Punto_de_Interes (precioEntrada 16)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-  (PlazaNavona of Punto_de_Interes (precioEntrada 0)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-  (GaleriaGallese of Punto_de_Interes (precioEntrada 15)(esAccessible si)(puntuacion media)(aptoParaNinos no))
-
-  ; AMSTERDAM
-  (RijksmuseumA of Punto_de_Interes (precioEntrada 22)(esAccessible si)(puntuacion alta)(aptoParaNinos no))
-  (CasaAnnaFrank of Punto_de_Interes (precioEntrada 14)(esAccessible si)(puntuacion alta)(aptoParaNinos no))
-  (CanalesAmsterdam of Punto_de_Interes (precioEntrada 0)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-  (VondelPark of Punto_de_Interes (precioEntrada 0)(esAccessible si)(puntuacion media)(aptoParaNinos si))
-  (BarrioRojoA of Punto_de_Interes (precioEntrada 0)(esAccessible si)(puntuacion media)(aptoParaNinos no))
-
-  ; LISBOA
-  (TorreBelem of Punto_de_Interes (precioEntrada 6)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-  (MonasterioJeronimos of Punto_de_Interes (precioEntrada 10)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-  (BarrioAlfama of Punto_de_Interes (precioEntrada 0)(esAccessible no)(puntuacion alta)(aptoParaNinos no))
-  (CastilloSJorge of Punto_de_Interes (precioEntrada 10)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-  (PlazoComercioL of Punto_de_Interes (precioEntrada 0)(esAccessible si)(puntuacion media)(aptoParaNinos si))
-
-  ; PRAGA
-  (CastilloPraga of Punto_de_Interes (precioEntrada 15)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-  (PuenteCarlos of Punto_de_Interes (precioEntrada 0)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-  (PlazaVenceslao of Punto_de_Interes (precioEntrada 0)(esAccessible si)(puntuacion media)(aptoParaNinos si))
-  (BarriojudIo of Punto_de_Interes (precioEntrada 12)(esAccessible si)(puntuacion alta)(aptoParaNinos no))
-  (CatedralSanVito of Punto_de_Interes (precioEntrada 0)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-
-  ; BERLIN
-  (PuertaBrandeburgo of Punto_de_Interes (precioEntrada 0)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-  (MuroBerlin of Punto_de_Interes (precioEntrada 0)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-  (Reichstag of Punto_de_Interes (precioEntrada 0)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-  (MuseoPergamo of Punto_de_Interes (precioEntrada 19)(esAccessible si)(puntuacion alta)(aptoParaNinos no))
-  (CheckpointCharlie of Punto_de_Interes (precioEntrada 0)(esAccessible si)(puntuacion media)(aptoParaNinos si))
-
-  ; TOKYO
-  (TorreTokyoT of Punto_de_Interes (precioEntrada 12)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-  (TemploSensoji of Punto_de_Interes (precioEntrada 0)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-  (ShinjukuT of Punto_de_Interes (precioEntrada 0)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-  (AkihabaraTok of Punto_de_Interes (precioEntrada 0)(esAccessible si)(puntuacion media)(aptoParaNinos si))
-  (MonteFujiTok of Punto_de_Interes (precioEntrada 5)(esAccessible no)(puntuacion alta)(aptoParaNinos no))
-  (DisneySea of Punto_de_Interes (precioEntrada 80)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-
-  ; NUEVA YORK
-  (EstatuaLibertad of Punto_de_Interes (precioEntrada 25)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-  (CentralPark of Punto_de_Interes (precioEntrada 0)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-  (TimesSquare of Punto_de_Interes (precioEntrada 0)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-  (EmpireState of Punto_de_Interes (precioEntrada 40)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-  (MetropolitanNY of Punto_de_Interes (precioEntrada 25)(esAccessible si)(puntuacion alta)(aptoParaNinos no))
-
-  ; BUENOS AIRES
-  (TeatroColon of Punto_de_Interes (precioEntrada 15)(esAccessible si)(puntuacion alta)(aptoParaNinos no))
-  (ObeliscoBA of Punto_de_Interes (precioEntrada 0)(esAccessible si)(puntuacion media)(aptoParaNinos si))
-  (Caminito of Punto_de_Interes (precioEntrada 0)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-  (Recoleta of Punto_de_Interes (precioEntrada 0)(esAccessible si)(puntuacion media)(aptoParaNinos si))
-  (PuertoMaderaBA of Punto_de_Interes (precioEntrada 0)(esAccessible si)(puntuacion media)(aptoParaNinos si))
-
-  ; EL CAIRO
-  (PiramidesGiza of Punto_de_Interes (precioEntrada 20)(esAccessible no)(puntuacion alta)(aptoParaNinos no))
-  (MuseoEgipcio of Punto_de_Interes (precioEntrada 12)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-  (KhanElKhalili of Punto_de_Interes (precioEntrada 0)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-  (CiudadelaCairo of Punto_de_Interes (precioEntrada 8)(esAccessible si)(puntuacion media)(aptoParaNinos si))
-
-  ; CIUDAD DEL CABO
-  (TableMountain of Punto_de_Interes (precioEntrada 22)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-  (RobbenIsland of Punto_de_Interes (precioEntrada 30)(esAccessible si)(puntuacion alta)(aptoParaNinos no))
-  (CapePoint of Punto_de_Interes (precioEntrada 15)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-  (BouldersBeach of Punto_de_Interes (precioEntrada 10)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-
-  ; SYDNEY
-  (OperaHouse of Punto_de_Interes (precioEntrada 35)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-  (BondiBeach of Punto_de_Interes (precioEntrada 0)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-  (HarbourBridge of Punto_de_Interes (precioEntrada 0)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-  (TarongaZoo of Punto_de_Interes (precioEntrada 45)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-
-  ; BANGKOK
-  (GranPalacioBK of Punto_de_Interes (precioEntrada 15)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-  (WatArun of Punto_de_Interes (precioEntrada 5)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-  (MercadoChatuchak of Punto_de_Interes (precioEntrada 0)(esAccessible si)(puntuacion alta)(aptoParaNinos si))
-  (RioChaoPhrayaBK of Punto_de_Interes (precioEntrada 10)(esAccessible si)(puntuacion media)(aptoParaNinos si))
-
-  ; CIUDADES ESPANOLAS
-
-  (Barcelona of Ciudad
-    (pais "Espana")
-    (precioMedio 130)
-    (estiloVida "cosmopolita")
-    (Tipo_de_ciudad [cultura] [playa] [gastronomia])
-    (Hablan_en [espanol])
-    (Contienen [SagradaFamilia] [ParcGuell] [CampNou] [BarrioGotico] [BeachBarcelona] [MNAC])
-    (Tiene_un_conjunto_de [HotelArtsBarcelona] [HostalRamblasBarcelona] [ApartBarcelona1])
-    (Requiere_de [material-urbano] [material-playa])
-    (Se_celebra [FinalChampions]))
-
-  (Madrid of Ciudad
-    (pais "Espana")
-    (precioMedio 110)
-    (estiloVida "animada")
-    (Tipo_de_ciudad [cultura] [gastronomia] [fiesta])
-    (Hablan_en [espanol])
-    (Contienen [MuseoPrado] [RetiroPark] [PalacioReal] [MercadoSanMiguel] [BernabeuTour] [ReinaSOfia])
-    (Tiene_un_conjunto_de [HotelWMadrid] [HostalMadridCentro] [ApartMadrid1])
-    (Requiere_de [material-urbano])
-    (Se_celebra))
-
-  (Sevilla of Ciudad
-    (pais "Espana")
-    (precioMedio 85)
-    (estiloVida "tradicional")
-    (Tipo_de_ciudad [cultura] [gastronomia] [romantica])
-    (Hablan_en [espanol])
-    (Contienen [CatedralSevilla] [AlcazarSevilla] [BarrioTriana] [PlazaEspana] [TorreDelOro])
-    (Tiene_un_conjunto_de [HotelAlfonsXIII] [HostalSevillaCentro] [ApartSevilla1])
-    (Requiere_de [material-urbano])
-    (Se_celebra [FeriaAbrilSevilla]))
-
-  (Valencia of Ciudad
-    (pais "Espana")
-    (precioMedio 90)
-    (estiloVida "mediterranea")
-    (Tipo_de_ciudad [playa] [gastronomia] [cultura])
-    (Hablan_en [espanol])
-    (Contienen [CiudadArtesCiencias] [PlayaMalvarrosa] [MercadoCentral] [CatedralValencia] [BiopagoValencia])
-    (Tiene_un_conjunto_de [HotelSheratonValencia] [HostalValenciaCentro] [ApartValencia1])
-    (Requiere_de [material-playa] [material-urbano])
-    (Se_celebra [LasFallasValencia]))
-
-  (SanSebastian of Ciudad
-    (pais "Espana")
-    (precioMedio 140)
-    (estiloVida "elegante")
-    (Tipo_de_ciudad [gastronomia] [playa] [cultura])
-    (Hablan_en [espanol])
-    (Contienen [PlayaConcha] [ParteVieja] [PintosSS] [MonteIgeldo] [AcuarioSS])
-    (Tiene_un_conjunto_de [HotelMariaDristinasSS] [HostalSSCentro] [ApartSS1])
-    (Requiere_de [material-playa] [material-invierno])
-    (Se_celebra [SanFermines]))
-
-  (Granada of Ciudad
-    (pais "Espana")
-    (precioMedio 75)
-    (estiloVida "historica")
-    (Tipo_de_ciudad [cultura] [romantica] [montana])
-    (Hablan_en [espanol])
-    (Contienen [Alhambra] [AlbaicIn] [CathedralGranada] [SierraNevadaGranada] [TablaosFlamenco])
-    (Tiene_un_conjunto_de [HotelParadorGranada] [HostalGranadaCentro] [ApartGranada1])
-    (Requiere_de [material-montana] [material-invierno])
-    (Se_celebra))
-
-  ; CIUDADES EUROPA
-
-  (Paris of Ciudad
-    (pais "Francia")
-    (precioMedio 190)
-    (estiloVida "romantica")
-    (Tipo_de_ciudad [romantica] [cultura] [gastronomia])
-    (Hablan_en [frances])
-    (Contienen [TorreEiffel] [Louvre] [Montmartre] [VersaillesP] [ChampsElysees] [MuseeOrsay])
-    (Tiene_un_conjunto_de [HotelRitzParis] [HostalParisCentro] [ApartParis1])
-    (Requiere_de [material-urbano])
-    (Se_celebra [LucesNavidadParis]))
-
-  (Roma of Ciudad
-    (pais "Italia")
-    (precioMedio 150)
-    (estiloVida "historica")
-    (Tipo_de_ciudad [cultura] [gastronomia] [romantica])
-    (Hablan_en [italiano])
-    (Contienen [Coliseo] [VaticanoCiudad] [FontanaTrevi] [ForoRomano] [PlazaNavona] [GaleriaGallese])
-    (Tiene_un_conjunto_de [HotelExcelsiorRoma] [HostalRomaCentro] [ApartRoma1])
-    (Requiere_de [material-urbano])
-    (Se_celebra))
-
-  (Amsterdam of Ciudad
-    (pais "Holanda")
-    (precioMedio 170)
-    (estiloVida "liberal")
-    (Tipo_de_ciudad [cultura] [fiesta] [aventura])
-    (Hablan_en [ingles])
-    (Contienen [RijksmuseumA] [CasaAnnaFrank] [CanalesAmsterdam] [VondelPark] [BarrioRojoA])
-    (Tiene_un_conjunto_de [HotelPulitzerAmsterdam] [HostalAmsterdamCentro] [ApartAmsterdam1])
-    (Requiere_de [material-urbano])
-    (Se_celebra))
-
-  (Lisboa of Ciudad
-    (pais "Portugal")
-    (precioMedio 95)
-    (estiloVida "nostalgica")
-    (Tipo_de_ciudad [cultura] [gastronomia] [romantica])
-    (Hablan_en [portugues])
-    (Contienen [TorreBelem] [MonasterioJeronimos] [BarrioAlfama] [CastilloSJorge] [PlazoComercioL])
-    (Tiene_un_conjunto_de [HotelBairroAltoLisboa] [HostalLisboaCentro] [ApartLisboa1])
-    (Requiere_de [material-urbano])
-    (Se_celebra))
-
-  (Praga of Ciudad
-    (pais "Republica Checa")
-    (precioMedio 80)
-    (estiloVida "medieval")
-    (Tipo_de_ciudad [cultura] [fiesta] [romantica])
-    (Hablan_en [ingles])
-    (Contienen [CastilloPraga] [PuenteCarlos] [PlazaVenceslao] [BarriojudIo] [CatedralSanVito])
-    (Tiene_un_conjunto_de [HotelFourSeasonsPraga] [HostalPragaCentro] [ApartPraga1])
-    (Requiere_de [material-urbano])
-    (Se_celebra))
-
-  (Berlin of Ciudad
-    (pais "Alemania")
-    (precioMedio 120)
-    (estiloVida "alternativa")
-    (Tipo_de_ciudad [cultura] [fiesta])
-    (Hablan_en [aleman] [ingles])
-    (Contienen [PuertaBrandeburgo] [MuroBerlin] [Reichstag] [MuseoPergamo] [CheckpointCharlie])
-    (Tiene_un_conjunto_de [HotelAdlonBerlin] [HostalBerlinMitte] [ApartBerlin1])
-    (Requiere_de [material-urbano])
-    (Se_celebra [OktoberfestMunich]))
-
-  ; CIUDADES OCEANIA
-
-  (Sydney of Ciudad
-    (pais "Australia")
-    (precioMedio 180)
-    (estiloVida "relajada-playera")
-    (Tipo_de_ciudad [playa] [cultura] [aventura])
-    (Hablan_en [ingles])
-    (Contienen [OperaHouse] [BondiBeach] [HarbourBridge] [TarongaZoo])
-    (Tiene_un_conjunto_de [HotelParkHyattSyd] [HostalSydSurf] [ApartSyd1])
-    (Requiere_de [material-urbano] [material-playa])
-    (Se_celebra))
-
-  ; CIUDADES AMERICA
-
-  (NuevaYork of Ciudad
-    (pais "EEUU")
-    (precioMedio 250)
-    (estiloVida "frenetica")
-    (Tipo_de_ciudad [cultura] [gastronomia] [aventura])
-    (Hablan_en [ingles])
-    (Contienen [EstatuaLibertad] [CentralPark] [TimesSquare] [EmpireState] [MetropolitanNY])
-    (Tiene_un_conjunto_de [HotelMarriottNY] [HostalNYCentral] [ApartNY1])
-    (Requiere_de [material-urbano])
-    (Se_celebra [AnoNuevoTimesSquare]))
-
-  (BuenosAires of Ciudad
-    (pais "Argentina")
-    (precioMedio 90)
-    (estiloVida "bohemia")
-    (Tipo_de_ciudad [cultura] [gastronomia] [romantica])
-    (Hablan_en [espanol])
-    (Contienen [TeatroColon] [ObeliscoBA] [Caminito] [Recoleta] [PuertoMaderaBA])
-    (Tiene_un_conjunto_de [HotelAlvearBA] [HostalPalermo] [ApartBA1])
-    (Requiere_de [material-urbano])
-    (Se_celebra [CarnavalRio]))
-
-  ; CIUDADES AFRICA
-
-  (ElCairo of Ciudad
-    (pais "Egipto")
-    (precioMedio 60)
-    (estiloVida "caotica-historica")
-    (Tipo_de_ciudad [cultura] [aventura])
-    (Hablan_en [ingles])
-    (Contienen [PiramidesGiza] [MuseoEgipcio] [KhanElKhalili] [CiudadelaCairo])
-    (Tiene_un_conjunto_de [HotelRitzCairo] [HostalCairoOld] [ApartCairo1])
-    (Requiere_de [material-urbano])
-    (Se_celebra))
-
-  (CiudadDelCabo of Ciudad
-    (pais "Sudafrica")
-    (precioMedio 110)
-    (estiloVida "natural")
-    (Tipo_de_ciudad [aventura] [playa] [gastronomia])
-    (Hablan_en [ingles])
-    (Contienen [TableMountain] [RobbenIsland] [CapePoint] [BouldersBeach])
-    (Tiene_un_conjunto_de [HotelTheSilof] [HostalCapeBackpackers] [ApartCape1])
-    (Requiere_de [material-urbano] [material-playa])
-    (Se_celebra))
-
-  ; CIUDADES ASIA
-
-  (Bangkok of Ciudad
-    (pais "Tailandia")
-    (precioMedio 50)
-    (estiloVida "exotica")
-    (Tipo_de_ciudad [gastronomia] [cultura] [aventura])
-    (Hablan_en [ingles])
-    (Contienen [GranPalacioBK] [WatArun] [MercadoChatuchak] [RioChaoPhrayaBK])
-    (Tiene_un_conjunto_de [HotelMandarinBK] [HostalBKStreet] [ApartBK1])
-    (Requiere_de [material-urbano])
-    (Se_celebra))
-
-  (Tokyo of Ciudad
-    (pais "Japon")
-    (precioMedio 200)
-    (estiloVida "futurista")
-    (Tipo_de_ciudad [cultura] [gastronomia] [aventura])
-    (Hablan_en [japones])
-    (Contienen [TorreTokyoT] [TemploSensoji] [ShinjukuT] [AkihabaraTok] [MonteFujiTok] [DisneySea])
-    (Tiene_un_conjunto_de [HotelParkHyattTokyo] [HostalTokyoCentro] [ApartTokyo1])
-    (Requiere_de [material-urbano])
-    (Se_celebra [HanamiTokyo]))
-
-  ; ALOJAMIENTOS
-
-  ; BARCELONA
-  (HotelArtsBarcelona of Hotel (calidadAlojamiento alta)(precioAlojamiento 220)(servicio full)(apartamentoFamiliar no)(ambiente lujo))
-  (HostalRamblasBarcelona of Hostal (calidadAlojamiento media)(precioAlojamiento 55)(habitacionCompartida si)(ambiente social)(apartamentoFamiliar no))
-  (ApartBarcelona1 of Apartamento (calidadAlojamiento media)(precioAlojamiento 110)(numHabitaciones 3)(apartamentoFamiliar si)(ambiente familiar))
-
-  ; MADRID
-  (HotelWMadrid of Hotel (calidadAlojamiento alta)(precioAlojamiento 200)(servicio full)(apartamentoFamiliar no)(ambiente lujo))
-  (HostalMadridCentro of Hostal (calidadAlojamiento media)(precioAlojamiento 45)(habitacionCompartida no)(ambiente tranquilo)(apartamentoFamiliar no))
-  (ApartMadrid1 of Apartamento (calidadAlojamiento media)(precioAlojamiento 95)(numHabitaciones 2)(apartamentoFamiliar si)(ambiente familiar))
-
-  ; SEVILLA
-  (HotelAlfonsXIII of Hotel (calidadAlojamiento alta)(precioAlojamiento 180)(servicio full)(apartamentoFamiliar no)(ambiente lujo))
-  (HostalSevillaCentro of Hostal (calidadAlojamiento baja)(precioAlojamiento 35)(habitacionCompartida si)(ambiente social)(apartamentoFamiliar no))
-  (ApartSevilla1 of Apartamento (calidadAlojamiento media)(precioAlojamiento 70)(numHabitaciones 2)(apartamentoFamiliar si)(ambiente familiar))
-
-  ; VALENCIA
-  (HotelSheratonValencia of Hotel (calidadAlojamiento alta)(precioAlojamiento 160)(servicio full)(apartamentoFamiliar no)(ambiente lujo))
-  (HostalValenciaCentro of Hostal (calidadAlojamiento media)(precioAlojamiento 40)(habitacionCompartida no)(ambiente tranquilo)(apartamentoFamiliar no))
-  (ApartValencia1 of Apartamento (calidadAlojamiento media)(precioAlojamiento 80)(numHabitaciones 2)(apartamentoFamiliar si)(ambiente familiar))
-
-  ; SAN SEBASTIAN
-  (HotelMariaDristinasSS of Hotel (calidadAlojamiento alta)(precioAlojamiento 300)(servicio full)(apartamentoFamiliar no)(ambiente lujo))
-  (HostalSSCentro of Hostal (calidadAlojamiento media)(precioAlojamiento 55)(habitacionCompartida no)(ambiente tranquilo)(apartamentoFamiliar no))
-  (ApartSS1 of Apartamento (calidadAlojamiento media)(precioAlojamiento 130)(numHabitaciones 2)(apartamentoFamiliar si)(ambiente familiar))
-
-  ; GRANADA
-  (HotelParadorGranada of Hotel (calidadAlojamiento alta)(precioAlojamiento 170)(servicio full)(apartamentoFamiliar no)(ambiente lujo))
-  (HostalGranadaCentro of Hostal (calidadAlojamiento baja)(precioAlojamiento 30)(habitacionCompartida si)(ambiente social)(apartamentoFamiliar no))
-  (ApartGranada1 of Apartamento (calidadAlojamiento media)(precioAlojamiento 60)(numHabitaciones 2)(apartamentoFamiliar si)(ambiente familiar))
-
-  ; PARIS
-  (HotelRitzParis of Hotel (calidadAlojamiento alta)(precioAlojamiento 500)(servicio full)(apartamentoFamiliar no)(ambiente lujo))
-  (HostalParisCentro of Hostal (calidadAlojamiento media)(precioAlojamiento 65)(habitacionCompartida si)(ambiente social)(apartamentoFamiliar no))
-  (ApartParis1 of Apartamento (calidadAlojamiento media)(precioAlojamiento 150)(numHabitaciones 2)(apartamentoFamiliar si)(ambiente familiar))
-
-  ; ROMA
-  (HotelExcelsiorRoma of Hotel (calidadAlojamiento alta)(precioAlojamiento 280)(servicio full)(apartamentoFamiliar no)(ambiente lujo))
-  (HostalRomaCentro of Hostal (calidadAlojamiento media)(precioAlojamiento 50)(habitacionCompartida si)(ambiente social)(apartamentoFamiliar no))
-  (ApartRoma1 of Apartamento (calidadAlojamiento media)(precioAlojamiento 120)(numHabitaciones 2)(apartamentoFamiliar si)(ambiente familiar))
-
-  ; AMSTERDAM
-  (HotelPulitzerAmsterdam of Hotel (calidadAlojamiento alta)(precioAlojamiento 260)(servicio full)(apartamentoFamiliar no)(ambiente lujo))
-  (HostalAmsterdamCentro of Hostal (calidadAlojamiento media)(precioAlojamiento 55)(habitacionCompartida si)(ambiente social)(apartamentoFamiliar no))
-  (ApartAmsterdam1 of Apartamento (calidadAlojamiento media)(precioAlojamiento 130)(numHabitaciones 2)(apartamentoFamiliar si)(ambiente familiar))
-
-  ; LISBOA
-  (HotelBairroAltoLisboa of Hotel (calidadAlojamiento alta)(precioAlojamiento 190)(servicio full)(apartamentoFamiliar no)(ambiente lujo))
-  (HostalLisboaCentro of Hostal (calidadAlojamiento media)(precioAlojamiento 40)(habitacionCompartida si)(ambiente social)(apartamentoFamiliar no))
-  (ApartLisboa1 of Apartamento (calidadAlojamiento media)(precioAlojamiento 90)(numHabitaciones 2)(apartamentoFamiliar si)(ambiente familiar))
-
-  ; PRAGA
-  (HotelFourSeasonsPraga of Hotel (calidadAlojamiento alta)(precioAlojamiento 210)(servicio full)(apartamentoFamiliar no)(ambiente lujo))
-  (HostalPragaCentro of Hostal (calidadAlojamiento baja)(precioAlojamiento 25)(habitacionCompartida si)(ambiente social)(apartamentoFamiliar no))
-  (ApartPraga1 of Apartamento (calidadAlojamiento media)(precioAlojamiento 75)(numHabitaciones 2)(apartamentoFamiliar si)(ambiente familiar))
-
-  ; BERLIN
-  (HotelAdlonBerlin of Hotel (calidadAlojamiento alta)(precioAlojamiento 240)(servicio full)(apartamentoFamiliar no)(ambiente lujo))
-  (HostalBerlinMitte of Hostal (calidadAlojamiento media)(precioAlojamiento 45)(habitacionCompartida si)(ambiente social)(apartamentoFamiliar no))
-  (ApartBerlin1 of Apartamento (calidadAlojamiento media)(precioAlojamiento 110)(numHabitaciones 2)(apartamentoFamiliar si)(ambiente familiar))
-
-  ; TOKYO
-  (HotelParkHyattTokyo of Hotel (calidadAlojamiento alta)(precioAlojamiento 450)(servicio full)(apartamentoFamiliar no)(ambiente lujo))
-  (HostalTokyoCentro of Hostal (calidadAlojamiento media)(precioAlojamiento 60)(habitacionCompartida si)(ambiente social)(apartamentoFamiliar no))
-  (ApartTokyo1 of Apartamento (calidadAlojamiento media)(precioAlojamiento 180)(numHabitaciones 2)(apartamentoFamiliar si)(ambiente familiar))
-
-  ; NUEVA YORK
-  (HotelMarriottNY of Hotel (calidadAlojamiento alta)(precioAlojamiento 350)(servicio full)(apartamentoFamiliar no)(ambiente lujo))
-  (HostalNYCentral of Hostal (calidadAlojamiento media)(precioAlojamiento 80)(habitacionCompartida si)(ambiente social)(apartamentoFamiliar no))
-  (ApartNY1 of Apartamento (calidadAlojamiento alta)(precioAlojamiento 250)(numHabitaciones 2)(apartamentoFamiliar si)(ambiente familiar))
-
-  ; BUENOS AIRES
-  (HotelAlvearBA of Hotel (calidadAlojamiento alta)(precioAlojamiento 150)(servicio full)(apartamentoFamiliar no)(ambiente lujo))
-  (HostalPalermo of Hostal (calidadAlojamiento media)(precioAlojamiento 25)(habitacionCompartida si)(ambiente social)(apartamentoFamiliar no))
-  (ApartBA1 of Apartamento (calidadAlojamiento media)(precioAlojamiento 60)(numHabitaciones 2)(apartamentoFamiliar si)(ambiente familiar))
-
-  ; EL CAIRO
-  (HotelRitzCairo of Hotel (calidadAlojamiento alta)(precioAlojamiento 120)(servicio full)(apartamentoFamiliar no)(ambiente lujo))
-  (HostalCairoOld of Hostal (calidadAlojamiento baja)(precioAlojamiento 15)(habitacionCompartida si)(ambiente social)(apartamentoFamiliar no))
-  (ApartCairo1 of Apartamento (calidadAlojamiento media)(precioAlojamiento 45)(numHabitaciones 2)(apartamentoFamiliar si)(ambiente familiar))
-
-  ; CIUDAD DEL CABO
-  (HotelTheSilof of Hotel (calidadAlojamiento alta)(precioAlojamiento 210)(servicio full)(apartamentoFamiliar no)(ambiente lujo))
-  (HostalCapeBackpackers of Hostal (calidadAlojamiento media)(precioAlojamiento 30)(habitacionCompartida si)(ambiente social)(apartamentoFamiliar no))
-  (ApartCape1 of Apartamento (calidadAlojamiento media)(precioAlojamiento 85)(numHabitaciones 2)(apartamentoFamiliar si)(ambiente familiar))
-
-  ; SYDNEY
-  (HotelParkHyattSyd of Hotel (calidadAlojamiento alta)(precioAlojamiento 290)(servicio full)(apartamentoFamiliar no)(ambiente lujo))
-  (HostalSydSurf of Hostal (calidadAlojamiento media)(precioAlojamiento 55)(habitacionCompartida si)(ambiente social)(apartamentoFamiliar no))
-  (ApartSyd1 of Apartamento (calidadAlojamiento alta)(precioAlojamiento 160)(numHabitaciones 2)(apartamentoFamiliar si)(ambiente familiar))
-
-  ; BANGKOK
-  (HotelMandarinBK of Hotel (calidadAlojamiento alta)(precioAlojamiento 180)(servicio full)(apartamentoFamiliar no)(ambiente lujo))
-  (HostalBKStreet of Hostal (calidadAlojamiento media)(precioAlojamiento 20)(habitacionCompartida si)(ambiente social)(apartamentoFamiliar no))
-  (ApartBK1 of Apartamento (calidadAlojamiento media)(precioAlojamiento 55)(numHabitaciones 2)(apartamentoFamiliar si)(ambiente familiar))
-
-  ; TRANSPORTES — AVIONES
-  (VueloMadridBarcelona of Avion (precioTransporte 80)(duracionViaje corta)(accesibilidad media) (claseAsiento turista)(Origen [Madrid])(Destino [Barcelona]))
-  (VueloMadridParis of Avion (precioTransporte 120)(duracionViaje corta)(accesibilidad media) (claseAsiento turista)(Origen [Madrid])(Destino [Paris]))
-  (VueloMadridRoma of Avion (precioTransporte 110)(duracionViaje corta)(accesibilidad media) (claseAsiento turista)(Origen [Madrid])(Destino [Roma]))
-  (VueloMadridAmsterdam of Avion (precioTransporte 130)(duracionViaje corta)(accesibilidad media) (claseAsiento turista)(Origen [Madrid])(Destino [Amsterdam]))
-  (VueloMadridLisboa of Avion (precioTransporte 90)(duracionViaje corta)(accesibilidad media) (claseAsiento turista)(Origen [Madrid])(Destino [Lisboa]))
-  (VueloMadridPraga of Avion (precioTransporte 140)(duracionViaje media)(accesibilidad media) (claseAsiento turista)(Origen [Madrid])(Destino [Praga]))
-  (VueloMadridBerlin of Avion (precioTransporte 150)(duracionViaje corta)(accesibilidad media) (claseAsiento turista)(Origen [Madrid])(Destino [Berlin]))
-  (VueloMadridTokyo of Avion (precioTransporte 750)(duracionViaje muy-larga)(accesibilidad media) (claseAsiento turista)(Origen [Madrid])(Destino [Tokyo]))
-  (VueloMadridNY of Avion (precioTransporte 600)(duracionViaje larga)(accesibilidad media) (claseAsiento turista)(Origen [Madrid])(Destino [NuevaYork]))
-  (VueloMadridBA of Avion (precioTransporte 850)(duracionViaje muy-larga)(accesibilidad media) (claseAsiento turista)(Origen [Madrid])(Destino [BuenosAires]))
-  (VueloMadridCairo of Avion (precioTransporte 350)(duracionViaje media)(accesibilidad media) (claseAsiento turista)(Origen [Madrid])(Destino [ElCairo]))
-  (VueloMadridCape of Avion (precioTransporte 900)(duracionViaje muy-larga)(accesibilidad media) (claseAsiento turista)(Origen [Madrid])(Destino [CiudadDelCabo]))
-  (VueloMadridSydney of Avion (precioTransporte 1200)(duracionViaje muy-larga)(accesibilidad media) (claseAsiento turista)(Origen [Madrid])(Destino [Sydney]))
-  (VueloMadridBangkok of Avion (precioTransporte 650)(duracionViaje muy-larga)(accesibilidad media) (claseAsiento turista)(Origen [Madrid])(Destino [Bangkok]))
-
-  ; TRANSPORTES — TRENES
-
-  (TrenMadridBarcelona of Tren (precioTransporte 50)(duracionViaje media)(accesibilidad alta) (claseAsiento turista)(Origen [Madrid])(Destino [Barcelona]))
-  (TrenMadridSevilla of Tren (precioTransporte 40)(duracionViaje media)(accesibilidad alta) (claseAsiento turista)(Origen [Madrid])(Destino [Sevilla]))
-  (TrenMadridValencia of Tren (precioTransporte 35)(duracionViaje media)(accesibilidad alta) (claseAsiento turista)(Origen [Madrid])(Destino [Valencia]))
-  (TrenMadridSS of Tren (precioTransporte 55)(duracionViaje media)(accesibilidad alta) (claseAsiento turista)(Origen [Madrid])(Destino [SanSebastian]))
-  (TrenMadridParis of Tren (precioTransporte 180)(duracionViaje larga)(accesibilidad alta) (claseAsiento turista)(Origen [Madrid])(Destino [Paris]))
-  (TrenParisBerlin of Tren (precioTransporte 120)(duracionViaje media)(accesibilidad alta) (claseAsiento turista)(Origen [Paris])(Destino [Berlin]))
-
-  ; TRANSPORTES — AUTOBUSES
-
-  (AutobusMadridBarcelona of Autobus (precioTransporte 25)(duracionViaje larga)(accesibilidad alta) (claseAsiento turista)(Origen [Madrid])(Destino [Barcelona]))
-  (AutobusMadridSevilla of Autobus (precioTransporte 20)(duracionViaje larga)(accesibilidad alta) (claseAsiento turista)(Origen [Madrid])(Destino [Sevilla]))
-  (AutobusMadridValencia of Autobus (precioTransporte 18)(duracionViaje media)(accesibilidad alta) (claseAsiento turista)(Origen [Madrid])(Destino [Valencia]))
-  (AutobusMadridSS of Autobus (precioTransporte 28)(duracionViaje larga)(accesibilidad alta) (claseAsiento turista)(Origen [Madrid])(Destino [SanSebastian]))
-  (AutobusMadridGranada of Autobus (precioTransporte 18)(duracionViaje larga)(accesibilidad alta) (claseAsiento turista)(Origen [Madrid])(Destino [Granada]))
-  (AutobusSsevillaGranada of Autobus (precioTransporte 12)(duracionViaje media)(accesibilidad alta) (claseAsiento turista)(Origen [Sevilla])(Destino [Granada]))
-  (AutobusMadridLisboa of Autobus (precioTransporte 22)(duracionViaje larga)(accesibilidad alta) (claseAsiento turista)(Origen [Madrid])(Destino [Lisboa]))
-
-  ; TRANSPORTES — COCHES
-  
-  (CocheAlquilerMadridSegovia of Coche (precioTransporte 45)(duracionViaje corta)(accesibilidad alta) (Origen [Madrid])(Destino [Segovia]))
-  (CocheRutaAndalucia of Coche (precioTransporte 120)(duracionViaje media)(accesibilidad alta) (Origen [Sevilla])(Destino [Granada]))
-
-  ; TRANSPORTES — BARCOS
-
-  (FerryAlgecirasTanger of Barco (precioTransporte 40)(duracionViaje corta)(accesibilidad media) (claseAsiento turista)(Origen [Madrid])(Destino [ElCairo]))
-  (CruceroBarcelonaRoma of Barco (precioTransporte 250)(duracionViaje larga)(accesibilidad alta) (claseAsiento primera)(Origen [Barcelona])(Destino [Roma]))
-  (CruceroNilo of Barco (precioTransporte 300)(duracionViaje media)(accesibilidad media) (claseAsiento primera)(Origen [ElCairo])(Destino [ElCairo]))
-
-  ; TRANSPORTES DE VUELTA (INVERSOS)
-  (VueloBarcelonaMadrid of Avion (precioTransporte 80)(duracionViaje corta)(accesibilidad media) (claseAsiento turista)(Origen [Barcelona])(Destino [Madrid]))
-  (VueloParisMadrid of Avion (precioTransporte 120)(duracionViaje corta)(accesibilidad media) (claseAsiento turista)(Origen [Paris])(Destino [Madrid]))
-  (VueloRomaMadrid of Avion (precioTransporte 110)(duracionViaje corta)(accesibilidad media) (claseAsiento turista)(Origen [Roma])(Destino [Madrid]))
-  (VueloAmsterdamMadrid of Avion (precioTransporte 130)(duracionViaje corta)(accesibilidad media) (claseAsiento turista)(Origen [Amsterdam])(Destino [Madrid]))
-  (VueloLisboaMadrid of Avion (precioTransporte 90)(duracionViaje corta)(accesibilidad media) (claseAsiento turista)(Origen [Lisboa])(Destino [Madrid]))
-  (VueloPragaMadrid of Avion (precioTransporte 140)(duracionViaje media)(accesibilidad media) (claseAsiento turista)(Origen [Praga])(Destino [Madrid]))
-  (VueloBerlinMadrid of Avion (precioTransporte 150)(duracionViaje corta)(accesibilidad media) (claseAsiento turista)(Origen [Berlin])(Destino [Madrid]))
-  (VueloTokyoMadrid of Avion (precioTransporte 750)(duracionViaje muy-larga)(accesibilidad media) (claseAsiento turista)(Origen [Tokyo])(Destino [Madrid]))
-  (VueloNYMadrid of Avion (precioTransporte 600)(duracionViaje larga)(accesibilidad media) (claseAsiento turista)(Origen [NuevaYork])(Destino [Madrid]))
-  (VueloBAMadrid of Avion (precioTransporte 850)(duracionViaje muy-larga)(accesibilidad media) (claseAsiento turista)(Origen [BuenosAires])(Destino [Madrid]))
-  (VueloCairoMadrid of Avion (precioTransporte 350)(duracionViaje media)(accesibilidad media) (claseAsiento turista)(Origen [ElCairo])(Destino [Madrid]))
-  (VueloCapeMadrid of Avion (precioTransporte 900)(duracionViaje muy-larga)(accesibilidad media) (claseAsiento turista)(Origen [CiudadDelCabo])(Destino [Madrid]))
-  (VueloSydneyMadrid of Avion (precioTransporte 1200)(duracionViaje muy-larga)(accesibilidad media) (claseAsiento turista)(Origen [Sydney])(Destino [Madrid]))
-  (VueloBangkokMadrid of Avion (precioTransporte 650)(duracionViaje muy-larga)(accesibilidad media) (claseAsiento turista)(Origen [Bangkok])(Destino [Madrid]))
-
-  (TrenBarcelonaMadrid of Tren (precioTransporte 50)(duracionViaje media)(accesibilidad alta) (claseAsiento turista)(Origen [Barcelona])(Destino [Madrid]))
-  (TrenSevillaMadrid of Tren (precioTransporte 40)(duracionViaje media)(accesibilidad alta) (claseAsiento turista)(Origen [Sevilla])(Destino [Madrid]))
-  (TrenValenciaMadrid of Tren (precioTransporte 35)(duracionViaje media)(accesibilidad alta) (claseAsiento turista)(Origen [Valencia])(Destino [Madrid]))
-  (TrenSSMadrid of Tren (precioTransporte 55)(duracionViaje media)(accesibilidad alta) (claseAsiento turista)(Origen [SanSebastian])(Destino [Madrid]))
-  (TrenParisMadrid of Tren (precioTransporte 180)(duracionViaje larga)(accesibilidad alta) (claseAsiento turista)(Origen [Paris])(Destino [Madrid]))
-  (TrenBerlinParis of Tren (precioTransporte 120)(duracionViaje media)(accesibilidad alta) (claseAsiento turista)(Origen [Berlin])(Destino [Paris]))
-
-  (AutobusBarcelonaMadrid of Autobus (precioTransporte 25)(duracionViaje larga)(accesibilidad alta) (claseAsiento turista)(Origen [Barcelona])(Destino [Madrid]))
-  (AutobusSevillaMadrid of Autobus (precioTransporte 20)(duracionViaje larga)(accesibilidad alta) (claseAsiento turista)(Origen [Sevilla])(Destino [Madrid]))
-  (AutobusValenciaMadrid of Autobus (precioTransporte 18)(duracionViaje media)(accesibilidad alta) (claseAsiento turista)(Origen [Valencia])(Destino [Madrid]))
-  (AutobusSSMadrid of Autobus (precioTransporte 28)(duracionViaje larga)(accesibilidad alta) (claseAsiento turista)(Origen [SanSebastian])(Destino [Madrid]))
-  (AutobusGranadaMadrid of Autobus (precioTransporte 18)(duracionViaje larga)(accesibilidad alta) (claseAsiento turista)(Origen [Granada])(Destino [Madrid]))
-  (AutobusGranadaSevilla of Autobus (precioTransporte 12)(duracionViaje media)(accesibilidad alta) (claseAsiento turista)(Origen [Granada])(Destino [Sevilla]))
-  (AutobusLisboaMadrid of Autobus (precioTransporte 22)(duracionViaje larga)(accesibilidad alta) (claseAsiento turista)(Origen [Lisboa])(Destino [Madrid]))
-
-  (CocheSegoviaMadrid of Coche (precioTransporte 45)(duracionViaje corta)(accesibilidad alta) (Origen [Segovia])(Destino [Madrid]))
-  (CocheAndaluciaInversa of Coche (precioTransporte 120)(duracionViaje media)(accesibilidad alta) (Origen [Granada])(Destino [Sevilla]))
-
-  (CruceroRomaBarcelona of Barco (precioTransporte 250)(duracionViaje larga)(accesibilidad alta) (claseAsiento primera)(Origen [Roma])(Destino [Barcelona]))
-
-)
+
+(HotelBrooklynBridge of Hotel
+   (calidadAlojamiento 4)
+   (precioAlojamiento 220)
+   (servicio si)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+(HostalHarlem of Hostal
+   (calidadAlojamiento 2)
+   (precioAlojamiento 40)
+   (accesibilidad no)
+   (ambiente SOCIAL))
+
+(ApartNYMidtown of Apartamento
+   (calidadAlojamiento 3)
+   (precioAlojamiento 160)
+   (capacidad 3)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+; -------------------------
+; BUENOS AIRES
+; -------------------------
+
+(HotelAlvearBA of Hotel
+   (calidadAlojamiento 5)
+   (precioAlojamiento 250)
+   (servicio si)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+(HostalPalermo of Hostal
+   (calidadAlojamiento 3)
+   (precioAlojamiento 35)
+   (accesibilidad no)
+   (ambiente SOCIAL))
+
+(ApartBA1 of Apartamento
+   (calidadAlojamiento 4)
+   (precioAlojamiento 100)
+   (capacidad 4)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+(HotelSanTelmo of Hotel
+   (calidadAlojamiento 4)
+   (precioAlojamiento 140)
+   (servicio si)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+(HostalLaBoca of Hostal
+   (calidadAlojamiento 2)
+   (precioAlojamiento 25)
+   (accesibilidad no)
+   (ambiente SOCIAL))
+
+(ApartBARecoleta of Apartamento
+   (calidadAlojamiento 3)
+   (precioAlojamiento 85)
+   (capacidad 3)
+   (accesibilidad si)
+   (ambiente TRANQUILO))
+
+(AvionMAD-Barcelona of Avion (Origen Madrid) (Destino Barcelona) (precioTransporte 60) (duracionViaje corta) (accesibilidad si) (medio avion))
+(AvionBarcelona-MAD of Avion (Origen Barcelona) (Destino Madrid) (precioTransporte 60) (duracionViaje corta) (accesibilidad si) (medio avion))
+
+(AvionMAD-Sevilla of Avion (Origen Madrid) (Destino Sevilla) (precioTransporte 55) (duracionViaje corta) (accesibilidad si) (medio avion))
+(AvionSevilla-MAD of Avion (Origen Sevilla) (Destino Madrid) (precioTransporte 55) (duracionViaje corta) (accesibilidad si) (medio avion))
+
+(AvionMAD-Valencia of Avion (Origen Madrid) (Destino Valencia) (precioTransporte 50) (duracionViaje corta) (accesibilidad si) (medio avion))
+(AvionValencia-MAD of Avion (Origen Valencia) (Destino Madrid) (precioTransporte 50) (duracionViaje corta) (accesibilidad si) (medio avion))
+
+(AvionMAD-SanSebastian of Avion (Origen Madrid) (Destino SanSebastian) (precioTransporte 70) (duracionViaje corta) (accesibilidad si) (medio avion))
+(AvionSanSebastian-MAD of Avion (Origen SanSebastian) (Destino Madrid) (precioTransporte 70) (duracionViaje corta) (accesibilidad si) (medio avion))
+
+(AvionMAD-Granada of Avion (Origen Madrid) (Destino Granada) (precioTransporte 65) (duracionViaje corta) (accesibilidad si) (medio avion))
+(AvionGranada-MAD of Avion (Origen Granada) (Destino Madrid) (precioTransporte 65) (duracionViaje corta) (accesibilidad si) (medio avion))
+
+(AvionMAD-Alicante of Avion (Origen Madrid) (Destino Alicante) (precioTransporte 55) (duracionViaje corta) (accesibilidad si) (medio avion))
+(AvionAlicante-MAD of Avion (Origen Alicante) (Destino Madrid) (precioTransporte 55) (duracionViaje corta) (accesibilidad si) (medio avion))
+
+(AvionMAD-Paris of Avion (Origen Madrid) (Destino Paris) (precioTransporte 120) (duracionViaje corta) (accesibilidad si) (medio avion))
+(AvionParis-MAD of Avion (Origen Paris) (Destino Madrid) (precioTransporte 120) (duracionViaje corta) (accesibilidad si) (medio avion))
+
+(AvionMAD-Roma of Avion (Origen Madrid) (Destino Roma) (precioTransporte 140) (duracionViaje corta) (accesibilidad si) (medio avion))
+(AvionRoma-MAD of Avion (Origen Roma) (Destino Madrid) (precioTransporte 140) (duracionViaje corta) (accesibilidad si) (medio avion))
+
+(AvionMAD-Amsterdam of Avion (Origen Madrid) (Destino Amsterdam) (precioTransporte 150) (duracionViaje corta) (accesibilidad si) (medio avion))
+(AvionAmsterdam-MAD of Avion (Origen Amsterdam) (Destino Madrid) (precioTransporte 150) (duracionViaje corta) (accesibilidad si) (medio avion))
+
+(AvionMAD-Lisboa of Avion (Origen Madrid) (Destino Lisboa) (precioTransporte 80) (duracionViaje corta) (accesibilidad si) (medio avion))
+(AvionLisboa-MAD of Avion (Origen Lisboa) (Destino Madrid) (precioTransporte 80) (duracionViaje corta) (accesibilidad si) (medio avion))
+
+(AvionMAD-Praga of Avion (Origen Madrid) (Destino Praga) (precioTransporte 160) (duracionViaje media) (accesibilidad si) (medio avion))
+(AvionPraga-MAD of Avion (Origen Praga) (Destino Madrid) (precioTransporte 160) (duracionViaje media) (accesibilidad si) (medio avion))
+
+(AvionMAD-Berlin of Avion (Origen Madrid) (Destino Berlin) (precioTransporte 150) (duracionViaje media) (accesibilidad si) (medio avion))
+(AvionBerlin-MAD of Avion (Origen Berlin) (Destino Madrid) (precioTransporte 150) (duracionViaje media) (accesibilidad si) (medio avion))
+
+(AvionMAD-NuevaYork of Avion (Origen Madrid) (Destino NuevaYork) (precioTransporte 550) (duracionViaje larga) (accesibilidad si) (medio avion))
+(AvionNuevaYork-MAD of Avion (Origen NuevaYork) (Destino Madrid) (precioTransporte 550) (duracionViaje larga) (accesibilidad si) (medio avion))
+
+(AvionMAD-BuenosAires of Avion (Origen Madrid) (Destino BuenosAires) (precioTransporte 700) (duracionViaje larga) (accesibilidad si) (medio avion))
+(AvionBuenosAires-MAD of Avion (Origen BuenosAires) (Destino Madrid) (precioTransporte 700) (duracionViaje larga) (accesibilidad si) (medio avion))
+
+(AvionMAD-Tokyo of Avion (Origen Madrid) (Destino Tokyo) (precioTransporte 780) (duracionViaje muy-larga) (accesibilidad si) (medio avion))
+(AvionTokyo-MAD of Avion (Origen Tokyo) (Destino Madrid) (precioTransporte 780) (duracionViaje muy-larga) (accesibilidad si) (medio avion))
+
+(AvionMAD-Bangkok of Avion (Origen Madrid) (Destino Bangkok) (precioTransporte 650) (duracionViaje larga) (accesibilidad si) (medio avion))
+(AvionBangkok-MAD of Avion (Origen Bangkok) (Destino Madrid) (precioTransporte 650) (duracionViaje larga) (accesibilidad si) (medio avion))
+
+(AvionMAD-ElCairo of Avion (Origen Madrid) (Destino ElCairo) (precioTransporte 300) (duracionViaje media) (accesibilidad si) (medio avion))
+(AvionElCairo-MAD of Avion (Origen ElCairo) (Destino Madrid) (precioTransporte 300) (duracionViaje media) (accesibilidad si) (medio avion))
+
+(AvionMAD-CiudadDelCabo of Avion (Origen Madrid) (Destino CiudadDelCabo) (precioTransporte 900) (duracionViaje muy-larga) (accesibilidad si) (medio avion))
+(AvionCiudadDelCabo-MAD of Avion (Origen CiudadDelCabo) (Destino Madrid) (precioTransporte 900) (duracionViaje muy-larga) (accesibilidad si) (medio avion))
+
+(AvionMAD-Sydney of Avion (Origen Madrid) (Destino Sydney) (precioTransporte 1100) (duracionViaje muy-larga) (accesibilidad si) (medio avion))
+(AvionSydney-MAD of Avion (Origen Sydney) (Destino Madrid) (precioTransporte 1100) (duracionViaje muy-larga) (accesibilidad si) (medio avion))
+
+(BarcoBCN-Roma of Barco (Origen Barcelona) (Destino Roma) (precioTransporte 80) (duracionViaje larga) (accesibilidad si) (medio barco))
+(BarcoRoma-BCN of Barco (Origen Roma) (Destino Barcelona) (precioTransporte 80) (duracionViaje larga) (accesibilidad si) (medio barco))
+
+(BarcoBCN-Lisboa of Barco (Origen Barcelona) (Destino Lisboa) (precioTransporte 70) (duracionViaje larga) (accesibilidad si) (medio barco))
+(BarcoLisboa-BCN of Barco (Origen Lisboa) (Destino Barcelona) (precioTransporte 70) (duracionViaje larga) (accesibilidad si) (medio barco))
+
+(BarcoValencia-Roma of Barco (Origen Valencia) (Destino Roma) (precioTransporte 75) (duracionViaje larga) (accesibilidad si) (medio barco))
+(BarcoRoma-Valencia of Barco (Origen Roma) (Destino Valencia) (precioTransporte 75) (duracionViaje larga) (accesibilidad si) (medio barco))
+
+(BarcoValencia-Lisboa of Barco (Origen Valencia) (Destino Lisboa) (precioTransporte 65) (duracionViaje larga) (accesibilidad si) (medio barco))
+(BarcoLisboa-Valencia of Barco (Origen Lisboa) (Destino Valencia) (precioTransporte 65) (duracionViaje larga) (accesibilidad si) (medio barco))
+
+(TrenBCN-Paris of Tren (Origen Barcelona) (Destino Paris) (precioTransporte 85) (duracionViaje larga) (accesibilidad si) (medio tren))
+(TrenParis-BCN of Tren (Origen Paris) (Destino Barcelona) (precioTransporte 85) (duracionViaje larga) (accesibilidad si) (medio tren))
+
+(TrenBCN-Lisboa of Tren (Origen Barcelona) (Destino Lisboa) (precioTransporte 90) (duracionViaje larga) (accesibilidad si) (medio tren))
+(TrenLisboa-BCN of Tren (Origen Lisboa) (Destino Barcelona) (precioTransporte 90) (duracionViaje larga) (accesibilidad si) (medio tren))
+
+(TrenBCN-Roma of Tren (Origen Barcelona) (Destino Roma) (precioTransporte 110) (duracionViaje muy-larga) (accesibilidad si) (medio tren))
+(TrenRoma-BCN of Tren (Origen Roma) (Destino Barcelona) (precioTransporte 110) (duracionViaje muy-larga) (accesibilidad si) (medio tren))
+
+(TrenMadrid-Paris of Tren (Origen Madrid) (Destino Paris) (precioTransporte 95) (duracionViaje larga) (accesibilidad si) (medio tren))
+(TrenParis-Madrid of Tren (Origen Paris) (Destino Madrid) (precioTransporte 95) (duracionViaje larga) (accesibilidad si) (medio tren))
+
+(TrenMadrid-Lisboa of Tren (Origen Madrid) (Destino Lisboa) (precioTransporte 60) (duracionViaje larga) (accesibilidad si) (medio tren))
+(TrenLisboa-Madrid of Tren (Origen Lisboa) (Destino Madrid) (precioTransporte 60) (duracionViaje larga) (accesibilidad si) (medio tren))
+
+(TrenParis-Berlin of Tren (Origen Paris) (Destino Berlin) (precioTransporte 100) (duracionViaje larga) (accesibilidad si) (medio tren))
+(TrenBerlin-Paris of Tren (Origen Berlin) (Destino Paris) (precioTransporte 100) (duracionViaje larga) (accesibilidad si) (medio tren))
+
+(TrenParis-Amsterdam of Tren (Origen Paris) (Destino Amsterdam) (precioTransporte 70) (duracionViaje media) (accesibilidad si) (medio tren))
+(TrenAmsterdam-Paris of Tren (Origen Amsterdam) (Destino Paris) (precioTransporte 70) (duracionViaje media) (accesibilidad si) (medio tren))
+
+(TrenAmsterdam-Berlin of Tren (Origen Amsterdam) (Destino Berlin) (precioTransporte 65) (duracionViaje media) (accesibilidad si) (medio tren))
+(TrenBerlin-Amsterdam of Tren (Origen Berlin) (Destino Amsterdam) (precioTransporte 65) (duracionViaje media) (accesibilidad si) (medio tren))
+
+(TrenBerlin-Praga of Tren (Origen Berlin) (Destino Praga) (precioTransporte 55) (duracionViaje media) (accesibilidad si) (medio tren))
+(TrenPraga-Berlin of Tren (Origen Praga) (Destino Berlin) (precioTransporte 55) (duracionViaje media) (accesibilidad si) (medio tren))
+
+(TrenParis-Roma of Tren (Origen Paris) (Destino Roma) (precioTransporte 120) (duracionViaje muy-larga) (accesibilidad si) (medio tren))
+(TrenRoma-Paris of Tren (Origen Roma) (Destino Paris) (precioTransporte 120) (duracionViaje muy-larga) (accesibilidad si) (medio tren))
+
+(TrenLisboa-Paris of Tren (Origen Lisboa) (Destino Paris) (precioTransporte 110) (duracionViaje muy-larga) (accesibilidad si) (medio tren))
+(TrenParis-Lisboa of Tren (Origen Paris) (Destino Lisboa) (precioTransporte 110) (duracionViaje muy-larga) (accesibilidad si) (medio tren))
+
+(AutobusMAD-Alicante of Autobus (Origen Madrid) (Destino Alicante) (precioTransporte 20) (duracionViaje media) (accesibilidad si) (medio autobus))
+(AutobusAlicante-MAD of Autobus (Origen Alicante) (Destino Madrid) (precioTransporte 20) (duracionViaje media) (accesibilidad si) (medio autobus))
+
+(AutobusMAD-Granada of Autobus (Origen Madrid) (Destino Granada) (precioTransporte 22) (duracionViaje media) (accesibilidad si) (medio autobus))
+(AutobusGranada-MAD of Autobus (Origen Granada) (Destino Madrid) (precioTransporte 22) (duracionViaje media) (accesibilidad si) (medio autobus))
+
+(AutobusValencia-Alicante of Autobus (Origen Valencia) (Destino Alicante) (precioTransporte 12) (duracionViaje corta) (accesibilidad si) (medio autobus))
+(AutobusAlicante-Valencia of Autobus (Origen Alicante) (Destino Valencia) (precioTransporte 12) (duracionViaje corta) (accesibilidad si) (medio autobus))
+
+(TrenBCN-SanSebastian of Tren (Origen Barcelona) (Destino SanSebastian) (precioTransporte 50) (duracionViaje media) (accesibilidad si) (medio tren))
+(TrenSanSebastian-BCN of Tren (Origen SanSebastian) (Destino Barcelona) (precioTransporte 50) (duracionViaje media) (accesibilidad si) (medio tren))
+
+(TrenValencia-Sevilla of Tren (Origen Valencia) (Destino Sevilla) (precioTransporte 48) (duracionViaje media) (accesibilidad si) (medio tren))
+(TrenSevilla-Valencia of Tren (Origen Sevilla) (Destino Valencia) (precioTransporte 48) (duracionViaje media) (accesibilidad si) (medio tren))
+
+(TrenAlicante-Granada of Tren (Origen Alicante) (Destino Granada) (precioTransporte 40) (duracionViaje media) (accesibilidad si) (medio tren))
+(TrenGranada-Alicante of Tren (Origen Granada) (Destino Alicante) (precioTransporte 40) (duracionViaje media) (accesibilidad si) (medio tren))
+
+(TrenMadrid-SanSebastian of Tren (Origen Madrid) (Destino SanSebastian) (precioTransporte 45) (duracionViaje media) (accesibilidad si) (medio tren))
+(TrenSanSebastian-Madrid of Tren (Origen SanSebastian) (Destino Madrid) (precioTransporte 45) (duracionViaje media) (accesibilidad si) (medio tren)))
+
 
 ; ------------------------------------
 ;           MÓDULOS
 ; ------------------------------------
-(defmodule MAIN (export ?ALL))
+(defmodule MAIN 
+  (export ?ALL))
 
-  (defmodule recopilacion-usuario
-    (import MAIN ?ALL)
-    (export ?ALL))
+(defmodule RECOPILACION-USUARIO
+  (import MAIN ?ALL)
+  (export ?ALL))
 
-  (defmodule inicializacion
-    (import MAIN ?ALL)
-    (export ?ALL))
+(defmodule INICIALIZACION
+  (import MAIN ?ALL)
+  (export ?ALL))
 
-  (defmodule abstraccion-usuario
-    (import MAIN ?ALL)
-    (export ?ALL))
+(defmodule ABSTRACCION-USUARIO
+  (import MAIN ?ALL)
+  (export ?ALL))
 
-  (defmodule heuristica-usuario
-    (import MAIN ?ALL)
-    (export ?ALL))
+(defmodule HEURISTICA-USUARIO
+  (import MAIN ?ALL)
+  (export ?ALL))
 
-(defmodule sintesis
-    (import MAIN ?ALL)
-    (export ?ALL))
+(defmodule SINTESIS
+  (import MAIN ?ALL)
+  (export ?ALL))
 
-(defmodule imprimir-resultados
-    (import MAIN ?ALL)
-    (export ?ALL))
+(defmodule IMPRIMIR-RESULTADOS
+  (import MAIN ?ALL)
+  (export ?ALL))
 
 ; ------------------------------------
 ;           TEMPLATES
 ; ------------------------------------
 
   (deftemplate MAIN::datos-usuario
-    (slot edad (type INTEGER) (default -1))
-    (slot conocimiento (type INTEGER) (default -1))
-    (slot experiencia (type INTEGER) (default -1))
-    (slot profesion (type SYMBOL) (allowed-symbols nulo artes ciencias humanidades tecnico salud ninguno) (default nulo))
-    (multislot idiomas (type INSTANCE) (allowed-classes Idioma))
-    (multislot ciudad (type INSTANCE) (allowed-classes Ciudad))
-    (slot motivo (type INSTANCE) (allowed-classes Eventos_especiales Objetivo))
-    (slot tipoGrupo (type SYMBOL) (allowed-symbols nulo amigos familia individual pareja) (default nulo))
-  )
+  (slot edad (type INTEGER) (default -1))
+  (slot añosEstudio (type INTEGER) (default -1))
+  (slot viajesRealizados (type INTEGER) (default -1))
+  (slot paisesVisitados (type INTEGER) (default -1))
+  (slot profesion (type SYMBOL) (allowed-symbols artes ciencias humanidades tecnico salud ninguno) (default ninguno))
+  (multislot idiomas (type INSTANCE)) 
+  (multislot ciudad (type INSTANCE))
+  (slot motivo (type INSTANCE)) 
+  (slot tipoGrupo (type SYMBOL)(allowed-symbols persona_individual pareja familia grupo_amigos) (default persona_individual))
+  (slot numAdultos (type INTEGER) (default 1))
+  (slot numNinos (type INTEGER) (default 0))
+  (multislot edadesNinos (type INTEGER))
+  (slot requiereAccesibilidad (type SYMBOL) (allowed-symbols si no) (default no))
+  (multislot equipamiento (type INSTANCE)) 
+)
 
-  (deftemplate MAIN::restricciones-viaje
-    (slot presupuestoMaximo (type INTEGER) (default -1))
-    (slot minDiasViaje (type INTEGER) (default -1))
-    (slot maxDiasViaje (type INTEGER) (default -1))
-    (slot accesibilidad (type INTEGER) (default -1))
-    (slot calMinAlojamiento (type INTEGER) (default -1))
-    (slot minNumCiudad (type INTEGER) (default -1))
-    (slot maxNumCiudad (type INTEGER) (default -1))
-    (multislot ciudadesObligatorias (type INSTANCE) (allowed-classes Ciudad))
-    (multislot lugarInteres (type INSTANCE) (allowed-classes Punto_de_Interes))
-  )
+(deftemplate MAIN::restricciones-viaje
+  (slot presupuestoMaximo (type INTEGER) (default -1))
+  (slot minDiasViaje (type INTEGER) (default -1))
+  (slot maxDiasViaje (type INTEGER) (default -1))
+  (slot calMinAlojamiento (type INTEGER) (default -1)) 
+  (slot minNumCiudad (type INTEGER) (default -1))
+  (slot maxNumCiudad (type INTEGER) (default -1))
+  (multislot ciudadesObligatorias (type SYMBOL))
+  (multislot lugarInteres (type INSTANCE))
+  (multislot transportesDescartados (type INSTANCE)) 
+)
 
-  (deftemplate MAIN::preferencias-viaje
-    (slot nivelRitmo (type INTEGER) (default -1)) 
-    (multislot tematicas (type INSTANCE) (allowed-classes Tematica))
-    (slot temporada (type INSTANCE) (allowed-classes Temporada))
-    (multislot transporte (type SYMBOL) (allowed-symbols nulo avion barco tren coche autobus) (default nulo))
-  )
+(deftemplate MAIN::preferencias-viaje
+  (slot nivelRitmo (type SYMBOL) (allowed-symbols relajado ajetreado indiferente) (default indiferente)) 
+  (multislot tematicasPreferidas (type SYMBOL))
+  (multislot transportesPreferidos (type SYMBOL))
+  (slot preferenciaClima (type SYMBOL) (allowed-symbols indiferente calido frio templado) (default indiferente))
+  (slot preferenciaPopularidad (type SYMBOL) (allowed-symbols indiferente turistica poco-conocida) (default indiferente))
+  (slot criterioPrioridad (type SYMBOL) (allowed-symbols poco equilibrado mucho) (default equilibrado))
+)
 
-  (deftemplate MAIN::datos-viaje-familia
-    (slot numAdultos (type INTEGER))
-    (slot numNinos (type INTEGER))
-    (multislot edadesNinos (type INTEGER)))
+(deftemplate MAIN::ciudad-candidata
+  (slot nombre (type SYMBOL))
+  (slot puntuacion (type INTEGER) (default 0))
+  (slot valida (type SYMBOL) (allowed-symbols si no) (default si))
+)
 
-  (deftemplate MAIN::datos-viaje-amigos
-    (slot numPersonas (type INTEGER)))
+(deftemplate MAIN::viaje-seleccionado
+  (slot id (type INTEGER))
+  (multislot ciudades (type SYMBOL))
+  (multislot dias (type INTEGER))
+  (multislot alojamientos (type SYMBOL)) 
+  (multislot transportes (type SYMBOL))  
+  (multislot num-trans-por-parada (type INTEGER))
+  (multislot actividades-asignadas (type SYMBOL))
+)
 
-  (deftemplate MAIN::ciudad-candidata
-    (slot nombre (type INSTANCE))
-    (slot puntuacion (type INTEGER) (default 0))
-    (slot valida (type SYMBOL) (allowed-symbols si no) (default si))
-  )
-
-  (deftemplate MAIN::viaje-seleccionado
-    (slot id)
-    (multislot ciudades)
-    (multislot dias)
-    (multislot alojamientos)
-    (multislot transportes)
-    (multislot num-trans-por-parada)
-  )
-
-  (deftemplate MAIN::sintesis-viaje
-    (slot id)
-    (multislot ciudades)
-    (multislot dias)
-    (multislot alojamientos)
-    (multislot transportes)
-    (multislot num-trans-por-parada)
-    (slot dias-totales (type INTEGER) (default 0))
-    (slot presupuesto-restante (type FLOAT) (default 0.0))
-    (slot paso (type INTEGER) (default 1))
-  )
+(deftemplate MAIN::sintesis-viaje
+  (slot id (type INTEGER))
+  (multislot ciudades)                   
+  (multislot dias)                      
+  (multislot alojamientos)               
+  (multislot transportes)                
+  (multislot num-trans-por-parada)       
+  (multislot actividades-asignadas)     
+  (slot dias-totales (type INTEGER) (default 0))
+  (slot presupuesto-restante (type NUMBER) (default 0.0)) 
+  (slot paso (type INTEGER) (default 1)) 
+)
 
 ; ------------------------------------
 ;           FUNCIONES
@@ -1010,6 +2037,13 @@
         (bind ?r (pregunta-numerica "Seleccione (0 para terminar):" 0 (length$ ?instancias))))
     ?lista)
 
+(deffunction MAIN::elegir-simbolo (?pregunta ?lista-simbolos)
+  (printout t ?pregunta crlf)
+  (loop-for-count (?i 1 (length$ ?lista-simbolos)) do
+    (format t "  %d. %s%n" ?i (nth$ ?i ?lista-simbolos)))
+  (bind ?res (pregunta-numerica "Seleccione numero" 1 (length$ ?lista-simbolos)))
+  (nth$ ?res ?lista-simbolos))
+
 ; ------------------------------------
 ;           REGLA INICIAL
 ; ------------------------------------
@@ -1019,760 +2053,945 @@
     (printout t "============================================" crlf)
     (printout t "    Sistema de Recomendacion de Viajes IA    " crlf)
     (printout t "============================================" crlf)
-    (focus recopilacion-usuario))
+    (focus RECOPILACION-USUARIO))
+
+(deffacts RECOPILACION-USUARIO::hechos-iniciales
+  (Ciudad ask)
+  (Idioma ask)
+  (Usuario ask)
+  (Profesion ask)
+  (Temporada ask)
+  (Punto_de_Interes ask)
+  (transporte ask)
+  (Tematica ask)
+  (Edad ask)
+  (AnosEstudio ask)
+  (ViajesRealizados ask)
+  (Presupuesto ask)
+  (Duracion ask)
+  (Ritmo ask)
+  (Accesibilidad ask)
+  (Calidad-Alojamiento ask)
+  (Num-Ciudades ask)
+  (Familia ask)
+  (Grupo_de_amigos ask)
+  (Objetivo ask)
+  (Eventos_especiales ask)
+  (Material ask)
+  (Popularidad ask)
+  (Criterio ask))
+
+(defrule RECOPILACION-USUARIO::inicializar-usuario
+  (not (datos-usuario))
+  (not (recoleccion-finalizada))
+  =>
+  (assert (datos-usuario))
+  (assert (restricciones-viaje))
+  (assert (preferencias-viaje)))
+
+(defrule RECOPILACION-USUARIO::obtener-edad-usuario
+  (declare (salience 9))
+  ?f <- (datos-usuario (edad ?e))
+  ?h <- (Edad ask)
+  (not (recoleccion-finalizada))
+  =>
+  (modify ?f (edad (pregunta-numerica "¿Cual es tu edad? " 18 110)))
+  (retract ?h))
+
+(defrule RECOPILACION-USUARIO::obtener-ciudad-usuario
+  (declare (salience 9))
+  ?f <- (datos-usuario)
+  ?h <- (Ciudad ask)
+  (not (recoleccion-finalizada))
+  =>
+  (modify ?f (ciudad (elegir-instancia Ciudad "¿Donde vives? (elige tu ciudad de origen)")))
+  (retract ?h))
+
+(defrule RECOPILACION-USUARIO::obtener-idioma-usuario
+  (declare (salience 9))
+  ?f <- (datos-usuario)
+  ?h <- (Idioma ask)
+  (not (recoleccion-finalizada))
+  =>
+  (modify ?f (idiomas (elegir-multinstancia Idioma "¿Que idiomas hablas?")))
+  (retract ?h))
+
+(defrule RECOPILACION-USUARIO::obtener-experiencia-viajera
+  (declare (salience 9))
+  ?f <- (datos-usuario (viajesRealizados ?vr) (paisesVisitados ?pv))
+  ?h <- (ViajesRealizados ask)
+  (not (recoleccion-finalizada))
+  =>
+  (modify ?f (viajesRealizados (pregunta-numerica "¿Cuantos viajes has hecho? " 0 100))
+             (paisesVisitados (pregunta-numerica "¿Cuantos paises has visitado? " 0 100)))
+  (retract ?h))
+
+(defrule RECOPILACION-USUARIO::obtener-estudios-usuario
+  (declare (salience 9))
+  ?f <- (datos-usuario (añosEstudio ?c))
+  ?h <- (AnosEstudio ask)
+  (not (recoleccion-finalizada))
+  =>
+  (modify ?f (añosEstudio (pregunta-numerica "¿Cuantos anos has estudiado? " 0 40)))
+  (retract ?h))
+
+(defrule RECOPILACION-USUARIO::obtener-profesion-usuario
+  (declare (salience 9))
+  ?u <- (datos-usuario)
+  ?h <- (Profesion ask)
+  (not (recoleccion-finalizada))
+  =>
+  (retract ?h)
+  (if (eq (pregunta-booleana "¿Trabajas?") si)
+      then
+        (bind ?sector (elegir-simbolo "Indique su sector:" (create$ artes ciencias humanidades tecnico salud ninguno)))
+        (modify ?u (profesion ?sector))
+      else
+        (modify ?u (profesion ninguno))))
+
+(defrule RECOPILACION-USUARIO::obtener-accesibilidad-usuario
+  (declare (salience 9))
+  ?f <- (datos-usuario)
+  ?h <- (Accesibilidad ask)
+  (not (recoleccion-finalizada))
+  =>
+  (bind ?acc (pregunta-booleana "¿Alguien en el grupo tiene alguna patologia o discapacidad (requiere accesibilidad)?"))
+  (modify ?f (requiereAccesibilidad ?acc))
+  (retract ?h))
+
+(defrule RECOPILACION-USUARIO::obtener-equipamiento
+   (declare (salience 9))
+   ?f <- (datos-usuario)
+   ?h <- (Material ask)
+   (not (recoleccion-finalizada))
+   =>
+   (bind ?lista (create$))
+   (if (eq (pregunta-booleana "¿Necesitas/tienes equipamiento para deportes de invierno?") si)
+       then (bind ?lista (create$ ?lista material-invierno)))
+   (if (eq (pregunta-booleana "¿Necesitas/tienes equipamiento de playa?") si)
+       then (bind ?lista (create$ ?lista material-playa)))
+   (if (eq (pregunta-booleana "¿Necesitas/tienes material de montaña?") si)
+       then (bind ?lista (create$ ?lista material-montana)))
+   (if (eq (pregunta-booleana "¿Necesitas/tienes equipamiento urbano?") si)
+       then (bind ?lista (create$ ?lista material-urbano)))
+   (if (eq (pregunta-booleana "¿Necesitas/tienes equipamiento de camping?") si)
+       then (bind ?lista (create$ ?lista material-camping)))
+   (modify ?f (equipamiento ?lista))
+   (retract ?h))
+
+(defrule RECOPILACION-USUARIO::obtener-tipo-usuario
+   (declare (salience 8))
+   ?f <- (datos-usuario)
+   ?h <- (Usuario ask)
+   (not (recoleccion-finalizada))
+   =>
+   (bind ?tipo (elegir-simbolo "¿Como viaja usted?"
+                   (create$ persona_individual pareja familia grupo_amigos)))
+   (modify ?f (tipoGrupo ?tipo))
+   (retract ?h))
+
+(defrule RECOPILACION-USUARIO::obtener-datos-familia
+  (declare (salience 7))
+  ?f <- (datos-usuario (tipoGrupo ?tg))
+  (test (eq ?tg familia))
+  ?h <- (Familia ask)
+  (not (recoleccion-finalizada))
+  =>
+  (bind ?na (pregunta-numerica "¿Cuantos adultos viajan? " 1 10))
+  (bind ?nn (pregunta-numerica "¿Cuantos ninos viajan? " 0 10))
+  (bind ?lista (create$))
+  (loop-for-count (?i 1 ?nn) do
+      (printout t "Edad del niño " ?i ": ")
+      (bind ?edad (pregunta-numerica "" 0 17))
+      (bind ?lista (insert$ ?lista ?i ?edad)))
+  (modify ?f (numAdultos ?na) (numNinos ?nn) (edadesNinos ?lista))
+  (retract ?h))
+
+(defrule RECOPILACION-USUARIO::obtener-datos-amigos
+  (declare (salience 7))
+  ?f <- (datos-usuario (tipoGrupo ?tg))
+  (test (eq ?tg grupo_amigos))
+  ?h <- (Grupo_de_amigos ask)
+  (not (recoleccion-finalizada))
+  =>
+  (bind ?np (pregunta-numerica "¿Cuantas personas sois en el grupo de amigos? " 2 20))
+  (modify ?f (numAdultos ?np))
+  (retract ?h))
+
+(defrule RECOPILACION-USUARIO::obtener-motivo
+  (declare (salience 5))
+  ?f <- (datos-usuario)
+  ?h1 <- (Objetivo ask)
+  ?h2 <- (Eventos_especiales ask)
+  (not (recoleccion-finalizada))
+  =>
+  (if (eq (pregunta-booleana "¿El viaje es por algun evento especial?") si)
+      then
+        (modify ?f (motivo (elegir-instancia Eventos_especiales "¿Cual es el evento?")))
+      else
+        (if (eq (pregunta-booleana "¿El viaje tiene algun objetivo especifico?") si)
+            then
+              (modify ?f (motivo (elegir-instancia Objetivo "¿Cual es el objetivo?")))))
+  (retract ?h1 ?h2))
+
+(defrule RECOPILACION-USUARIO::obtener-presupuesto
+  (declare (salience 5))
+  ?f <- (restricciones-viaje)
+  ?h <- (Presupuesto ask)
+  (not (recoleccion-finalizada))
+  =>
+  (modify ?f (presupuestoMaximo (pregunta-numerica "¿Cual es tu presupuesto total maximo (euros)?" 1 50000)))
+  (retract ?h))
+
+(defrule RECOPILACION-USUARIO::obtener-duracion
+  (declare (salience 5))
+  ?f <- (restricciones-viaje)
+  ?h <- (Duracion ask)
+  (not (recoleccion-finalizada))
+  =>
+  (printout t "¿Cuanto quieres que dure el viaje en total?" crlf)
+  (bind ?dmin (pregunta-numerica "   Dias totales minimos" 1 60))
+  (bind ?dmax (pregunta-numerica "   Dias totales maximos" ?dmin 60))
+  (modify ?f (minDiasViaje ?dmin) (maxDiasViaje ?dmax))
+  (retract ?h))
+
+(defrule RECOPILACION-USUARIO::obtener-num-ciudades
+  (declare (salience 5))
+  ?f <- (restricciones-viaje)
+  ?h <- (Num-Ciudades ask)
+  (not (recoleccion-finalizada))
+  =>
+  (printout t "¿Cuantas ciudades quieres visitar?" crlf)
+  (bind ?ncmin (pregunta-numerica "   Numero minimo de ciudades" 1 10))
+  (bind ?ncmax (pregunta-numerica "   Numero maximo de ciudades" ?ncmin 10))
+  (modify ?f (minNumCiudad ?ncmin) (maxNumCiudad ?ncmax))
+  (retract ?h))
+
+(defrule RECOPILACION-USUARIO::obtener-transporte
+  (declare (salience 5))
+  ?f <- (restricciones-viaje)
+  ?h <- (transporte ask)
+  (not (recoleccion-finalizada))
+  =>
+  (if (eq (pregunta-booleana "¿Quiere excluir/descartar algun tipo de transporte?") si)
+      then
+        (modify ?f (transportesDescartados (elegir-multinstancia Transporte "Seleccione los transportes a EXCLUIR:"))))
+  (retract ?h))
+
+(defrule RECOPILACION-USUARIO::obtener-calidad-alojamiento
+  (declare (salience 5))
+  ?f <- (restricciones-viaje)
+  ?h <- (Calidad-Alojamiento ask)
+  (not (recoleccion-finalizada))
+  =>
+  (bind ?calidad (pregunta-numerica "¿Cual es la calidad minima de alojamiento deseada?" 0 5))
+  (modify ?f (calMinAlojamiento ?calidad))
+  (retract ?h))
+
+(defrule RECOPILACION-USUARIO::obtener-ciudades-obligatorias
+  (declare (salience 5))
+  ?f <- (restricciones-viaje (ciudadesObligatorias))
+  (not (recoleccion-finalizada))
+  =>
+  (if (eq (pregunta-booleana "¿Tienes ciudades fijas/obligatorias que quieras incluir?") si)
+      then
+        (modify ?f (ciudadesObligatorias (elegir-multinstancia Ciudad "Selecciona las ciudades obligatorias:")))))
+
+(defrule RECOPILACION-USUARIO::obtener-punto-interes
+  (declare (salience 5))
+  ?f <- (restricciones-viaje)
+  ?h <- (Punto_de_Interes ask)
+  (not (recoleccion-finalizada))
+  =>
+  (if (eq (pregunta-booleana "¿Tiene interes en visitar puntos de interes especificos?") si)
+      then
+        (modify ?f (lugarInteres (elegir-multinstancia LugarInteres "Seleccione los puntos de interes deseados:"))))
+  (retract ?h))
+
+(defrule RECOPILACION-USUARIO::obtener-tematica
+  (declare (salience 5))
+  ?f <- (preferencias-viaje)
+  ?h <- (Tematica ask)
+  (not (recoleccion-finalizada))
+  =>
+  (modify ?f (tematicasPreferidas (elegir-multinstancia Tematica "¿Que tipo o tematica de ciudades quieres visitar?")))
+  (retract ?h))
+
+(defrule RECOPILACION-USUARIO::obtener-temporada
+  (declare (salience 5))
+  ?f <- (preferencias-viaje)
+  ?h <- (Temporada ask)
+  (not (recoleccion-finalizada))
+  =>
+  (modify ?f (preferenciaClima (elegir-simbolo "¿En que clima prefieres viajar?" (create$ indiferente calido frio templado))))
+  (retract ?h))
+
+(defrule RECOPILACION-USUARIO::obtener-ritmo-viaje
+  (declare (salience 5))
+  ?f <- (preferencias-viaje)
+  ?h <- (Ritmo ask)
+  (not (recoleccion-finalizada))
+  =>
+  (bind ?ritmo (elegir-simbolo "¿Prefieres tener un viaje relajado o ajetreado?" (create$ relajado ajetreado indiferente)))
+  (modify ?f (nivelRitmo ?ritmo))
+  (retract ?h))
+
+(defrule RECOPILACION-USUARIO::obtener-popularidad
+  (declare (salience 5))
+  ?f <- (preferencias-viaje (preferenciaPopularidad indiferente))
+  ?h <- (Popularidad ask)
+  (not (recoleccion-finalizada))
+  =>
+  (modify ?f (preferenciaPopularidad 
+                (elegir-simbolo 
+                   "¿Prefieres destinos turisticos o poco conocidos?"
+                   (create$ indiferente turistica poco_conocida))))
+  (retract ?h))
+
+(defrule RECOPILACION-USUARIO::obtener-criterio-prioridad
+  (declare (salience 5))
+  ?f <- (preferencias-viaje (criterioPrioridad equilibrado))
+  ?h <- (Criterio ask)
+  (not (recoleccion-finalizada))
+  =>
+  (modify ?f (criterioPrioridad
+                (elegir-simbolo
+                   "¿Durante la estancia en una ciudad, cuanto pretendes gastar?"
+                   (create$ poco equilibrado mucho))))
+  (retract ?h))
+
+(defrule RECOPILACION-USUARIO::fin-recoleccion-datos
+  (declare (salience -100))
+  (not (recoleccion-finalizada))
+  =>
+  (assert (recoleccion-finalizada))
+  (printout t crlf "--------------------------------------------" crlf)
+  (printout t "        RECOLECCION DE DATOS HECHA          " crlf)
+  (printout t "--------------------------------------------" crlf)
+  (focus INICIALIZACION))
 
 ; ------------------------------------
-;       MODULO RECOPILACION-USUARIO
+;         MODULO INICIALIZACION
 ; ------------------------------------
 
-  (deffacts recopilacion-usuario::hechos-iniciales
-    (Ciudad ask)
-    (Idioma ask)
-    (Usuario ask)
-    (Temporada ask)
-    (Punto_de_Interes ask)
-    (transporte ask)
-    (Tematica ask)
-    (Edad ask)
-    (Conocimiento ask)
-    (Experiencia ask)
-    (Presupuesto ask)
-    (Duracion ask)
-    (Ritmo ask)
-    (Accesibilidad ask)
-    (Calidad-Alojamiento ask)
-    (Num-Ciudades ask)
-    (Familia ask)
-    (Grupo_de_amigos ask)
-    (Objetivo ask)
-    (Eventos_especiales ask))
+(defrule INICIALIZACION::crear-instancia-individual
+   ?f <- (datos-usuario (tipoGrupo ?tg))
+   (test (eq ?tg persona_individual))
+   (restricciones-viaje (presupuestoMaximo ?p))
+   (not (instancia-creada))
+   =>
+   (make-instance [cliente] of Persona_Individual
+      (edad (fact-slot-value ?f edad))
+      (presupuestoMaximo ?p)
+      (añosEstudio (fact-slot-value ?f añosEstudio))
+      (viajesRealizados (fact-slot-value ?f viajesRealizados))
+      (paisesVisitados (fact-slot-value ?f paisesVisitados))
+      (profesion (fact-slot-value ?f profesion))
+      (Habla_en (fact-slot-value ?f idiomas))
+      (Vive_en (nth$ 1 (fact-slot-value ?f ciudad))))
+   (assert (instancia-creada)))
 
-  (defrule recopilacion-usuario::inicializar-usuario
-    (not (datos-usuario))
-    (not (recoleccion-finalizada))
-    =>
-    (assert (datos-usuario))
-    (assert (restricciones-viaje))
-    (assert (preferencias-viaje)))
+(defrule INICIALIZACION::crear-instancia-pareja
+   ?f <- (datos-usuario (tipoGrupo ?tg))
+   (test (eq ?tg pareja))
+   (restricciones-viaje (presupuestoMaximo ?p))
+   (not (instancia-creada))
+   =>
+   (make-instance [cliente] of Pareja
+      (edad (fact-slot-value ?f edad))
+      (presupuestoMaximo ?p)
+      (añosEstudio (fact-slot-value ?f añosEstudio))
+      (viajesRealizados (fact-slot-value ?f viajesRealizados))
+      (paisesVisitados (fact-slot-value ?f paisesVisitados))
+      (profesion (fact-slot-value ?f profesion))
+      (Habla_en (fact-slot-value ?f idiomas))
+      (Vive_en (nth$ 1 (fact-slot-value ?f ciudad))))
+   (assert (instancia-creada)))
 
-  (defrule recopilacion-usuario::obtener-edad-usuario
-    ?f <- (datos-usuario (edad ?e))
-    ?h <- (Edad ask)
-    (not (recoleccion-finalizada))
-    =>
-    (modify ?f (edad (pregunta-numerica "¿Cual es tu edad? " 18 110)))
-    (retract ?h))
+(defrule INICIALIZACION::crear-instancia-familia
+   ?f <- (datos-usuario (tipoGrupo ?tg))
+   (test (eq ?tg familia))
+   (restricciones-viaje (presupuestoMaximo ?p))
+   (not (instancia-creada))
+   =>
+   (make-instance [cliente] of Familia
+      (edad (fact-slot-value ?f edad))
+      (presupuestoMaximo ?p)
+      (añosEstudio (fact-slot-value ?f añosEstudio))
+      (viajesRealizados (fact-slot-value ?f viajesRealizados))
+      (paisesVisitados (fact-slot-value ?f paisesVisitados))
+      (profesion (fact-slot-value ?f profesion))
+      (Habla_en (fact-slot-value ?f idiomas))
+      (Vive_en (nth$ 1 (fact-slot-value ?f ciudad)))
+      (nAdultos (fact-slot-value ?f numAdultos))
+      (nNiños (fact-slot-value ?f numNinos))
+      (edadNiños (fact-slot-value ?f edadesNinos)))
+   (assert (instancia-creada)))
 
-  (defrule recopilacion-usuario::obtener-conocimiento-usuario
-    ?f <- (datos-usuario (conocimiento ?c))
-    ?h <- (Conocimiento ask)
-    (not (recoleccion-finalizada))
-    =>
-    (modify ?f (conocimiento (pregunta-numerica "¿Cuantos anos has estudiado? " 0 40)))
-    (retract ?h))
+(defrule INICIALIZACION::crear-instancia-amigos
+   ?f <- (datos-usuario (tipoGrupo ?tg))
+   (test (eq ?tg grupo_amigos))
+   (restricciones-viaje (presupuestoMaximo ?p))
+   (not (instancia-creada))
+   =>
+   (make-instance [cliente] of Grupo_de_amigos
+      (edad (fact-slot-value ?f edad))
+      (presupuestoMaximo ?p)
+      (añosEstudio (fact-slot-value ?f añosEstudio))
+      (viajesRealizados (fact-slot-value ?f viajesRealizados))
+      (paisesVisitados (fact-slot-value ?f paisesVisitados))
+      (profesion (fact-slot-value ?f profesion))
+      (Habla_en (fact-slot-value ?f idiomas))
+      (Vive_en (nth$ 1 (fact-slot-value ?f ciudad)))
+      (nPersonas (fact-slot-value ?f numAdultos)))
+   (assert (instancia-creada)))
 
-  (defrule recopilacion-usuario::obtener-profesion-usuario
-    ?u <- (datos-usuario (profesion ?p))
-    ?h <- (Profesion ask)
-    (not (recoleccion-finalizada))
-    =>
-    (if (eq (pregunta-booleana "¿Trabajas?") si)
-        then
-            (printout t "Indique su sector:" crlf)
-            (printout t "  1. artes" crlf)
-            (printout t "  2. ciencias" crlf)
-            (printout t "  3. humanidades" crlf)
-            (printout t "  4. tecnico" crlf)
-            (printout t "  5. salud" crlf)
-            (bind ?res (pregunta-numerica "Seleccione: " 1 5))
-            (bind ?sector artes)
-            (if (eq ?res 1) then (bind ?sector artes))
-            (if (eq ?res 2) then (bind ?sector ciencias))
-            (if (eq ?res 3) then (bind ?sector humanidades))
-            (if (eq ?res 4) then (bind ?sector tecnico))
-            (if (eq ?res 5) then (bind ?sector salud))
-            (modify ?u (profesion ?sector))
-        else
-            (modify ?u (profesion ninguno))))
-
-(defrule recopilacion-usuario::obtener-experiencia-usuario
-    ?f <- (datos-usuario (experiencia ?e))
-    ?h <- (Experiencia ask)
-    (not (recoleccion-finalizada))
-    =>
-    (bind ?vr (pregunta-numerica "¿Cuantos viajes has hecho? " 0 100))
-    (bind ?pv (pregunta-numerica "¿Cuantos paises has visitado? " 0 100))
-    (modify ?f (experiencia (+ ?vr ?pv)))
-    (retract ?h))
-
-  (defrule recopilacion-usuario::obtener-idioma-usuario
-    ?f <- (datos-usuario)
-    ?h <- (Idioma ask)
-    (not (recoleccion-finalizada))
-    =>
-    (modify ?f (idiomas (elegir-multinstancia Idioma "¿Que idiomas hablas?")))
-    (retract ?h))
-
-  (defrule recopilacion-usuario::obtener-ciudad-usuario
-    ?f <- (datos-usuario)
-    ?h <- (Ciudad ask)
-    (not (recoleccion-finalizada))
-    =>
-    (bind ?ciudades (elegir-multinstancia Ciudad "¿Donde vives? (elige tu ciudad de origen)"))
-    (modify ?f (ciudad ?ciudades))
-    (retract ?h))
-
-  (defrule recopilacion-usuario::obtener-tipo-usuario
-    ?f <- (datos-usuario (tipoGrupo nulo))
-    ?h <- (Usuario ask)
-    (not (recoleccion-finalizada))
-    =>
-    (printout t "¿Como viaja usted?" crlf)
-    (printout t "  1. Individual" crlf)
-    (printout t "  2. Pareja" crlf)
-    (printout t "  3. Familia" crlf)
-    (printout t "  4. Amigos" crlf)
-    (bind ?res (pregunta-numerica "Seleccione una opcion: " 1 4))
-    (bind ?simbolo individual)
-    (if (eq ?res 1) then (bind ?simbolo individual))
-    (if (eq ?res 2) then (bind ?simbolo pareja))
-    (if (eq ?res 3) then (bind ?simbolo familia))
-    (if (eq ?res 4) then (bind ?simbolo amigos))
-    (modify ?f (tipoGrupo ?simbolo))
-    (retract ?h))
-
-  (defrule recopilacion-usuario::obtener-datos-familia
-    (datos-usuario (tipoGrupo familia))
-    ?h <- (Familia ask)
-    (not (recoleccion-finalizada))
-    =>
-    (bind ?na (pregunta-numerica "¿Cuantos adultos viajan? " 1 10))
-    (bind ?nn (pregunta-numerica "¿Cuantos ninos viajan? " 0 10))
-    (bind ?lista (create$))
-    (loop-for-count (?i 1 ?nn) do
-        (bind ?lista (insert$ ?lista ?i
-            (pregunta-numerica
-                (format nil "Cual es la edad del nino %d: " ?i) 0 17))))
-    (assert (datos-viaje-familia
-        (numAdultos ?na)
-        (numNinos ?nn)
-        (edadesNinos ?lista)))
-    (retract ?h))
-
-  (defrule recopilacion-usuario::obtener-datos-amigos
-    (datos-usuario (tipoGrupo amigos))
-    ?h <- (Grupo_de_amigos ask)
-    (not (recoleccion-finalizada))
-    =>
-    (bind ?np (pregunta-numerica
-        "¿Cuantas personas sois en el grupo de amigos? " 2 20))
-    (assert (datos-viaje-amigos (numPersonas ?np)))
-    (retract ?h))
-
-  (defrule recopilacion-usuario::obtener-motivo
-    ?f <- (datos-usuario)
-    ?h1 <- (Objetivo ask)
-    ?h2 <- (Eventos_especiales ask)
-    (not (recoleccion-finalizada))
-    =>
-    (if (eq (pregunta-booleana "¿El viaje es por algun evento especial?") si)
-        then
-            (modify ?f (motivo
-                (elegir-instancia Eventos_especiales "¿Cual es el evento?")))
-        else
-            (if (eq (pregunta-booleana
-                "¿El viaje tiene algun objetivo especifico?") si)
-                then
-                    (modify ?f (motivo
-                        (elegir-instancia Objetivo "¿Cual es el objetivo?")))
-            ))
-    (retract ?h1 ?h2))
-
-  (defrule recopilacion-usuario::obtener-temporada
-    ?f <- (preferencias-viaje)
-    ?h <- (Temporada ask)
-    (not (recoleccion-finalizada))
-    =>
-    (modify ?f (temporada
-        (elegir-instancia Temporada "¿En que estacion quieres viajar?")))
-    (retract ?h))
-
-  (defrule recopilacion-usuario::obtener-duracion
-    ?f <- (restricciones-viaje (minDiasViaje ?d))
-    ?h <- (Duracion ask)
-    (not (recoleccion-finalizada))
-    =>
-    (printout t "¿Cuanto quieres que dure el viaje?" crlf)
-    (bind ?dmin (pregunta-numerica "  Dias totales minimos" 1 60))
-    (bind ?dmax (pregunta-numerica "  Dias totales maximos" ?dmin 60))
-    (modify ?f (minDiasViaje ?dmin) (maxDiasViaje ?dmax))
-    (retract ?h))
-
-  (defrule recopilacion-usuario::obtener-presupuesto
-    ?f <- (restricciones-viaje (presupuestoMaximo ?p))
-      ?h <- (Presupuesto ask)
-    (not (recoleccion-finalizada))
-    =>
-    (modify ?f (presupuestoMaximo
-        (pregunta-numerica "¿Cual es tu presupuesto total (euros)?" 1 50000)))
-    (retract ?h))
-
-  (defrule recopilacion-usuario::obtener-num-ciudades
-    ?f <- (restricciones-viaje (minNumCiudad ?n))
-    ?h <- (Num-Ciudades ask)
-    (not (recoleccion-finalizada))
-    =>
-    (printout t "¿Cuantas ciudades quieres visitar?" crlf)
-    (bind ?ncmin (pregunta-numerica "  Numero minimo" 1 10))
-    (bind ?ncmax (pregunta-numerica "  Numero maximo" ?ncmin 10))
-    (modify ?f (minNumCiudad ?ncmin) (maxNumCiudad ?ncmax))
-    (retract ?h))
-
-  (defrule recopilacion-usuario::obtener-ritmo-viaje
-    ?f <- (preferencias-viaje (nivelRitmo ?r))
-    ?h <- (Ritmo ask)
-    (not (recoleccion-finalizada))
-    =>
-    (modify ?f (nivelRitmo
-        (pregunta-numerica "¿Cual es el nivel de ritmo del viaje? (1=Tranquilo, 10=Intenso)" 1 10)))
-    (retract ?h))
-
-  (defrule recopilacion-usuario::obtener-accesibilidad-usuario
-    ?f <- (restricciones-viaje (accesibilidad ?a))
-    ?h <- (Accesibilidad ask)
-    (not (recoleccion-finalizada))
-    =>
-    (modify ?f (accesibilidad
-        (pregunta-numerica "¿Que grado de accesibilidad requiere?" 0 10)))
-    (retract ?h))
-
-  (defrule recopilacion-usuario::obtener-calidad-alojamiento
-    ?f <- (restricciones-viaje (calMinAlojamiento ?c))
-    ?h <- (Calidad-Alojamiento ask)
-    (not (recoleccion-finalizada))
-    =>
-    (modify ?f (calMinAlojamiento
-        (pregunta-numerica
-            "¿Cual es la calidad minima de alojamiento?" 0 10)))
-    (retract ?h))
-
-  ;(defrule recopilacion-usuario::obtener-ciudades-y-punto-interes
-   ; ?f <- (restricciones-viaje)
-   ; ?h <- (Punto_de_Interes ask)
-   ; (not (recoleccion-finalizada))
-   ; =>
-   ; (if (eq (pregunta-booleana "¿Tiene alguna ciudad que quiera visitar?") si)
-   ;     then (modify ?f (ciudadesObligatorias
-    ;        (elegir-multinstancia Ciudad "Seleccione las ciudades:"))))
-    ;(if (eq (pregunta-booleana "¿Tiene algun lugar de interes que quiera visitar?") si)
-    ;    then (modify ?f (lugarInteres
-    ;        (elegir-multinstancia Punto_de_Interes "Seleccione los puntos:"))))
-    ;(retract ?h))
-
-  (defrule recopilacion-usuario::obtener-transporte
-    ?f <- (preferencias-viaje)
-    ?h <- (transporte ask)
-    (not (recoleccion-finalizada))
-    =>
-    (printout t "¿Hay algun transporte que NO quiera usar?" crlf)
-    (if (eq (pregunta-booleana "¿Quiere excluir algun transporte?") si)
-        then
-            (printout t "  1. Avion" crlf)
-            (printout t "  2. Tren" crlf)
-            (printout t "  3. Coche" crlf)
-            (printout t "  4. Autobus" crlf)
-            (printout t "  5. Barco" crlf)
-            (bind ?res (pregunta-numerica "Seleccione uno: " 1 5))
-            (bind ?simbolo avion)
-            (if (eq ?res 1) then (bind ?simbolo avion))
-            (if (eq ?res 2) then (bind ?simbolo tren))
-            (if (eq ?res 3) then (bind ?simbolo coche))
-            (if (eq ?res 4) then (bind ?simbolo autobus))
-            (if (eq ?res 5) then (bind ?simbolo barco))
-            (modify ?f (transporte ?simbolo)))
-    (retract ?h))
-
-  (defrule recopilacion-usuario::obtener-tematica
-    ?f <- (preferencias-viaje)
-    ?h <- (Tematica ask)
-    (not (recoleccion-finalizada))
-    =>
-    (modify ?f (tematicas
-        (elegir-multinstancia Tematica "¿Que tipo de ciudades quieres visitar?")))
-    (retract ?h))
-
-  (defrule recopilacion-usuario::fin-recoleccion-datos
-    (declare (salience -100))
-    (not (recoleccion-finalizada))
-    =>
-    (assert (recoleccion-finalizada))
-    (printout t crlf "--------------------------------------------" crlf)
-    (printout t " RECOLECCION DE DATOS HECHA " crlf)
-    (printout t "--------------------------------------------" crlf)
-    (focus inicializacion))
+(defrule INICIALIZACION::fin-inicializacion
+  (declare (salience -100))
+  (instancia-creada)
+  (not (fin-inicializacion-ok))
+  =>
+  (assert (fin-inicializacion-ok))
+  (printout t crlf)
+  (printout t "--------------------------------------------" crlf)
+  (printout t "            INSTANCIAS CREADAS              " crlf)
+  (printout t "--------------------------------------------" crlf)
+  (focus ABSTRACCION-USUARIO))
 
 ; ------------------------------------
-;        MODULO INICIALIZACION
+;         MODULO ABSTRACCION-USUARIO
 ; ------------------------------------
 
-  (defrule inicializacion::crear-instancia-individual
-    ?f <- (datos-usuario (tipoGrupo individual) (edad ?e) (conocimiento ?est) (experiencia ?v) (idiomas $?ids) (ciudad $?orig))
-    (restricciones-viaje (presupuestoMaximo ?p))
-    (not (instancia-creada))
-    =>
-    (make-instance [cliente] of Persona_Individual
-        (edad ?e)
-        (presupuestoMaximo ?p)
-        (anosEstudio ?est)
-        (experiencia ?v)
-        (Habla_en ?ids)
-        (Vive_en (nth$ 1 ?orig)))
-    (assert (instancia-creada)))
+(defrule ABSTRACCION-USUARIO::abstraer-datos-usuario
+   ?u <- (object (is-a Usuario) 
+                 (edad ?v-edad) 
+                 (añosEstudio ?v-c) 
+                 (viajesRealizados ?v-vr) 
+                 (paisesVisitados ?v-pv) 
+                 (Habla_en $?ids))
+   (not (abstraer-datos-usuario-definido))
+   =>
+   (bind ?cat-edad
+      (if (< ?v-edad 30) then joven
+      else (if (< ?v-edad 65) then adulto
+      else anciano)))
 
-  (defrule inicializacion::crear-instancia-pareja
-    ?f <- (datos-usuario (tipoGrupo pareja) (edad ?e) (conocimiento ?est) (experiencia ?v) (idiomas $?ids) (ciudad $?orig))
-    (restricciones-viaje (presupuestoMaximo ?p))
-    (not (instancia-creada))
-    =>
-    (make-instance [cliente] of Pareja
-        (edad ?e)
-        (presupuestoMaximo ?p)
-        (anosEstudio ?est)
-        (experiencia ?v)
-        (Habla_en ?ids)
-        (Vive_en (nth$ 1 ?orig)))
-    (assert (instancia-creada)))
+   (bind ?cat-c
+      (if (< ?v-c 6) then bajo
+      else (if (< ?v-c 15) then medio
+      else alto)))
 
-  (defrule inicializacion::crear-instancia-familia
-    ?f <- (datos-usuario (tipoGrupo familia) (edad ?e) (conocimiento ?est) (experiencia ?v) (idiomas $?ids) (ciudad $?orig))
-    (restricciones-viaje (presupuestoMaximo ?p))
-    ?df <- (datos-viaje-familia (numAdultos ?na) (numNinos ?nn) (edadesNinos $?en))
-    (not (instancia-creada))
-    =>
-    (make-instance [cliente] of Familia
-        (edad ?e)
-        (presupuestoMaximo ?p)
-        (anosEstudio ?est)
-        (experiencia ?v)
-        (Habla_en ?ids)
-        (Vive_en (nth$ 1 ?orig))
-        (nAdultos ?na)
-        (nNinos ?nn)
-        (edadNinos ?en))
-    (retract ?df)
-    (assert (instancia-creada)))
+   (bind ?total-exp (+ ?v-vr ?v-pv))
+   (bind ?cat-exp
+      (if (< ?total-exp 5) then baja
+      else (if (< ?total-exp 15) then media
+      else alta)))
 
-  (defrule inicializacion::crear-instancia-amigos
-    ?f <- (datos-usuario   (tipoGrupo amigos) (edad ?e) (conocimiento ?est) (experiencia ?v) (idiomas $?ids) (ciudad $?orig))
-    (restricciones-viaje (presupuestoMaximo ?p))
-    ?df <- (datos-viaje-amigos (numPersonas ?np))
-    (not (instancia-creada))
-    =>
-    (make-instance [cliente] of Grupo_de_amigos
-        (edad ?e)
-        (presupuestoMaximo ?p)
-        (anosEstudio ?est)
-        (experiencia ?v)
-        (Habla_en ?ids)
-        (Vive_en (nth$ 1 ?orig))
-        (nPersonas ?np))
-    (retract ?df)
-    (assert (instancia-creada)))
+   (bind ?cat-id
+      (if (or (member$ [ingles] ?ids) (> (length$ ?ids) 1))
+          then internacional
+          else local))
 
-  (defrule inicializacion::fin-inicializacion
-    (declare (salience -100))
-    (instancia-creada)
-    (not (fin-inicializacion-ok))
-    =>
-    (assert (fin-inicializacion-ok))
-    (printout t crlf)
-    (printout t "--------------------------------------------" crlf)
-    (printout t " INSTANCIAS CREADAS                         " crlf)
-    (printout t "--------------------------------------------" crlf)
-    (focus abstraccion-usuario))
+   (assert (nivel-cultural ?cat-c))
+   (assert (experiencia-viajera ?cat-exp))
+   (assert (problema-abstracto ?cat-edad ?cat-c ?cat-exp ?cat-id))
+   (assert (abstraer-datos-usuario-definido))
+   (format t "  [Abstraccion] Perfil: edad=%s / nivel-cultural=%s / experiencia=%s / idiomas=%s%n" ?cat-edad ?cat-c ?cat-exp ?cat-id))
 
-; ------------------------------------
-;        MODULO ABSTRACCION-USUARIO
-; ------------------------------------
+(defrule ABSTRACCION-USUARIO::info-usuario-familia
+   ?u <- (object (is-a Familia) 
+                 (name [cliente]) 
+                 (nAdultos ?numAdultos) 
+                 (nNiños ?numNinos) 
+                 (edadNiños $?edadesNinos)) 
+   (not (info-usuario-definido-familia))
+   =>
+   (bind ?tipo-familia (if (> ?numAdultos 2) then varias-familias else una-familia))
+   (bind ?numerosa (if (> ?numNinos 3) then si else no))
+   (bind ?hay-bebe no)
+   (progn$ (?edad ?edadesNinos)
+      (if (< ?edad 3) then (bind ?hay-bebe si)))
 
+   (assert (problema-familia ?tipo-familia ?numerosa ?hay-bebe))
+   (assert (info-usuario-definido-familia))
+   (format t "  [Abstraccion] Familia: %s / numerosa=%s / bebe=%s%n" ?tipo-familia ?numerosa ?hay-bebe)
+   (if (eq ?hay-bebe si) then (assert (requiere-accesibilidad))))
 
-  (defrule abstraccion-usuario::abstraer-datos-usuario
-    ?u <- (object (is-a Usuario) (edad ?v-edad) (anosEstudio ?v-c) (experiencia ?v-exp) (Habla_en $?ids))
-    (not (abstraer-datos-usuario-definido))
-    =>
-    (bind ?cat-edad
-        (if (< ?v-edad 30) then joven
-        else (if (< ?v-edad 65) then adulto
-        else anciano)))
+(defrule ABSTRACCION-USUARIO::info-usuario-amigos
+   (object (is-a Grupo_de_amigos) (name [cliente]) (nPersonas ?numPersonas))
+   (not (info-usuario-definido-amigos))
+   =>
+   (bind ?categoria (if (> ?numPersonas 5) then numeroso else no-numeroso))
+   (assert (problema-amigos ?categoria))
+   (assert (info-usuario-definido-amigos))
+   (format t "  [Abstraccion] Grupo amigos: %s%n" ?categoria)
+   (if (> ?numPersonas 8) then (assert (requiere-transporte-grande))))
 
-    (bind ?cat-c
-        (if (< ?v-c 6) then poco
-        else (if (< ?v-c 15) then medio
-        else alto)))
+(defrule ABSTRACCION-USUARIO::abstraer-presupuesto
+   (restricciones-viaje (presupuestoMaximo ?p) (maxDiasViaje ?d))
+   (test (and (numberp ?p) (numberp ?d) (> ?p 0) (> ?d 0)))
+   (not (perfil-economico ?))
+   =>
+   (bind ?ppd (/ ?p ?d))
+   (bind ?nivel
+      (if (< ?ppd 60) then bajo
+      else (if (< ?ppd 150) then medio
+      else alto)))
+   (assert (perfil-economico ?nivel))
+   (format t "  [Abstraccion] Presupuesto/dia: %d euros -> %s%n" (round ?ppd) ?nivel))
 
-    (bind ?cat-exp
-        (if (>= ?v-exp 10) then alta
-        else (if (>= ?v-exp 5) then media
-        else baja)))
+(defrule ABSTRACCION-USUARIO::abstraer-duracion
+   (restricciones-viaje (maxDiasViaje ?d))
+   (test (and (numberp ?d) (> ?d 0)))
+   (not (perfil-duracion ?))
+   =>
+   (bind ?dur
+      (if (<= ?d 3) then corta
+      else (if (<= ?d 7) then media
+      else larga)))
+   (assert (perfil-duracion ?dur))
+   (format t "  [Abstraccion] Duracion: %d dias -> %s%n" ?d ?dur))
 
-    (bind ?cat-id
-        (if (or (member$ [ingles] ?ids)(> (length$ ?ids) 1))
-            then internacional
-            else local))
+(defrule ABSTRACCION-USUARIO::abstraer-accesibilidad
+   (datos-usuario (requiereAccesibilidad ?acc))
+   (not (accesibilidad-abstracta-hecho))
+   =>
+   (if (eq ?acc si)
+      then (assert (restriccion-movilidad-critica si))
+      else (assert (restriccion-movilidad-critica no)))
+   (assert (accesibilidad-abstracta-hecho)))
 
-    (assert (problema-abstracto ?cat-edad ?cat-c ?cat-exp ?cat-id))
-    (assert (abstraer-datos-usuario-definido))
-    (printout t "  [Abstraccion] Perfil: "?cat-edad " / " ?cat-c " / " ?cat-exp " / " ?cat-id crlf))
+(defrule ABSTRACCION-USUARIO::abstraer-ritmo
+   (preferencias-viaje (nivelRitmo ?r))
+   (not (ritmo-categoria ?))
+   =>
+   (bind ?cat (if (eq ?r indiferente) then normal else ?r))
+   (assert (ritmo-categoria ?cat))
+   (format t "  [Abstraccion] Ritmo: %s%n" ?cat))
 
-  (defrule abstraccion-usuario::info-usuario-familia
-    ?u <- (object (is-a Familia) (nAdultos ?numAdultos) (nNinos ?numNinos) (edadNinos $?edadesNinos))
-    (not (info-usuario-definido-familia))
-    =>
-    (bind ?tipo-familia
-        (if (> ?numAdultos 2) then varias-familias
-        else una-familia))
+(defrule ABSTRACCION-USUARIO::abstraer-calidad-alojamiento
+   (restricciones-viaje (calMinAlojamiento ?a))
+   (test (numberp ?a))
+   (not (calidad-alojamiento ?))
+   =>
+   (bind ?cat
+      (if (>= ?a 8) then lujo
+      else (if (>= ?a 5) then estandar
+      else economico)))
+   (assert (calidad-alojamiento ?cat))
+   (format t "  [Abstraccion] Calidad alojamiento minima: %s%n" ?cat))
 
-    (bind ?numerosa
-        (if (> ?numNinos 3) then si else no))
+(defrule ABSTRACCION-USUARIO::abstraer-num-ciudades
+   (restricciones-viaje (minNumCiudad ?c) (maxDiasViaje ?d))
+   (test (and (> ?c 0) (> ?d 0)))
+   (not (duracion-ciudad-abstracta ?))
+   =>
+   (bind ?ratio (/ ?d ?c)) ; Dias por ciudad promedio
+   (bind ?cat
+      (if (< ?ratio 2.0) then expres ; menos de dos dias por ciudad es una paliza
+      else (if (<= ?ratio 4.0) then normal
+      else calmado)))
+   (assert (duracion-ciudad-abstracta ?cat))
+   (format t "  [Abstraccion] Ritmo de estancia en ciudades: %s%n" ?cat))
 
-    (bind ?hay-bebe no)
-    (progn$ (?edad ?edadesNinos)
-        (if (< ?edad 3) then (bind ?hay-bebe si)))
+(defrule ABSTRACCION-USUARIO::deducir-objetivo-evento
+   (datos-usuario (motivo ?m))
+   (test (and (neq ?m ninguno) (neq ?m nil)))
+   (object (is-a Eventos_especiales) (name ?m))
+   (not (clase-objetivo ?))
+   =>
+   (if (or (eq ?m [boda]) (eq ?m [luna-miel]) (eq ?m [aniversario]))
+      then (assert (clase-objetivo romantico))
+      else (if (or (eq ?m [fin-curso]) (eq ?m [cumpleanos]))
+         then (assert (clase-objetivo diversion))
+         else (assert (clase-objetivo descanso))))
+   (format t "  [Abstraccion] Objetivo deducido de evento: %s%n" ?m))
 
-    (assert (problema-familia ?tipo-familia ?numerosa ?hay-bebe))
-    (assert (info-usuario-definido-familia))
-    (printout t "  [Abstraccion] Familia: "?tipo-familia " / numerosa=" ?numerosa " / bebe=" ?hay-bebe crlf)
+(defrule ABSTRACCION-USUARIO::abstraer-objetivo-directo
+   (datos-usuario (motivo ?m))
+   (test (and (neq ?m ninguno) (neq ?m nil)))
+   (object (is-a Objetivo) (name ?m))
+   (not (clase-objetivo ?))
+   =>
+   (assert (clase-objetivo ?m))
+   (format t "  [Abstraccion] Objetivo directo: %s%n" ?m))
 
-    (if (eq ?hay-bebe si)
-        then (assert (requiere-accesibilidad))))
+(defrule ABSTRACCION-USUARIO::objetivo-sin-motivo
+   (datos-usuario (motivo ?m))
+   (test (or (eq ?m ninguno) (eq ?m nil)))
+   (not (clase-objetivo ?))
+   =>
+   (assert (clase-objetivo descanso))
+   (format t "  [Abstraccion] Sin motivo explicito -> descanso por defecto%n"))
 
-  (defrule abstraccion-usuario::info-usuario-amigos
-    (object (is-a Grupo_de_amigos)(nPersonas ?numPersonas))
-    (not (info-usuario-definido-amigos))
-    =>
-    (bind ?categoria
-        (if (> ?numPersonas 5) then numeroso
-        else no-numeroso))
-    (assert (problema-amigos ?categoria))
-    (assert (info-usuario-definido-amigos))
-    (printout t "  [Abstraccion] Grupo amigos: " ?categoria crlf)
+(defrule ABSTRACCION-USUARIO::abstraer-tematicas
+   (preferencias-viaje (tematicasPreferidas $?temas))
+   (not (tematicas-abstraidas))
+   =>
+   (if (> (length$ ?temas) 0)
+      then
+          (progn$ (?t ?temas)
+              (assert (clase-tematica ?t))
+              (format t "  [Abstraccion] Tematica activa: %s%n" ?t))
+      else
+          (assert (clase-tematica cultura))
+          (format t "  [Abstraccion] Sin tematica -> cultura por defecto%n"))
+   (assert (tematicas-abstraidas)))
 
-    (if (> ?numPersonas 8)
-        then (assert (requiere-transporte-grande))))
+(defrule ABSTRACCION-USUARIO::abstraer-clima-actividad
+   (preferencias-viaje (preferenciaClima ?temp))
+   (datos-usuario (equipamiento $?equipo))
+   (not (perfil-clima-actividad ?))
+   =>
+   (bind ?perfil normal)
+   (if (and (eq ?temp frio) (member$ material-invierno $?equipo))
+      then (bind ?perfil nieve-esqui))
+   (if (and (eq ?temp calido) (member$ material-playa $?equipo))
+      then (bind ?perfil costa-relax))
+   (if (member$ material-montana $?equipo)
+      then (bind ?perfil aventura-trekking))
+      
+   (assert (perfil-clima-actividad ?perfil))
+   (format t "  [Abstraccion] Fusión Actividad-Equipamiento: %s%n" ?perfil))
 
-  (defrule abstraccion-usuario::abstraer-presupuesto
-    (restricciones-viaje (presupuestoMaximo ?p)(maxDiasViaje ?d))
-    (test (and (numberp ?p)(numberp ?d)(> ?p 0)(> ?d 0)))
-    (not (perfil-economico ?))
-    =>
-    (bind ?ppd (/ ?p ?d))
-    (bind ?nivel
-        (if (< ?ppd 60) then bajo
-        else (if (< ?ppd 150) then medio
-        else alto)))
-    (assert (perfil-economico ?nivel))
-    (printout t "  [Abstraccion] Presupuesto/dia: "
-        (round ?ppd) "euros → " ?nivel crlf))
+(defrule ABSTRACCION-USUARIO::abstraer-complejidad-logistica
+   (or (problema-familia varias-familias si ?) ; Varias familias o con bebés
+       (problema-amigos numeroso))              ; O grupo grande de amigos
+   (not (logistica-viaje ?))
+   =>
+   (assert (logistica-viaje compleja))
+   (format t "  [Abstraccion] Complejidad logistica del itinerario: COMPLEJA%n"))
 
-  (defrule abstraccion-usuario::abstraer-duracion
-    (restricciones-viaje (maxDiasViaje ?d))
-    (test (and (numberp ?d)(> ?d 0)))
-    (not (perfil-duracion ?))
-    =>
-    (bind ?dur
-        (if (<= ?d 4) then corta
-        else (if (<= ?d 10) then media
-        else larga)))
-    (assert (perfil-duracion ?dur))
-    (printout t "  [Abstraccion] Duracion: " ?d " dias → " ?dur crlf))
-
-  (defrule abstraccion-usuario::abstraer-accesibilidad
-    (restricciones-viaje (accesibilidad ?acc))
-    (test (>= ?acc 0))
-    (not (accesibilidad-abstracta-hecho))
-    =>
-    (if (> ?acc 5)
-        then (assert (restriccion-movilidad-critica si))
-        else (assert (restriccion-movilidad-critica no)))
-    (assert (accesibilidad-abstracta-hecho)))
-
-  (defrule abstraccion-usuario::abstraer-ritmo
-    (preferencias-viaje (nivelRitmo ?r))
-    (test (> ?r 0))
-    (not (ritmo-categoria ?))
-    =>
-    (bind ?cat
-        (if (<= ?r 3) then relajado
-        else (if (<= ?r 7) then normal
-        else frenetico)))
-    (assert (ritmo-categoria ?cat))
-    (printout t "  [Abstraccion] Ritmo: " ?r "/10 → " ?cat crlf))
-
-  (defrule abstraccion-usuario::abstraer-calidad-alojamiento
-    (restricciones-viaje (calMinAlojamiento ?a))
-    (test (> ?a 0))
-    (not (calidad-alojamiento ?))
-    =>
-    (bind ?cat
-        (if (<= ?a 3) then economico
-        else (if (<= ?a 7) then estandar
-        else lujo)))
-    (assert (calidad-alojamiento ?cat))
-    (printout t "  [Abstraccion] Calidad alojamiento: " ?cat crlf))
-
-  (defrule abstraccion-usuario::abstraer-num-ciudades
-    (restricciones-viaje (minNumCiudad ?c))
-    (test (> ?c 0))
-    (not (duracion-ciudad-abstracta ?))
-    =>
-    (bind ?cat
-        (if (<= ?c 1) then pocas
-        else (if (<= ?c 3) then normal
-        else muchas)))
-    (assert (duracion-ciudad-abstracta ?cat)))
+(defrule ABSTRACCION-USUARIO::abstraer-complejidad-logistica-por-defecto
+   (not (logistica-viaje ?))
+   =>
+   (assert (logistica-viaje estandar))
+   (format t "  [Abstraccion] Complejidad logistica del itinerario: ESTANDAR%n"))
 
 
-  (defrule abstraccion-usuario::deducir-objetivo-evento
-    (datos-usuario (motivo ?m))
-    (test (neq ?m nil))
-    (object (is-a Eventos_especiales)(name ?m))
-    (not (clase-objetivo ?))
-    =>
-    (if (or (eq ?m [boda])(eq ?m [luna-miel])(eq ?m [aniversario]))
-        then (assert (clase-objetivo romantico))
-        else (if (or (eq ?m [fin-curso])(eq ?m [cumpleanos]))
-            then (assert (clase-objetivo diversion))
-            else (assert (clase-objetivo descanso))))
-    (printout t "  [Abstraccion] Objetivo deducido de evento: "
-        (instance-name ?m) crlf))
-
-  (defrule abstraccion-usuario::abstraer-objetivo-directo
-    (datos-usuario (motivo ?m))
-    (test (neq ?m nil))
-    (object (is-a Objetivo)(name ?m))
-    (not (clase-objetivo ?))
-    =>
-    (assert (clase-objetivo (instance-name ?m)))
-    (printout t "  [Abstraccion] Objetivo directo: "
-        (instance-name ?m) crlf))
+(defrule ABSTRACCION-USUARIO::fin-abstraccion
+   (declare (salience -100))
+   (perfil-economico ?)
+   (perfil-duracion ?)
+   (ritmo-categoria ?)
+   (clase-objetivo ?)
+   (nivel-cultural ?)
+   (experiencia-viajera ?)
+   (tematicas-abstraidas)
+   (perfil-clima-actividad ?)
+   (calidad-alojamiento ?)
+   (duracion-ciudad-abstracta ?)
+   (logistica-viaje ?)
+   (not (fin-abstraccion-hecho))
+   =>
+   (assert (fin-abstraccion-hecho))
+   (printout t crlf "--------------------------------------------" crlf)
+   (printout t "              ABSTRACCION HECHA             " crlf)
+   (printout t "--------------------------------------------" crlf)
+   (focus HEURISTICA-USUARIO))
 
 
-  (defrule abstraccion-usuario::objetivo-sin-motivo
-    (datos-usuario (motivo ?m))
-    (test (eq ?m nil))
-    (not (clase-objetivo ?))
-    =>
-    (assert (clase-objetivo descanso))
-    (printout t "  [Abstraccion] Sin motivo → descanso" crlf))
+; ===================================================================
+;                      HEURISTICA USUARIO
+; ===================================================================
 
-  (defrule abstraccion-usuario::abstraer-tematicas
-    (preferencias-viaje (tematicas $?temas))
-    (not (tematicas-abstraidas))
-    =>
-    (if (> (length$ ?temas) 0)
-        then
-            (progn$ (?t ?temas)
-                (assert (clase-tematica ?t))
-                (printout t "  [Abstraccion] Tematica: "
-                    (instance-name ?t) crlf))
-        else
-            (assert (clase-tematica [cultura]))
-            (printout t "  [Abstraccion] Sin tematica → cultura por defecto" crlf))
-    (assert (tematicas-abstraidas)))
+(defrule HEURISTICA-USUARIO::inicializar-ciudades
+   (declare (salience 100))
+   (object (is-a Ciudad) (name ?c))
+   (not (ciudad-candidata (nombre ?c-sym&:(eq ?c-sym (instance-name-to-symbol ?c)))))
+   =>
+   (assert (ciudad-candidata (nombre (instance-name-to-symbol ?c)) (puntuacion 0) (valida si))))
+
+(defrule HEURISTICA-USUARIO::puntos-presupuesto
+   ?f <- (ciudad-candidata (nombre ?c) (valida si) (puntuacion ?p))
+   (restricciones-viaje (presupuestoMaximo ?presupuesto) (maxDiasViaje ?dias))
+   (preferencias-viaje (preferenciaClima ?temp))
+   (object (is-a Ciudad) (name ?obj) (precioMedio ?pr))
+   (test (eq (instance-name-to-symbol ?obj) ?c))
+   (not (penalizado-presupuesto ?c))
+   (test (and (> ?presupuesto 0) (> ?dias 0)))
+   =>
+   (bind ?precio-ajustado ?pr)
+   (if (eq ?temp calido) then 
+      (bind ?precio-ajustado (round (* ?pr 1.20)))
+      (format t "  [Heuristica] %s se evalua con recargo de temporada alta: %d euros/dia.%n" ?c ?precio-ajustado))
+
+   (bind ?limite (/ ?presupuesto ?dias))
+   (if (> ?precio-ajustado ?limite) then
+      (bind ?exceso (/ (- ?precio-ajustado ?limite) ?limite))  
+      (bind ?penalizacion 0)
+      (if (< ?exceso 0.25) then (bind ?penalizacion 5))
+      (if (and (>= ?exceso 0.25) (< ?exceso 0.75)) then (bind ?penalizacion 15))
+      (if (>= ?exceso 0.75) then (bind ?penalizacion 30))
+      (modify ?f (puntuacion (- ?p ?penalizacion)))
+      (format t "  [Heuristica] -%d a %s por presupuesto ajustado (Precio: %d, Limite: %d).%n" ?penalizacion ?c ?precio-ajustado (round ?limite)))
+   (assert (penalizado-presupuesto ?c)))
+
+(defrule HEURISTICA-USUARIO::puntos-transporte
+   ?f <- (ciudad-candidata (nombre ?c) (valida si) (puntuacion ?p))
+   (restricciones-viaje (presupuestoMaximo ?presupuesto))
+   (object (is-a Transporte) (Destino ?dest) (precioTransporte ?pt))
+   (test (eq (instance-name-to-symbol ?dest) ?c))
+   (not (penalizado-transporte ?c))
+   (test (> ?presupuesto 0))
+   =>
+   (bind ?limite-transporte (* ?presupuesto 0.20))  
+   (if (> ?pt ?limite-transporte) then
+      (bind ?exceso (/ (- ?pt ?limite-transporte) ?limite-transporte))
+      (bind ?penalizacion 0)
+      (if (< ?exceso 0.25) then (bind ?penalizacion 5))
+      (if (and (>= ?exceso 0.25) (< ?exceso 0.75)) then (bind ?penalizacion 15))
+      (if (>= ?exceso 0.75) then (bind ?penalizacion 30))
+      (modify ?f (puntuacion (- ?p ?penalizacion))))
+   (assert (penalizado-transporte ?c)))
+
+(defrule HEURISTICA-USUARIO::filtro-distancia-continente
+   (or  (perfil-duracion corta)
+        (datos-usuario (tipoGrupo familia)))
+   (datos-usuario (ciudad $?origen))
+   ?f <- (ciudad-candidata (nombre ?c) (valida si))
+   (object (is-a Ciudad)
+           (name ?obj-dest)
+           (continente ?cont-destino))
+   (test (eq (instance-name-to-symbol ?obj-dest) ?c))
+   (object (is-a Ciudad)
+           (name ?obj-org)
+           (continente ?cont-origen))
+   (test (eq (instance-name-to-symbol ?obj-org) (nth$ 1 ?origen)))
+   (test (neq ?cont-origen ?cont-destino))
+   =>
+   (modify ?f (valida no))
+   (format t "  [Heuristica] DESCARTE: %s está en otro continente (%s) y el viaje requiere cercanía.%n" ?c ?cont-destino))
 
 
-  (defrule abstraccion-usuario::fin-abstraccion
-    (declare (salience -100))
-    (abstraer-datos-usuario-definido)
-    (perfil-economico ?)
-    (perfil-duracion ?)
-    (ritmo-categoria ?)
-    (clase-objetivo ?)
-    (tematicas-abstraidas)
-    (not (fin-abstraccion-hecho))
-    =>
-    (assert (fin-abstraccion-hecho))
-    (printout t crlf)
-    (printout t "--------------------------------------------" crlf)
-    (printout t " ABSTRACCION HECHA    " crlf)
-    (printout t "--------------------------------------------" crlf)
-    (focus heuristica-usuario))
+(defrule HEURISTICA-USUARIO::filtro-duracion-larga
+   (perfil-duracion larga)
+   ?f <- (ciudad-candidata (nombre ?c) (valida si))
+   (object (is-a Ciudad) (name ?obj) (Contienen $?contienen))
+   (test (eq (instance-name-to-symbol ?obj) ?c))
+   (test (< (length$ ?contienen) 3))
+   =>
+   (modify ?f (valida no))
+   (format t "  [Heuristica] DESCARTE: %s ofrece pocos puntos de interes para un viaje largo.%n" ?c))
 
-; ------------------------------------
-;           HEURISTICA USUARIO
-; ------------------------------------
-
-  (defrule heuristica-usuario::inicializar-ciudades
-    (declare (salience 100))
-    (object (is-a Ciudad) (name ?c))
-    (not (ciudad-candidata (nombre ?c)))
-    =>
-    (assert (ciudad-candidata (nombre ?c) (puntuacion 0) (valida si)))
-  )
-
-  (defrule heuristica-usuario::puntos-presupuesto
-    ?f <- (ciudad-candidata (nombre ?c) (valida si) (puntuacion ?p))
-    (restricciones-viaje (presupuestoMaximo ?presupuesto) (maxDiasViaje ?dias))
-    (object (is-a Ciudad) (name ?c) (precioMedio ?pr))
-    (not (penalizado-presupuesto ?c))
-    =>
-    (bind ?limite (/ ?presupuesto ?dias))
-    
-    (if (> ?pr ?limite) then
-        (bind ?exceso (/ (- ?pr ?limite) ?limite))  
-        (bind ?penalizacion 0)
-        
-        (if (< ?exceso 0.25) then      
-            (bind ?penalizacion 5))
-        (if (and (>= ?exceso 0.25)
-                 (< ?exceso 0.75)) then  
-            (bind ?penalizacion 15))
-        (if (>= ?exceso 0.75) then       
-            (bind ?penalizacion 30))
-        
-        (modify ?f (puntuacion (- ?p ?penalizacion)))
-        (printout t "  [Heuristica] -" ?penalizacion " a " ?c " por precio (" ?pr " euros/dia, limite " (round ?limite) " euros/dia)." crlf)
-    )
-    (assert (penalizado-presupuesto ?c))
-)
-
-(defrule heuristica-usuario::puntos-transporte
-    ?f <- (ciudad-candidata (nombre ?c) (valida si) (puntuacion ?p))
-    (restricciones-viaje (presupuestoMaximo ?presupuesto))
-    (object (is-a Transporte) (Destino ?c) (precioTransporte ?pt))
-    (not (penalizado-transporte ?c))
-    =>
-    (bind ?limite-transporte (* ?presupuesto 0.20))  
-    
-    (if (> ?pt ?limite-transporte) then
-        (bind ?exceso (/ (- ?pt ?limite-transporte) ?limite-transporte))
-        (bind ?penalizacion 0)
-        
-        (if (< ?exceso 0.25) then
-            (bind ?penalizacion 5))
-        (if (and (>= ?exceso 0.25)
-                 (< ?exceso 0.75)) then
-            (bind ?penalizacion 15))
-        (if (>= ?exceso 0.75) then
-            (bind ?penalizacion 30))
-        
-        (modify ?f (puntuacion (- ?p ?penalizacion)))
-        (printout t "  [Heuristica] -" ?penalizacion " a " ?c " por transporte caro (" ?pt " euros, limite " (round ?limite-transporte) " euros)." crlf)
-    )
-    (assert (penalizado-transporte ?c))
-)
-
-  (defrule heuristica-usuario::filtro-duracion-corta
-    (perfil-duracion corta)
-    (datos-usuario (ciudad $?origen))
-    (test (> (length$ ?origen) 0))
-    ?f <- (ciudad-candidata (nombre ?c)(valida si))
-    (object (is-a Ciudad)(name ?c)(continente ?cont-destino))
-    =>
-    (bind ?ciudad-origen (nth$ 1 ?origen))
-    (bind ?cont-origen (send ?ciudad-origen get-continente))
-    (if (neq ?cont-origen ?cont-destino)
-        then
-            (modify ?f (valida no))
-            (printout t "  [Heuristica] " (instance-name ?c)" descartada: viaje corto, continente diferente." crlf)))
-
-  (defrule heuristica-usuario::filtro-duracion-larga
-      (perfil-duracion larga)
-      ?f <- (ciudad-candidata (nombre ?c) (valida si))
-      (object (is-a Ciudad) (name ?c) (Contienen $?contienen))
-      (test (< (length$ ?contienen) 3))
-      =>
+(defrule HEURISTICA-USUARIO::filtro-restriccion-tematica
+   ?f <- (ciudad-candidata (nombre ?c) (valida si))
+   (preferencias-viaje (tematicasPreferidas $?temas-pref))
+   (test (> (length$ ?temas-pref) 0))
+   (object (is-a Ciudad) (name ?obj) (Tipo_de_ciudad $?tipos))
+   (test (eq (instance-name-to-symbol ?obj) ?c))
+   =>
+   (bind ?encuentra no)
+   (progn$ (?t ?temas-pref)
+      (if (member$ ?t ?tipos) then (bind ?encuentra si)))
+   (if (eq ?encuentra no) then
       (modify ?f (valida no))
-      (printout t "  [Heuristica] Ciudad " (instance-name ?c) " descartada: muy pocos puntos de interes para viaje largo." crlf)
-  )
+      (format t "  [Heuristica] DESCARTE: %s no pertenece a ninguna tematica solicitada.%n" ?c)))
 
-  (defrule heuristica-usuario::puntuar-tematica
-    ?f <- (ciudad-candidata (nombre ?c) (valida si) (puntuacion ?p))
-    (preferencias-viaje(tematicas $?tematicas-usuario))
-    (object (is-a Ciudad) (name ?c) (Tipo_de_ciudad $?tipos-ciudad))
-    (not (puntuo-tematica ?c))
-    =>
-    (bind ?coincide no)
-    (progn$ (?t ?tematicas-usuario)
-        (if (member$ ?t ?tipos-ciudad) 
-            then (bind ?coincide si))
-    )
-    (if (eq ?coincide si) then
-        (modify ?f (puntuacion (+ ?p 20)))
-        (printout t "  [Heuristica] +20 a " (instance-name ?c) " por coincidir con la tematica deseada." crlf)
-    )
-    
-    (assert (puntuo-tematica ?c))
-)
+(defrule HEURISTICA-USUARIO::filtro-material-faltante
+   ?f <- (ciudad-candidata (nombre ?c) (valida si))
+   (datos-usuario (equipamiento $?mis-materiales))
+   (object (is-a Ciudad) (name ?obj) (Requiere_de $?mat-req))
+   (test (eq (instance-name-to-symbol ?obj) ?c))
+   =>
+   (bind ?faltante no)
+   (progn$ (?m ?mat-req)
+      (if (not (member$ (instance-name-to-symbol ?m) ?mis-materiales)) then (bind ?faltante si)))
+   (if (eq ?faltante si) then
+      (modify ?f (valida no))
+      (format t "  [Heuristica] DESCARTE: %s requiere equipamiento que no posees.%n" ?c)))
 
-  (defrule heuristica-usuario::puntuar-ciudad-obligatoria
-    ?f <- (ciudad-candidata (nombre ?c) (valida si) (puntuacion ?p))
-    (restricciones-viaje (ciudadesObligatorias $?lista))
-    (test (member$ ?c $?lista))
-    (not (puntuo-obligatoria ?c))
-    =>
-    (assert (puntuo-obligatoria ?c))
-    (modify ?f (puntuacion (+ ?p 500)))
-    (printout t "  [Heuristica] +500 a " (instance-name ?c) " por ser ciudad obligatoria." crlf)
-  )
+(defrule HEURISTICA-USUARIO::filtro-calidad-alojamiento
+   ?f <- (ciudad-candidata (nombre ?c) (valida si))
+   (restricciones-viaje (calMinAlojamiento ?min-cal))
+   (object (is-a Ciudad)
+           (name ?obj)
+           (Tiene_un_conjunto_de $?aloj-list))
+   (test (eq (instance-name-to-symbol ?obj) ?c))
+   =>
+   (bind ?total 0)
+   (bind ?n 0)
 
-  (deffunction heuristica-usuario::hay-interseccion (?l1 ?l2)
-   (foreach ?x ?l1
-      (if (member$ ?x ?l2) then
-         (return TRUE)))
-   (return FALSE)
-  )
+   (progn$ (?a ?aloj-list)
+      (bind ?p (send ?a get-calidadAlojamiento))
+      (bind ?total (+ ?total ?p))
+      (bind ?n (+ ?n 1)))
 
-  (defrule heuristica-usuario::puntuar-punto-interes
+   (if (> ?n 0)
+       then (bind ?media (/ ?total ?n))
+       else (bind ?media 0))
+
+   (if (< ?media ?min-cal) then
+       (modify ?f (valida no))
+       (format t "  [Heuristica] DESCARTE: %s no cumple la calidad mínima (%d). Media=%d%n"
+               ?c ?min-cal ?media)))
+
+(defrule HEURISTICA-USUARIO::puntuar-tematica
+   ?f <- (ciudad-candidata (nombre ?c) (valida si) (puntuacion ?p))
+   (preferencias-viaje (tematicasPreferidas $?tematicas-usuario)) 
+   (object (is-a Ciudad) (name ?obj) (Tipo_de_ciudad $?tipos-ciudad))
+   (test (eq (instance-name-to-symbol ?obj) ?c))
+   (not (puntuo-tematica ?c))
+   =>
+   (bind ?coincide no)
+   (progn$ (?t ?tematicas-usuario)
+      (if (member$ ?t ?tipos-ciudad) then (bind ?coincide si)))
+   (if (eq ?coincide si) then
+      (modify ?f (puntuacion (+ ?p 20)))
+      (format t "  [Heuristica] +20 a %s por coincidir con la tematica deseada.%n" ?c))
+   (assert (puntuo-tematica ?c)))
+
+(defrule HEURISTICA-USUARIO::puntuar-alojamiento-y-perfil-gasto
+   ?f <- (ciudad-candidata (nombre ?c) (valida si) (puntuacion ?p))
+   (perfil-economico alto)
+   (calidad-alojamiento lujo)
+   (object (is-a Ciudad) (name ?obj) (Tipo_de_ciudad $?tipos))
+   (test (eq (instance-name-to-symbol ?obj) ?c))
+   (not (puntuo-alojamiento ?c))
+   =>
+   (modify ?f (puntuacion (+ ?p 35)))
+   (format t "  [Heuristica] +35 a %s por excelente oferta de hoteles de alta gama para presupuesto alto.%n" ?c)
+   (assert (puntuo-alojamiento ?c)))
+
+
+(defrule HEURISTICA-USUARIO::puntuar-objetivo-grupo
+   ?f <- (ciudad-candidata (nombre ?c) (valida si) (puntuacion ?p))
+   (clase-objetivo ?obj-v)
+   (object (is-a Ciudad) (name ?obj-inst) (Tipo_de_ciudad $?tipos))
+   (test (eq (instance-name-to-symbol ?obj-inst) ?c))
+   (not (puntuo-objetivo ?c))
+   =>
+   (bind ?bonus 0)
+   (if (and (eq ?obj-v diversion) (member$ [fiesta] ?tipos)) then (bind ?bonus 40))
+   (if (and (eq ?obj-v romantico) (member$ [romantica] ?tipos)) then (bind ?bonus 40))
+   (if (and (eq ?obj-v descanso) (member$ [tranquila] ?tipos)) then (bind ?bonus 30))
+   (if (> ?bonus 0) then
+      (modify ?f (puntuacion (+ ?p ?bonus)))
+      (format t "  [Heuristica] +%d a %s por cumplir el objetivo de viaje (%s).%n" ?bonus ?c ?obj-v))
+   (assert (puntuo-objetivo ?c)))
+
+(defrule HEURISTICA-USUARIO::puntuar-tipo-compania
+   ?f <- (ciudad-candidata (nombre ?c) (valida si) (puntuacion ?p))
+   (datos-usuario (tipoGrupo ?grupo))
+   (object (is-a Ciudad) (name ?obj) (Tipo_de_ciudad $?tipos-ciudad))
+   (test (eq (instance-name-to-symbol ?obj) ?c))
+   (not (puntuo-grupo ?c))
+   =>
+   (if (member$ ?grupo ?tipos-ciudad) then
+      (modify ?f (puntuacion (+ ?p 25)))
+      (format t "  [Heuristica] +25 a %s por adecuacion al tipo de grupo viajero.%n" ?c))
+   (assert (puntuo-grupo ?c)))
+
+(defrule HEURISTICA-USUARIO::puntuar-nivel-cultural
+   ?f <- (ciudad-candidata (nombre ?c) (valida si) (puntuacion ?p))
+   (nivel-cultural ?cat-c)
+   (object (is-a Ciudad) (name ?obj) (Tipo_de_ciudad $?tipos-ciudad))
+   (test (eq (instance-name-to-symbol ?obj) ?c))
+   (not (puntuo-cultural ?c))
+   =>
+   (bind ?bonus 0)
+   (if (and (eq ?cat-c alto) (member$ [cultura] ?tipos-ciudad)) then (bind ?bonus 30)
+   else (if (and (eq ?cat-c medio) (member$ [cultura] ?tipos-ciudad)) then (bind ?bonus 15)
+   else (if (and (eq ?cat-c bajo) (or (member$ [playa] ?tipos-ciudad) (member$ [fiesta] ?tipos-ciudad))) then (bind ?bonus 10))))
+   (if (> ?bonus 0) then
+      (modify ?f (puntuacion (+ ?p ?bonus)))
+      (format t "  [Heuristica] +%d a %s por afinidad con nivel cultural %s.%n" ?bonus ?c ?cat-c))
+   (assert (puntuo-cultural ?c)))
+
+(defrule HEURISTICA-USUARIO::puntuar-profesion
+   ?f <- (ciudad-candidata (nombre ?c) (valida si) (puntuacion ?p))
+   (datos-usuario (profesion ?prof))
+   (test (neq ?prof ninguno))
+   (object (is-a Ciudad) (name ?obj) (Tipo_de_ciudad $?tipos-ciudad))
+   (test (eq (instance-name-to-symbol ?obj) ?c))
+   (not (puntuo-profesion ?c))
+   =>
+   (bind ?bonus 0)
+   (if (and (eq ?prof artes) (member$ [cultura] ?tipos-ciudad)) then (bind ?bonus 25))
+   (if (and (eq ?prof ciencias) (or (member$ [cultura] ?tipos-ciudad) (member$ [aventura] ?tipos-ciudad))) then (bind ?bonus 20))
+   (if (and (eq ?prof humanidades) (or (member$ [cultura] ?tipos-ciudad) (member$ [romantica] ?tipos-ciudad))) then (bind ?bonus 20))
+   (if (and (eq ?prof tecnico) (member$ [aventura] ?tipos-ciudad)) then (bind ?bonus 15))
+   (if (and (eq ?prof salud) (or (member$ [montana] ?tipos-ciudad) (member$ [playa] ?tipos-ciudad))) then (bind ?bonus 20))
+   (if (> ?bonus 0) then
+      (modify ?f (puntuacion (+ ?p ?bonus)))
+      (format t "  [Heuristica] +%d a %s por afinidad con la profesion %s.%n" ?bonus ?c ?prof))
+   (assert (puntuo-profesion ?c)))
+
+(defrule HEURISTICA-USUARIO::puntuar-ciudad-obligatoria
+   ?f <- (ciudad-candidata (nombre ?c) (valida si) (puntuacion ?p))
+   (restricciones-viaje (ciudadesObligatorias $?lista))
+   (test (member$ ?c $?lista))
+   (not (puntuo-obligatoria ?c))
+   =>
+   (assert (puntuo-obligatoria ?c))
+   (modify ?f (puntuacion (+ ?p 1000)))
+   (format t "  [Heuristica] +1000 a %s por ser ciudad obligatoria (Prioridad Absoluta).%n" ?c))
+
+(deffunction HEURISTICA-USUARIO::hay-interseccion (?l1 ?l2)
+   (progn$ (?x ?l1)
+      (if (member$ ?x ?l2) then (return TRUE)))
+   (return FALSE))
+
+(defrule HEURISTICA-USUARIO::puntuar-punto-interes
    ?f <- (ciudad-candidata (nombre ?c) (valida si) (puntuacion ?p))
    (restricciones-viaje (lugarInteres $?lugares-deseados))
-   (object (is-a Ciudad)(name ?c)(Contienen $?puntos-ciudad))
-   (test (hay-interseccion ?lugares-deseados ?puntos-ciudad))
+   (object (is-a Ciudad) (name ?obj) (Contienen $?puntos-ciudad))
+   (test (eq (instance-name-to-symbol ?obj) ?c))
+   (test (HEURISTICA-USUARIO::hay-interseccion ?lugares-deseados ?puntos-ciudad))
    (not (puntuo-lugar-interes ?c))
    =>
    (assert (puntuo-lugar-interes ?c))
    (modify ?f (puntuacion (+ ?p 500)))
-   (printout t "  [Heuristica] +500 a " (instance-name ?c) " por puntos de interes." crlf)
-  )
+   (format t "  [Heuristica] +500 a %s por contener puntos de interes deseados.%n" ?c))
 
-  (defrule heuristica-usuario::puntuar-idioma
-    ?f <- (ciudad-candidata (nombre ?c) (valida si) (puntuacion ?p))
-    (datos-usuario (idiomas $?idiomas-usuario))
-    (object (is-a Ciudad) (name ?c) (Hablan_en $?idiomas-ciudad))
-    (not (puntuo-idioma ?c))
-    =>
-    (bind ?coincide no)
-    (progn$ (?id ?idiomas-usuario)
-        (if (member$ ?id ?idiomas-ciudad) then (bind ?coincide si))
-    )
-    (if (eq ?coincide si) then
-        (modify ?f (puntuacion (+ ?p 5)))
-        (printout t "  [Heuristica] +5 a " (instance-name ?c) " por coincidir con los idiomas hablados." crlf)
-    )
-    (assert (puntuo-idioma ?c))
-  )
+(defrule HEURISTICA-USUARIO::puntuar-idioma
+   ?f <- (ciudad-candidata (nombre ?c) (valida si) (puntuacion ?p))
+   (datos-usuario (idiomas $?idiomas-usuario))
+   (object (is-a Ciudad) (name ?obj) (Hablan_en $?idiomas-ciudad))
+   (test (eq (instance-name-to-symbol ?obj) ?c))
+   (not (puntuo-idioma ?c))
+   =>
+   (bind ?coincide no)
+   (progn$ (?id ?idiomas-usuario)
+      (if (member$ ?id ?idiomas-ciudad) then (bind ?coincide si)))
+   (if (eq ?coincide si) then
+      (modify ?f (puntuacion (+ ?p 5)))
+      (format t "  [Heuristica] +5 a %s por coincidir con los idiomas hablados.%n" ?c))
+   (assert (puntuo-idioma ?c)))
 
-  (defrule heuristica-usuario::fin-heuristica
-    (declare (salience -100))
-    (not (fin-heuristica-hecho))
-    =>
-    (assert (fin-heuristica-hecho))
-    (printout t crlf "--------------------------------------------" crlf)
-    (printout t " HEURISTICA TERMINADA " crlf)
-    (printout t "--------------------------------------------" crlf)
-    (printout t crlf "--- LISTA DE CIUDADES CANDIDATAS ---" crlf)
-    (bind ?lista (find-all-facts ((?f ciudad-candidata)) TRUE))
-    (progn$ (?f ?lista)
-        (printout t "  Ciudad: " (fact-slot-value ?f nombre) " | Puntos: " (fact-slot-value ?f puntuacion) " | Valida: " (fact-slot-value ?f valida) crlf)
-    )
-    (printout t "------------------------------------" crlf)
-    (focus sintesis))
+(defrule HEURISTICA-USUARIO::filtrar-transportes-descartados
+   ?f <- (ciudad-candidata (nombre ?c) (valida si))
+   (restricciones-viaje (transportesDescartados $?descartados))
+   (object (is-a Transporte) (Destino ?dest) (medio ?m)) 
+   (test (eq (instance-name-to-symbol ?dest) ?c))
+   (test (and (> (length$ ?descartados) 0) (member$ ?m ?descartados)))
+   =>
+   (modify ?f (valida no))
+   (format t "  [Heuristica] DESCARTE: %s utiliza un transporte excluido (%s).%n" ?c ?m))
 
-; --------------------------------------------------
-;           MODULO SINTESIS
-; --------------------------------------------------
+(defrule HEURISTICA-USUARIO::fin-heuristica
+   (declare (salience -100))
+   (not (fin-heuristica-hecho))
+   =>
+   (printout t crlf "--------------------------------------------" crlf)
+   (printout t "            HEURISTICA TERMINADA            " crlf)
+   (printout t "--------------------------------------------" crlf)
+   (printout t crlf "--- LISTA DE CIUDADES CANDIDATAS ---" crlf)
+   (bind ?lista (find-all-facts ((?f ciudad-candidata)) TRUE))
+   (progn$ (?f ?lista)
+      (format t "  Ciudad: %s | Puntos: %d | Valida: %s%n" 
+        (fact-slot-value ?f nombre) 
+        (fact-slot-value ?f puntuacion) 
+        (fact-slot-value ?f valida)))
+   (printout t "------------------------------------" crlf)
+   (assert (fin-heuristica-hecho))
+   (focus SINTESIS))
 
-(deffunction sintesis::valor-calidad (?cal)
+; =============================================================================
+;                               MODULO SINTESIS
+; =============================================================================
+
+(deffunction SINTESIS::valor-calidad (?cal)
   (if (eq ?cal baja) then (return 1))
   (if (eq ?cal media) then (return 2))
   (if (eq ?cal alta) then (return 3))
@@ -1781,33 +3000,46 @@
   (if (eq ?cal lujo) then (return 3))
   (return 0))
 
-(deffunction sintesis::req-calidad (?cal)
+(deffunction SINTESIS::req-calidad (?cal)
   (if (<= ?cal 3) then (return 1))
   (if (<= ?cal 7) then (return 2))
   (return 3))
 
-(defrule sintesis::iniciar-sintesis
+;; ----------------------------------------------------------------------------
+;; Paso 0: Inicialización del estado de la síntesis
+;; ----------------------------------------------------------------------------
+(defrule SINTESIS::iniciar-sintesis
   (not (sintesis-viaje))
   (restricciones-viaje (presupuestoMaximo ?p))
   =>
-  (assert (sintesis-viaje (id 1) (paso 1) (dias-totales 0) (presupuesto-restante (float ?p)) (num-trans-por-parada))))
+  (assert (sintesis-viaje 
+            (id 1) 
+            (paso 1) 
+            (dias-totales 0) 
+            (presupuesto-restante (float ?p)) 
+            (num-trans-por-parada)
+            (actividades-asignadas))))
 
-(defrule sintesis::seleccionar-ciudades
+;; ----------------------------------------------------------------------------
+;; Paso 1: Selección de Ciudades Candidatas
+;; ----------------------------------------------------------------------------
+(defrule SINTESIS::seleccionar-ciudades
   (declare (salience 50))
-  ?estado <- (sintesis-viaje (paso 1)(ciudades $?ciudades)(presupuesto-restante ?pr))
-  (restricciones-viaje (minNumCiudad ?min)(maxNumCiudad ?max))
+  ?estado <- (sintesis-viaje (paso 1) (ciudades $?ciudades) (presupuesto-restante ?pr))
+  (restricciones-viaje (minNumCiudad ?min) (maxNumCiudad ?max))
   (test (< (length$ ?ciudades) ?max))
   (exists (ciudad-candidata (valida si)))
   =>
-  (bind ?cands (find-all-facts ((?f ciudad-candidata))(eq ?f:valida si)))
+  (bind ?cands (find-all-facts ((?f ciudad-candidata)) (eq ?f:valida si)))
   (bind ?mejor nil)
   (bind ?mejor-p -9999)
   (bind ?mejor-pr 999999)
+  
   (progn$ (?cand ?cands)
     (bind ?p (fact-slot-value ?cand puntuacion))
     (bind ?n (fact-slot-value ?cand nombre))
     (bind ?pc 0)
-    (do-for-all-instances ((?city Ciudad)) (eq (instance-name ?city) ?n)
+    (do-for-all-instances ((?city Ciudad)) (eq (instance-name-to-symbol (instance-name ?city)) ?n)
       (bind ?pc (send ?city get-precioMedio)))
     (if (or (> ?p ?mejor-p) (and (= ?p ?mejor-p) (< ?pc ?mejor-pr)))
       then (bind ?mejor ?cand) (bind ?mejor-p ?p) (bind ?mejor-pr ?pc)))
@@ -1822,18 +3054,21 @@
           (printout t "  [Sintesis] Presupuesto limitado. Finalizando seleccion con " (length$ ?ciudades) " ciudades." crlf)
           (modify ?estado (paso 2))
         else
-          (modify ?mejor (valida no)) ; IMPORTANTE: Descartar para no repetir
+          (modify ?mejor (valida no)) 
           (if (< ?pr ?gasto-est) 
             then (printout t "  [Sintesis] Aviso: Se supera el presupuesto para incluir el minimo de ciudades." crlf))
           (modify ?estado (ciudades (create$ ?ciudades ?c)) (presupuesto-restante (- ?pr ?gasto-est))))))
 
-(defrule sintesis::fin-seleccion-ciudades
+(defrule SINTESIS::fin-seleccion-ciudades
   (declare (salience -10))
   ?estado <- (sintesis-viaje (paso 1) (ciudades $?ciudades))
   =>
   (if (> (length$ ?ciudades) 0) then (modify ?estado (paso 2)) else (modify ?estado (paso 5))))
 
-(defrule sintesis::asignar-dias
+;; ----------------------------------------------------------------------------
+;; Paso 2: Asignación de Días por Parada y Ajuste al Máximo
+;; ----------------------------------------------------------------------------
+(defrule SINTESIS::asignar-dias
   (declare (salience 50))
   ?estado <- (sintesis-viaje (paso 2) (ciudades $?ciudades) (dias $?dias) (dias-totales ?tot))
   (test (< (length$ ?dias) (length$ ?ciudades)))
@@ -1841,7 +3076,7 @@
   (bind ?d (+ 1 (mod (random) 3)))
   (modify ?estado (dias (create$ ?dias ?d)) (dias-totales (+ ?tot ?d))))
 
-(defrule sintesis::ajustar-dias
+(defrule SINTESIS::ajustar-dias
   (declare (salience -10))
   ?estado <- (sintesis-viaje (paso 2) (ciudades $?ciudades) (dias $?dias) (dias-totales ?tot))
   (test (= (length$ ?dias) (length$ ?ciudades)))
@@ -1857,7 +3092,10 @@
     (modify ?estado (paso 3) (dias ?nd) (dias-totales ?s))
   else (modify ?estado (paso 3))))
 
-(defrule sintesis::asignar-alojamiento
+;; ----------------------------------------------------------------------------
+;; Paso 3: Asignación de Alojamiento según Calidad Mínima
+;; ----------------------------------------------------------------------------
+(defrule SINTESIS::asignar-alojamiento
   (declare (salience 50))
   ?estado <- (sintesis-viaje (paso 3) (ciudades $?ciudades) (alojamientos $?aloj))
   (test (< (length$ ?aloj) (length$ ?ciudades)))
@@ -1866,31 +3104,41 @@
   (bind ?c (nth$ (+ (length$ ?aloj) 1) ?ciudades))
   (bind ?r (req-calidad ?cm))
   (bind ?v (create$))
-  (do-for-all-instances ((?city Ciudad)) (eq (instance-name ?city) ?c)
+  
+  (do-for-all-instances ((?city Ciudad)) (eq (instance-name-to-symbol (instance-name ?city)) ?c)
     (progn$ (?a ?city:Tiene_un_conjunto_de)
       (if (>= (valor-calidad (send ?a get-calidadAlojamiento)) ?r) then (bind ?v (create$ ?v ?a)))))
+  
   (bind ?el ninguno) (bind ?pm 999999)
   (progn$ (?a ?v)
-    (if (< (send ?a get-precioAlojamiento) ?pm) then (bind ?pm (send ?a get-precioAlojamiento)) (bind ?el ?a)))
-  (modify ?estado (alojamientos (create$ ?aloj ?el))))
+    (if (< (send ?a get-precioAlojamiento) ?pm) 
+      then (bind ?pm (send ?a get-precioAlojamiento)) 
+           (bind ?el (instance-name-to-symbol (instance-name ?a)))))
+  (modify ?estado (alojamientos (create$ ?aloj ?el)))) 
 
-(defrule sintesis::fin-asignar-alojamiento
+(defrule SINTESIS::fin-asignar-alojamiento
   (declare (salience -10))
   ?estado <- (sintesis-viaje (paso 3) (alojamientos $?aloj) (ciudades $?ciudades))
   (test (= (length$ ?aloj) (length$ ?ciudades)))
-  => (modify ?estado (paso 4)))
+  => 
+  (modify ?estado (paso 4)))
 
-(defrule sintesis::asig-transporte
+;; ----------------------------------------------------------------------------
+;; Paso 4: Encadenamiento de Transportes (Rutas Directas o 1 Escala)
+;; ----------------------------------------------------------------------------
+(defrule SINTESIS::asig-transporte
   (declare (salience 50))
   ?estado <- (sintesis-viaje (paso 4) (ciudades $?ciudades) (transportes $?tr) (num-trans-por-parada $?ntpp))
   (test (< (length$ ?ntpp) (length$ ?ciudades)))
-  (preferencias-viaje (transporte ?p))
+  ;; CORREGIDO: Mapeado al multislot real de tu template 'transportesPreferidos'
+  (preferencias-viaje (transportesPreferidos $?tp)) 
   (datos-usuario (ciudad $?origen-usuario))
   =>
   (bind ?idx (+ (length$ ?ntpp) 1))
   (bind ?dest (nth$ ?idx ?ciudades))
+  
   (if (= ?idx 1)
-    then (bind ?orig (nth$ 1 ?origen-usuario))
+    then (bind ?orig (instance-name-to-symbol (nth$ 1 ?origen-usuario)))
     else (bind ?orig (nth$ (- ?idx 1) ?ciudades)))
     
   (bind ?mejor-ruta (create$))
@@ -1900,143 +3148,170 @@
     then
       (modify ?estado (num-trans-por-parada (create$ ?ntpp 0)))
     else
-      ; 1. Buscar Directo
-      (do-for-all-instances ((?t Transporte)) (and (eq ?t:Origen ?orig) (eq ?t:Destino ?dest))
+      ;; 1. Buscar Ruta Directa
+      (do-for-all-instances ((?t Transporte)) (and (eq (instance-name-to-symbol ?t:Origen) ?orig) (eq (instance-name-to-symbol ?t:Destino) ?dest))
         (bind ?prec (send ?t get-precioTransporte))
         (if (< ?prec ?min-precio) then 
             (bind ?min-precio ?prec)
-            (bind ?mejor-ruta (create$ ?t))))
+            (bind ?mejor-ruta (create$ (instance-name-to-symbol (instance-name ?t))))))
+      
+      ;; 2. Buscar Ruta con una Escala Intermedia
       (if (= (length$ ?mejor-ruta) 0) then
-          (do-for-all-instances ((?t1 Transporte)) (eq ?t1:Origen ?orig)
-             (bind ?int ?t1:Destino)
-             (do-for-all-instances ((?t2 Transporte)) (and (eq ?t2:Origen ?int) (eq ?t2:Destino ?dest))
+          (do-for-all-instances ((?t1 Transporte)) (eq (instance-name-to-symbol ?t1:Origen) ?orig)
+             (bind ?int (instance-name-to-symbol ?t1:Destino))
+             (do-for-all-instances ((?t2 Transporte)) (and (eq (instance-name-to-symbol ?t2:Origen) ?int) (eq (instance-name-to-symbol ?t2:Destino) ?dest))
                 (bind ?prec (+ (send ?t1 get-precioTransporte) (send ?t2 get-precioTransporte)))
                 (if (< ?prec ?min-precio) then
                     (bind ?min-precio ?prec)
-                    (bind ?mejor-ruta (create$ ?t1 ?t2))))))
+                    (bind ?mejor-ruta (create$ (instance-name-to-symbol (instance-name ?t1)) 
+                                               (instance-name-to-symbol (instance-name ?t2))))))))
 
       (if (= (length$ ?mejor-ruta) 0) then
-          (printout t "  [Sintesis] Aviso: No se encontro ruta de " (instance-name ?orig) " a " (instance-name ?dest) crlf)
+          (printout t "  [Sintesis] Aviso: No se encontro ruta de " ?orig " a " ?dest crlf)
           (modify ?estado (transportes (create$ ?tr ninguno)) (num-trans-por-parada (create$ ?ntpp 1)))
         else
           (modify ?estado (transportes (create$ ?tr ?mejor-ruta)) 
-                         (num-trans-por-parada (create$ ?ntpp (length$ ?mejor-ruta)))))))
+                           (num-trans-por-parada (create$ ?ntpp (length$ ?mejor-ruta)))))))
 
-(defrule sintesis::fin-transporte
+(defrule SINTESIS::fin-transporte
   (declare (salience -10))
-  ?estado <- (sintesis-viaje (id ?id) (paso 4) (ciudades $?ci) (dias $?di) (alojamientos $?al) (transportes $?tr) (num-trans-por-parada $?ntpp))
+  ?estado <- (sintesis-viaje (id ?id) 
+                             (paso 4) 
+                             (ciudades $?ci) 
+                             (dias $?di) 
+                             (alojamientos $?al) 
+                             (transportes $?tr) 
+                             (num-trans-por-parada $?ntpp) 
+                             (actividades-asignadas $?act)) ;; CORREGIDO: Nombre exacto de tu deftemplate
   (test (= (length$ ?ntpp) (length$ ?ci)))
   =>
-  (assert (viaje-seleccionado (id ?id) (ciudades ?ci) (dias ?di) (alojamientos ?al) (transportes ?tr) (num-trans-por-parada ?ntpp)))
+  (assert (viaje-seleccionado 
+            (id ?id) 
+            (ciudades ?ci) 
+            (dias ?di) 
+            (alojamientos ?al) 
+            (transportes ?tr) 
+            (num-trans-por-parada ?ntpp)
+            (actividades-asignadas ?act)))
+            
   (if (= ?id 1) then
-    (modify ?estado (id 2) (paso 1) (ciudades (create$)) (dias (create$)) (alojamientos (create$)) (transportes (create$)) (num-trans-por-parada (create$)) (dias-totales 0))
+    (modify ?estado (id 2) 
+                    (paso 1) 
+                    (ciudades (create$)) 
+                    (dias (create$)) 
+                    (alojamientos (create$)) 
+                    (transportes (create$)) 
+                    (num-trans-por-parada (create$)) 
+                    (actividades-asignadas (create$)) 
+                    (dias-totales 0))
   else (modify ?estado (paso 5))))
 
-(defrule sintesis::fin-sint
+(defrule SINTESIS::fin-sint
   (declare (salience 100))
   (sintesis-viaje (paso 5))
   =>
   (printout t crlf "============================================" crlf)
-  (printout t crlf "--- SINTESIS TERMINADA   ---" crlf)
+  (printout t "--- SINTESIS TERMINADA   ---" crlf)
+  (printout t "============================================" crlf)
+  (focus IMPRIMIR-RESULTADOS))
+
+
+; =============================================================================
+;                           MODULO IMPRIMIR RESULTADOS
+; =============================================================================
+
+(defrule IMPRIMIR-RESULTADOS::inicio
+  (declare (salience 100))
+  =>
   (printout t crlf "============================================" crlf)
-  (focus imprimir-resultados))
+  (printout t "         RECOMENDACION DE VIAJES            " crlf)
+  (printout t "============================================" crlf))
 
-; --------------------------------------------------
-;           MODULO IMPRIMIR RESULTADOS
-; --------------------------------------------------
-
-  (defrule imprimir-resultados::inicio
-    (declare (salience 100))
-    =>
-    (printout t crlf "============================================" crlf)
-    (printout t " RECOMENDACION DE VIAJES " crlf)
-    (printout t "============================================" crlf)
-  )
-
-  (defrule imprimir-resultados::imprimir-plan
-    (declare (salience 50))
-    (viaje-seleccionado (id ?id) (ciudades $?ciudades) (dias $?dias) (alojamientos $?alojamientos) (transportes $?transportes) (num-trans-por-parada $?ntpp))
-    (datos-usuario (idiomas $?idiomas-usuario))
-    (preferencias-viaje (tematicas $?tematicas-usuario))
-    =>
-    (printout t crlf " >>> PLAN DE VIAJE OPCION " ?id " <<<" crlf)
-    
-    (bind ?precio-total 0)
-    (bind ?duracion-total 0)
-    (bind ?t-idx 1)
-    
-    (loop-for-count (?i 1 (length$ ?ciudades))
-        (bind ?c (nth$ ?i ?ciudades))
-        (bind ?d (nth$ ?i ?dias))
-        (bind ?duracion-total (+ ?duracion-total ?d))
-        (bind ?aloj (nth$ ?i ?alojamientos))
-        (bind ?n-trans (nth$ ?i ?ntpp))
-        
-        (printout t "  Parada " ?i ": " ?c " (" ?d " dias)" crlf)
-        
-        (bind ?precio-ciudad 0)
-        (do-for-all-instances ((?city Ciudad)) (eq (instance-name ?city) ?c)
-            (bind ?precio-ciudad (* (send ?city get-precioMedio) ?d))
-            (printout t "    - Lugares a visitar: " (send ?city get-Contienen) crlf)
-        )
-        (printout t "    - Coste vida: " ?precio-ciudad " euros." crlf)
-        (bind ?precio-total (+ ?precio-total ?precio-ciudad))
-        
-        (if (neq ?aloj [ninguno]) then
-            (bind ?precio-aloj 0)
-            (do-for-all-instances ((?a Alojamiento)) (eq (instance-name ?a) ?aloj)
-                (bind ?precio-aloj (* (send ?a get-precioAlojamiento) ?d))
-                (printout t "    - Alojamiento: " (instance-name ?aloj) " (Calidad: " (send ?a get-calidadAlojamiento) ")" crlf)
-            )
-            (printout t "    - Coste alojamiento: " ?precio-aloj " euros." crlf)
-            (bind ?precio-total (+ ?precio-total ?precio-aloj))
-        else
-            (printout t "    - Alojamiento: Ninguno disponible que cumpla los requisitos." crlf)
-        )
-        
-        (printout t "    - Transporte de llegada:" crlf)
-        (loop-for-count (?j 1 ?n-trans)
-            (bind ?trans (nth$ ?t-idx ?transportes))
-            (if (neq ?trans ninguno) then
-                (do-for-all-instances ((?t Transporte)) (eq (instance-name ?t) ?trans)
-                    (bind ?p-t (send ?t get-precioTransporte))
-                    (printout t "      * " (instance-name ?trans) " (" (class ?t) "): " ?p-t " euros." crlf)
-                    (bind ?precio-total (+ ?precio-total ?p-t))
-                )
-            else
-                (printout t "      * Ninguno encontrado." crlf)
-            )
-            (bind ?t-idx (+ ?t-idx 1))
-        )
-    )
-    
-    (printout t "  ------------------------------------------" crlf)
-    (printout t "  RESUMEN PLAN " ?id ":" crlf)
-    (printout t "   - Duracion Total: " ?duracion-total " dias." crlf)
-    (printout t "   - Precio Total Aproximado: " ?precio-total " euros." crlf)
-    
-    (printout t "   - Preferencias cumplidas en este plan: " crlf)
-    (bind ?al-menos-una no)
-    (progn$ (?c ?ciudades)
-        (do-for-all-instances ((?city Ciudad)) (eq (instance-name ?city) ?c)
-            (bind ?hablan (send ?city get-Hablan_en))
-            (progn$ (?u-id ?idiomas-usuario)
-                (if (member$ ?u-id ?hablan) then 
-                    (printout t "      * Se habla tu idioma (" ?u-id ") en " ?c crlf)
-                    (bind ?al-menos-una si)
-                )
-            )
-            (bind ?tipos (send ?city get-Tipo_de_ciudad))
-            (progn$ (?t ?tematicas-usuario)
-                (if (member$ ?t ?tipos) then 
-                    (printout t "      * Coincide con tu tematica preferida (" ?t ") en " ?c crlf)
-                    (bind ?al-menos-una si)
-                )
-            )
-        )
-    )
-    (if (eq ?al-menos-una no) then
-        (printout t "      * Se han cumplido las restricciones de presupuesto y/o distancia." crlf)
-    )
-    (printout t "============================================" crlf)
-  )
+(defrule IMPRIMIR-RESULTADOS::imprimir-plan
+  (declare (salience 50))
+  (viaje-seleccionado (id ?id) (ciudades $?ciudades) (dias $?dias) (alojamientos $?alojamientos) (transportes $?transportes) (num-trans-por-parada $?ntpp))
+  (datos-usuario (idiomas $?idiomas-usuario))
+  ;; CORREGIDO: Cambiado 'tematicas' por 'tematicasPreferidas' según tu deftemplate
+  (preferencias-viaje (tematicasPreferidas $?tematicas-usuario)) 
+  =>
+  (printout t crlf " >>> PLAN DE VIAJE OPCION " ?id " <<<" crlf)
+  
+  (bind ?precio-total 0)
+  (bind ?duracion-total 0)
+  (bind ?t-idx 1)
+  
+  (loop-for-count (?i 1 (length$ ?ciudades))
+      (bind ?c (nth$ ?i ?ciudades))
+      (bind ?d (nth$ ?i ?dias))
+      (bind ?duracion-total (+ ?duracion-total ?d))
+      (bind ?aloj (nth$ ?i ?alojamientos))
+      (bind ?n-trans (nth$ ?i ?ntpp))
+      
+      (printout t "  Parada " ?i ": " ?c " (" ?d " dias)" crlf)
+      
+      (bind ?precio-ciudad 0)
+      (do-for-all-instances ((?city Ciudad)) (eq (instance-name-to-symbol (instance-name ?city)) ?c)
+          (bind ?precio-ciudad (* (send ?city get-precioMedio) ?d))
+          
+          (bind ?raw (send ?city get-Contienen))
+          (bind ?clean (create$))
+          (progn$ (?l ?raw) (bind ?clean (create$ ?clean (instance-name-to-symbol (instance-name ?l)))))
+          (printout t "    - Lugares a visitar: " ?clean crlf))
+          
+      (printout t "    - Coste vida: " ?precio-ciudad " euros." crlf)
+      (bind ?precio-total (+ ?precio-total ?precio-ciudad))
+      
+      (if (and (neq ?aloj ninguno) (neq ?aloj [ninguno])) then
+          (bind ?precio-aloj 0)
+          (do-for-all-instances ((?a Alojamiento)) (eq (instance-name-to-symbol (instance-name ?a)) ?aloj)
+              (bind ?precio-aloj (* (send ?a get-precioAlojamiento) ?d))
+              (printout t "    - Alojamiento: " ?aloj " (Calidad: " (send ?a get-calidadAlojamiento) ")" crlf))
+          (printout t "    - Coste alojamiento: " ?precio-aloj " euros." crlf)
+          (bind ?precio-total (+ ?precio-total ?precio-aloj))
+      else
+          (printout t "    - Alojamiento: Ninguno disponible que cumpla los requisitos." crlf))
+      
+      (printout t "    - Transporte de llegada:" crlf)
+      (if (> ?n-trans 0) then
+          (loop-for-count (?j 1 ?n-trans)
+              (bind ?trans (nth$ ?t-idx ?transportes))
+              (if (and (neq ?trans ninguno) (neq ?trans [ninguno])) then
+                  (do-for-all-instances ((?t Transporte)) (eq (instance-name-to-symbol (instance-name ?t)) ?trans)
+                      (bind ?p-t (send ?t get-precioTransporte))
+                      (printout t "      * " ?trans " (" (class ?t) "): " ?p-t " euros." crlf)
+                      (bind ?precio-total (+ ?precio-total ?p-t)))
+              else
+                  (printout t "      * Ninguno encontrado." crlf))
+              (bind ?t-idx (+ ?t-idx 1)))
+       else
+          (printout t "      * Desplazamiento local o a pie interno." crlf)))
+  
+  (printout t "  ------------------------------------------" crlf)
+  (printout t "  RESUMEN PLAN " ?id ":" crlf)
+  (printout t "    - Duracion Total: " ?duracion-total " dias." crlf)
+  (printout t "    - Precio Total Aproximado: " ?precio-total " euros." crlf)
+  
+  (printout t "    - Preferencias cumplidas en este plan: " crlf)
+  (bind ?al-menos-una no)
+  (progn$ (?c ?ciudades)
+      (do-for-all-instances ((?city Ciudad)) (eq (instance-name-to-symbol (instance-name ?city)) ?c)
+          (bind ?hablan (send ?city get-Hablan_en))
+          (progn$ (?u-id ?idiomas-usuario)
+              (bind ?u-id-sym (instance-name-to-symbol (instance-name ?u-id)))
+              (bind ?lista-hablan-sym (create$))
+              (progn$ (?h ?hablan) (bind ?lista-hablan-sym (create$ ?lista-hablan-sym (instance-name-to-symbol (instance-name ?h)))))
+              (if (member$ ?u-id-sym ?lista-hablan-sym) then 
+                  (printout t "      * Se habla tu idioma (" ?u-id-sym ") en " ?c crlf)
+                  (bind ?al-menos-una si)))
+          
+          (bind ?tipos (send ?city get-Tipo_de_ciudad))
+          (progn$ (?t ?tematicas-usuario)
+              (bind ?lista-tipos-sym (create$))
+              (progn$ (?tp ?tipos) (bind ?lista-tipos-sym (create$ ?lista-tipos-sym (instance-name-to-symbol (instance-name ?tp)))))
+              (if (member$ ?t ?lista-tipos-sym) then 
+                  (printout t "      * Coincide con tu temática preferida (" ?t ") en " ?c crlf)
+                  (bind ?al-menos-una si)))))
+                  
+  (if (eq ?al-menos-una no) then
+      (printout t "      * Se han cumplido las restricciones de presupuesto y/o distancia." crlf))
+  (printout t "============================================" crlf))
