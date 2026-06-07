@@ -1,0 +1,78 @@
+########################################################################
+# TRACES EXTENSIO 3 (preus)   (metric-ff v2.1, cerca: -s 3 -w 0  = cost uniforme/optim)
+########################################################################
+
+==================== problem1 (minimitzar preu, rang 100..500) ====================
+
+ff: parsing domain file
+domain 'VIATGES-EXT3' defined
+ ... done.
+ff: parsing problem file
+problem 'VIATGE-EXT3-1' defined
+ ... done.
+
+
+translating negated cond for predicate VISITED
+translating negated cond for predicate STARTED
+warning: numeric precondition. turning cost-minimizing relaxed plans OFF.
+
+ff: search configuration is weighted A* with weight 0.
+Metric is ((1.00*[RF0](TOTAL-PRICE)) - () + 0.00)
+COST MINIMIZATION DONE (WITHOUT cost-minimizing relaxed plans).
+
+advancing to goal distance:    3
+                               2
+                               0
+
+ff: found legal plan as follows
+step    0: CHOOSE-START ROM H-ROM
+        1: TRAVEL F-RP ROM PAR H-PAR2
+        2: TRAVEL F-PB2 PAR BCN H-BCN
+plan cost: 310.000000
+
+time spent:    0.00 seconds instantiating 28 easy, 0 hard action templates
+               0.00 seconds reachability analysis, yielding 33 facts and 28 actions
+               0.00 seconds creating final representation with 33 relevant facts, 12 relevant fluents
+               0.00 seconds computing LNF
+               0.00 seconds building connectivity graph
+               0.00 seconds searching, evaluating 86 states, to a max depth of 0
+               0.00 seconds total time
+
+
+==================== problem2 (preu minim restrictiu 380..600) ====================
+
+ff: parsing domain file
+domain 'VIATGES-EXT3' defined
+ ... done.
+ff: parsing problem file
+problem 'VIATGE-EXT3-2' defined
+ ... done.
+
+
+translating negated cond for predicate VISITED
+translating negated cond for predicate STARTED
+warning: numeric precondition. turning cost-minimizing relaxed plans OFF.
+
+ff: search configuration is weighted A* with weight 0.
+Metric is ((1.00*[RF0](TOTAL-PRICE)) - () + 0.00)
+COST MINIMIZATION DONE (WITHOUT cost-minimizing relaxed plans).
+
+advancing to goal distance:    5
+                               2
+                               1
+                               0
+
+ff: found legal plan as follows
+step    0: CHOOSE-START LON H-LON
+        1: TRAVEL F-LB LON BCN H-BCN
+        2: TRAVEL F-BP2 BCN PAR H-PAR2
+plan cost: 380.000000
+
+time spent:    0.00 seconds instantiating 28 easy, 0 hard action templates
+               0.00 seconds reachability analysis, yielding 33 facts and 28 actions
+               0.00 seconds creating final representation with 33 relevant facts, 12 relevant fluents
+               0.00 seconds computing LNF
+               0.00 seconds building connectivity graph
+               0.00 seconds searching, evaluating 108 states, to a max depth of 0
+               0.00 seconds total time
+
